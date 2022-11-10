@@ -183,7 +183,6 @@ function debounce(fn: { apply: (arg0: any, arg1: IArguments) => void; }, ms : nu
     for (let i = 0;i < resizers.length; i++) {
       const currentResizer = resizers[i];
       currentResizer.addEventListener('mousedown', function(e) {
-        console.log(e)
         e.preventDefault()
         original_width = parseFloat(getComputedStyle(element, null).getPropertyValue('width').replace('px', ''));
         original_height = parseFloat(getComputedStyle(element, null).getPropertyValue('height').replace('px', ''));
@@ -259,20 +258,12 @@ function debounce(fn: { apply: (arg0: any, arg1: IArguments) => void; }, ms : nu
 
 
 
-<div class='resizable'>
-  <div class='resizers'>
-    <div class='resizer top-left'></div>
-    <div class='resizer top-right'></div>
-    <div class='resizer bottom-left'></div>
-    <div class='resizer bottom-right'></div>
-  </div>
-</div>
 
 
 
-  <div id="dragdiv" class="z-50 w-3/12 absolute min-w-fit bg-slate-800" >
+  <div id="dragdiv" class="z-50 w-3/12 absolute min-h-fit bg-slate-800 resizable" >
   <div class="flex box-border border-2"><div class="flex-initial w-3/4" id="dragdivheader"><FiMoreHorizontal color="white"/></div>{open() ? <FiChevronUp onClick={()=>{setOpen(!open())}} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" /> : <FiChevronDown onClick={()=>{setOpen(!open())}} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" />}</div>
-  <div style={open()  && {display: "none",visibility: "hidden"}} class="text-white flex flex-col items-center">
+  <div id="menu" style={open()  && {display: "none",visibility: "hidden"}} class="text-white flex flex-col h-full items-center justify-evenly">
   <DropdownCipher/>
   <br/>
   <label for="encrypttext">Text to Cipher</label>
@@ -291,12 +282,14 @@ function debounce(fn: { apply: (arg0: any, arg1: IArguments) => void; }, ms : nu
         />
 
   <button type="submit" class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
-  <FiArrowDownRight class="self-end"></FiArrowDownRight>
+  
+  <FiArrowDownRight class="self-end resizer bottom-right"></FiArrowDownRight>
 
   </div>
   
   </div>
   </div>
+
 
   
   );
