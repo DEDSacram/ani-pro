@@ -18,7 +18,6 @@
     "vite-plugin-solid": "^2.3.0"
   },
   "dependencies": {
-    "interactjs": "^1.10.17",
     "pixi.js": "^7.0.3",
     "solid-icons": "^1.0.4",
     "solid-js": "^1.5.1",
