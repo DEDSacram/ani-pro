@@ -32,6 +32,4 @@
   }
   .resizer.bottom-right {
     cursor: nwse-resize;
-    right: -5px;
-    bottom: -5px;
   }

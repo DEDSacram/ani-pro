@@ -173,7 +173,7 @@ export const App: Component = () => {
   function makeResizableDiv(div) {
     const element = document.querySelector(div);
     const resizers = document.querySelectorAll(div + ' .resizer')
-    const minimum_size = 350;
+    const minimum_size = 0;
     let original_width = 0;
     let original_height = 0;
     let original_x = 0;
@@ -199,50 +199,50 @@ export const App: Component = () => {
           const width = original_width + (e.pageX - original_mouse_x);
           const height = original_height + (e.pageY - original_mouse_y)
           if(e.pageX < window.innerWidth){
-          if (width > minimum_size) {
+          if (width >= minimum_size) {
             element.style.width = width + 'px'
           }
         }
         if(e.pageY < window.innerHeight){
-          if (height > minimum_size) {
+          if (height >= minimum_size) {
             element.style.height = height + 'px'
           }
         }
         }
-        else if (currentResizer.classList.contains('bottom-left')) {
-          const height = original_height + (e.pageY - original_mouse_y)
-          const width = original_width - (e.pageX - original_mouse_x)
-          if (height > minimum_size) {
-            element.style.height = height + 'px'
-          }
-          if (width > minimum_size) {
-            element.style.width = width + 'px'
-            element.style.left = original_x + (e.pageX - original_mouse_x) + 'px'
-          }
-        }
-        else if (currentResizer.classList.contains('top-right')) {
-          const width = original_width + (e.pageX - original_mouse_x)
-          const height = original_height - (e.pageY - original_mouse_y)
-          if (width > minimum_size) {
-            element.style.width = width + 'px'
-          }
-          if (height > minimum_size) {
-            element.style.height = height + 'px'
-            element.style.top = original_y + (e.pageY - original_mouse_y) + 'px'
-          }
-        }
-        else {
-          const width = original_width - (e.pageX - original_mouse_x)
-          const height = original_height - (e.pageY - original_mouse_y)
-          if (width > minimum_size) {
-            element.style.width = width + 'px'
-            element.style.left = original_x + (e.pageX - original_mouse_x) + 'px'
-          }
-          if (height > minimum_size) {
-            element.style.height = height + 'px'
-            element.style.top = original_y + (e.pageY - original_mouse_y) + 'px'
-          }
-        }
+        // else if (currentResizer.classList.contains('bottom-left')) {
+        //   const height = original_height + (e.pageY - original_mouse_y)
+        //   const width = original_width - (e.pageX - original_mouse_x)
+        //   if (height > minimum_size) {
+        //     element.style.height = height + 'px'
+        //   }
+        //   if (width > minimum_size) {
+        //     element.style.width = width + 'px'
+        //     element.style.left = original_x + (e.pageX - original_mouse_x) + 'px'
+        //   }
+        // }
+        // else if (currentResizer.classList.contains('top-right')) {
+        //   const width = original_width + (e.pageX - original_mouse_x)
+        //   const height = original_height - (e.pageY - original_mouse_y)
+        //   if (width > minimum_size) {
+        //     element.style.width = width + 'px'
+        //   }
+        //   if (height > minimum_size) {
+        //     element.style.height = height + 'px'
+        //     element.style.top = original_y + (e.pageY - original_mouse_y) + 'px'
+        //   }
+        // }
+        // else {
+        //   const width = original_width - (e.pageX - original_mouse_x)
+        //   const height = original_height - (e.pageY - original_mouse_y)
+        //   if (width > minimum_size) {
+        //     element.style.width = width + 'px'
+        //     element.style.left = original_x + (e.pageX - original_mouse_x) + 'px'
+        //   }
+        //   if (height > minimum_size) {
+        //     element.style.height = height + 'px'
+        //     element.style.top = original_y + (e.pageY - original_mouse_y) + 'px'
+        //   }
+        // }
       }
 
       function stopResize() {
@@ -265,9 +265,9 @@ export const App: Component = () => {
 
 
 
-      <div id="dragdiv" class="z-50 w-3/12 absolute min-h-fit resizable" >
+      <div id="dragdiv" class="z-50 w-3/12 flex flex-col absolute resizable" >
         <div class="flex box-border border-2 bg-slate-800 "><div class="flex-initial w-3/4" id="dragdivheader"><FiMoreHorizontal color="white" /></div>{open() ? <FiChevronUp onClick={() => { setOpen(!open()) }} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" /> : <FiChevronDown onClick={() => { setOpen(!open()) }} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" />}</div>
-        <div id="menu" style={open() && { display: "none", visibility: "hidden" }} class="text-white flex flex-col h-full items-center justify-evenly bg-slate-800 ">
+        <div id="menu" style={open() && { display: "none", visibility: "hidden" }} class="text-white flex flex-col h-full items-center justify-between bg-slate-800 ">
           <DropdownCipher />
           <br />
           <label for="encrypttext">Text to Cipher</label>
