@@ -173,7 +173,7 @@ export const App: Component = () => {
   function makeResizableDiv(div) {
     const element = document.querySelector(div);
     const resizers = document.querySelectorAll(div + ' .resizer')
-    const minimum_size = 0;
+    const minimum_size = 228;
     let original_width = 0;
     let original_height = 0;
     let original_x = 0;
@@ -198,6 +198,7 @@ export const App: Component = () => {
         if (currentResizer.classList.contains('bottom-right')) {
           const width = original_width + (e.pageX - original_mouse_x);
           const height = original_height + (e.pageY - original_mouse_y)
+          // console.log (e.clientY - rect.top)
           if(e.pageX < window.innerWidth){
           if (width >= minimum_size) {
             element.style.width = width + 'px'
@@ -266,7 +267,7 @@ export const App: Component = () => {
 
 
       <div id="dragdiv" class="z-50 w-3/12 flex flex-col absolute resizable" >
-        <div class="flex box-border border-2 bg-slate-800 "><div class="flex-initial w-3/4" id="dragdivheader"><FiMoreHorizontal color="white" /></div>{open() ? <FiChevronUp onClick={() => { setOpen(!open()) }} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" /> : <FiChevronDown onClick={() => { setOpen(!open()) }} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" />}</div>
+        <div class="flex box-border border-2 bg-slate-800 "><div class="flex-initial w-3/4" id="dragdivheader"><FiMoreHorizontal color="white" /></div>{open() ? <FiChevronDown onClick={() => { setOpen(!open()) }} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" /> : <FiChevronUp onClick={() => { setOpen(!open()) }} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" />}</div>
         <div id="menu" style={open() && { display: "none", visibility: "hidden" }} class="text-white flex flex-col h-full items-center justify-between bg-slate-800 ">
           <DropdownCipher />
           <br />
