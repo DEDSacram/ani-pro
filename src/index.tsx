@@ -173,7 +173,7 @@ export const App: Component = () => {
   function makeResizableDiv(div) {
     const element = document.querySelector(div);
     const resizers = document.querySelectorAll(div + ' .resizer')
-    const minimum_size = 20;
+    const minimum_size = 350;
     let original_width = 0;
     let original_height = 0;
     let original_x = 0;
@@ -198,12 +198,16 @@ export const App: Component = () => {
         if (currentResizer.classList.contains('bottom-right')) {
           const width = original_width + (e.pageX - original_mouse_x);
           const height = original_height + (e.pageY - original_mouse_y)
+          if(e.pageX < window.innerWidth){
           if (width > minimum_size) {
             element.style.width = width + 'px'
           }
+        }
+        if(e.pageY < window.innerHeight){
           if (height > minimum_size) {
             element.style.height = height + 'px'
           }
+        }
         }
         else if (currentResizer.classList.contains('bottom-left')) {
           const height = original_height + (e.pageY - original_mouse_y)
