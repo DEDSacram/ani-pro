@@ -13,8 +13,6 @@ import Canvas from "./components/canvas";
 export const App: Component = () => {
   const [size, setSize] = createSignal({ width: document.body.clientWidth, height: document.body.clientHeight });
   const [open, setOpen] = createSignal(false)
-  // let contentWidth = 0
-  // let contentHeight = 0
 
 
   // ciphers
@@ -32,15 +30,25 @@ export const App: Component = () => {
       }, ms)
     };
   }
-
   function handleResize() {
     setSize({ width: document.documentElement.clientWidth, height: document.documentElement.clientHeight })
   }
+
   window.addEventListener('resize', debounce(handleResize, 200))
   let canvas!: { getContext: (arg0: string) => any; width: number; height: number; }
   let overlaycanvas!: { getContext: (arg0: string) => any; width: number; height: number; }
+  let ref
+  let resizerright
+  let [heightbefore,setHeightBefore] = createSignal("fit-content")
+  function checkOpen(){
+    if(!open()){
+      setHeightBefore(ref.offsetHeight + "px")
+    }
+    console.log(heightbefore())
+    setOpen(!open())
+  }
   onMount(() => {
-    makeResizableDiv('.resizable')
+    makeResizableDiv(ref,resizerright)
     dragElement(document.getElementById("dragdiv"), document.getElementById("dragdivheader"));
     const ctx = canvas.getContext("2d");
     let frame = requestAnimationFrame(loop);
@@ -98,8 +106,8 @@ export const App: Component = () => {
 
 
 
-      <div id="dragdiv" style={open() || {width:"fit-content",height:"fit-content"}} class="z-50 w-3/12 flex flex-col absolute resizable" >
-        <div class="flex box-border border-2 bg-slate-800 "><div class="flex-initial w-3/4" id="dragdivheader"><FiMoreHorizontal color="white" /></div>{open() ? <FiChevronDown onClick={() => { setOpen(!open()) }} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" /> : <FiChevronUp onClick={() => { setOpen(!open()) }} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" />}</div>
+      <div id="dragdiv" ref={ref} style={!open() ? {height:heightbefore()} : {height:"fit-content"}} class="z-50 w-3/12 flex flex-col absolute" >
+        <div class="flex box-border border-2 bg-slate-800 "><div class="flex-initial w-3/4" id="dragdivheader"><FiMoreHorizontal color="white" /></div>{open() ? <FiChevronDown onClick={checkOpen} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" /> : <FiChevronUp onClick={checkOpen} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" />}</div>
         <div id="menu" style={open() && { display: "none", visibility: "hidden" }} class="text-white flex flex-col h-full items-center justify-between bg-slate-800 ">
           <DropdownCipher />
           <br />
@@ -120,7 +128,7 @@ export const App: Component = () => {
 
           <button type="submit" class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
 
-          <FiArrowDownRight class="self-end resizer bottom-right"></FiArrowDownRight>
+          <FiArrowDownRight ref={resizerright} class="self-end resizer"></FiArrowDownRight>
 
         </div>
 

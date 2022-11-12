@@ -28,6 +28,6 @@
   .resizer{
     
   }
-  .resizer.bottom-right {
+  .resizer {
     cursor: nwse-resize;
   }
