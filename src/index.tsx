@@ -62,7 +62,14 @@ export const App: Component = () => {
     if (!open()) {
       if (ref.offsetTop + parseInt(heightbefore()) >= window.innerHeight) {
         let addto = ref.offsetTop
+        let fromtop =  (ref.offsetTop + heightbefore() - window.innerHeight) 
         ref.style.top = addto - (ref.offsetTop + heightbefore() - window.innerHeight) + "px"
+        if(ref.offsetTop < 0){
+          ref.style.top = 0 +"px"
+        }else{
+          
+        }
+        console.log( fromtop )
       }
       ref.style.height = heightbefore() + "px"
     }
@@ -132,7 +139,7 @@ export const App: Component = () => {
       </Suspense>
 
       <div id="dragdiv" ref={ref} class="z-50 w-3/12 flex flex-col absolute" >
-        <div class="flex box-border border-2 bg-slate-800 "><div class="flex-initial w-3/4" ref={dragheader} id="dragdivheader"><FiMoreHorizontal color="white" /></div>{open() ? <FiChevronDown onClick={checkOpen} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" /> : <FiChevronUp onClick={checkOpen} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" />}</div>
+        <div class="flex items-center justify-between box-border border-2 bg-slate-800 "><div class="flex flex-row justify-around items-center w-2/3" ref={dragheader} id="dragdivheader"><FiMoreHorizontal color="white"/><h1>Menu</h1></div>{open() ? <FiChevronDown onClick={checkOpen} color="white" class="custom-icon z-60 w-1/3" title="a11y" /> : <FiChevronUp onClick={checkOpen} color="white" class="custom-icon z-60 w-1/3" title="a11y" />}</div>
         <div id="menu" style={open() && { display: "none", visibility: "hidden" }} class="text-white flex flex-col h-full items-center justify-between bg-slate-800 ">
           <DropdownCipher />
           <br />

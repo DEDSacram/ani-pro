@@ -20,14 +20,6 @@
     min-height: 350px;
   } */
 
-  .resizers{
-    
-  }
-  .resizable {
-  }
-  .resizer{
-    
-  }
   .resizer {
     cursor: nwse-resize;
   }

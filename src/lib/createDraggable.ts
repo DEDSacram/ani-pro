@@ -23,7 +23,6 @@ function dragElement(elmnt: HTMLElement,header : HTMLElement) {
       // e = e || window.event;
       e?.preventDefault();
       // calculate the new cursor position:
-      console.log(pos3)
       pos1 = pos3 - e?.clientX;
       pos2 = pos4 - e?.clientY;
       pos3 = e?.clientX;
@@ -33,7 +32,6 @@ function dragElement(elmnt: HTMLElement,header : HTMLElement) {
    
       elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
       elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-      console.log(e.clientX)
       if(e.clientY <= 0){
         elmnt.style.top = 0+ "px";
       }
@@ -62,7 +60,13 @@ function dragElement(elmnt: HTMLElement,header : HTMLElement) {
         elmnt.style.left = window.innerWidth - elmnt.offsetWidth + "px";
       }
       if(elmnt.offsetTop + elmnt.offsetHeight >= window.innerHeight){
-        elmnt.style.top = window.innerHeight - elmnt.offsetHeight + "px";
+        if(elmnt.offsetHeight >window.innerHeight){
+          elmnt.style.top = 0 + "px";
+        }else{
+          console.log(window.innerHeight - elmnt.offsetHeight)
+          elmnt.style.top = window.innerHeight - elmnt.offsetHeight + "px";
+        }
+        
       }
     }
   }
