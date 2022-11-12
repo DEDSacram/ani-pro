@@ -23,3 +23,6 @@
   .resizer {
     cursor: nwse-resize;
   }
+  #animenu{
+    min-width: 450px;
+  }

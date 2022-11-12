@@ -111,10 +111,10 @@ export const App: Component = () => {
   // Mounting after dom was rendered
   onMount(() => {
     // resize and drag function on menu
-    makeResizableDiv(ref, resizerright)
+    makeResizableDiv(ref, resizerright,270,270)
     dragElement(ref, dragheader);
     dragElement(ref2, dragheader2);
-    makeResizableDiv(ref2, resizerright2)
+    makeResizableDiv(ref2, resizerright2,450,64)
 
     //context of canvas n1
     const ctx = canvas.getContext("2d");
@@ -195,23 +195,16 @@ export const App: Component = () => {
       </div>
 
 
-            <div ref={ref2}  class="z-50 w-3/12 flex flex-col absolute">
+            <div ref={ref2} id="animenu"  class="z-50 w-3/12 flex flex-col absolute">
             <div class="flex items-center justify-between box-border border-2 bg-slate-800 "><div class="flex flex-row justify-around items-center w-2/3" ref={dragheader2} id="dragdivheader"><FiMoreHorizontal color="white"/><h1>AniMenu</h1></div>{aniOpen() ? <FiChevronDown onClick={checkOpen2} color="white" class="custom-icon z-60 w-1/3" title="a11y" /> : <FiChevronUp onClick={checkOpen2} color="white" class="custom-icon z-60 w-1/3" title="a11y" />}</div>
             <div style={aniOpen() && { display: "none", visibility: "hidden" }} class="text-white flex flex-col h-full items-center justify-between bg-slate-800 ">
-          <label for="encrypttext">Text to Cipher</label>
-          <br />
-          <input name="encrypttext" class="text-black bg-gray-50 border border-gray-30 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            onInput={(e) => {
-              setTextEncryption(e.target.value);
-            }}
-          />
-          <label for="encrypttextkey">Cipher Key</label>
-          <input name="encrypttextkey" class="text-black bg-gray-50 border border-gray-30 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            onInput={(e) => {
-              setTextEncryptionKey(e.target.value);
-            }}
-          />
-          <button type="submit" class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+          <div >
+            <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">AutoLeft</button>
+            <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Left</button>
+            <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Stop</button>
+            <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Right</button>
+            <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">AutoRight</button>
+          </div>
           <FiArrowDownRight ref={resizerright2} class="self-end resizer"></FiArrowDownRight>
         </div>
             </div>
