@@ -13,13 +13,16 @@ import Canvas from "./components/canvas";
 export const App: Component = () => {
   const [size, setSize] = createSignal({ width: document.body.clientWidth, height: document.body.clientHeight });
   const [open, setOpen] = createSignal(false)
-
-
   // ciphers
   const [textEncryption, setTextEncryption] = createSignal('');
   const [textEncryptionKey, setTextEncryptionKey] = createSignal('');
 
-  const position = { x: 0, y: 0 }
+  //drag and resize references
+  let ref
+  let resizerright
+  let dragheader
+
+
   function debounce(fn: { apply: (arg0: any, arg1: IArguments) => void; }, ms: number) {
     let timer: any
     return (_: any) => {
@@ -33,23 +36,33 @@ export const App: Component = () => {
   function handleResize() {
     setSize({ width: document.documentElement.clientWidth, height: document.documentElement.clientHeight })
   }
-
   window.addEventListener('resize', debounce(handleResize, 200))
   let canvas!: { getContext: (arg0: string) => any; width: number; height: number; }
   let overlaycanvas!: { getContext: (arg0: string) => any; width: number; height: number; }
-  let ref
-  let resizerright
+
   let [heightbefore,setHeightBefore] = createSignal("fit-content")
   function checkOpen(){
     if(!open()){
-      setHeightBefore(ref.offsetHeight + "px")
+      setHeightBefore(ref.offsetHeight)
     }
-    console.log(heightbefore())
     setOpen(!open())
+    moveUp()
+  }
+  function moveUp(){
+    if(!open()){
+      if(ref.offsetTop+heightbefore() >= window.innerHeight){
+        let addto = ref.offsetTop
+        ref.style.top = addto-(ref.offsetTop+heightbefore() - window.innerHeight) + "px"
+      }
+      ref.style.height = heightbefore() + "px"
+    }
+    else{
+      ref.style.height = "fit-content"
+    }
   }
   onMount(() => {
     makeResizableDiv(ref,resizerright)
-    dragElement(document.getElementById("dragdiv"), document.getElementById("dragdivheader"));
+    dragElement(ref, dragheader);
     const ctx = canvas.getContext("2d");
     let frame = requestAnimationFrame(loop);
 
@@ -106,8 +119,8 @@ export const App: Component = () => {
 
 
 
-      <div id="dragdiv" ref={ref} style={!open() ? {height:heightbefore()} : {height:"fit-content"}} class="z-50 w-3/12 flex flex-col absolute" >
-        <div class="flex box-border border-2 bg-slate-800 "><div class="flex-initial w-3/4" id="dragdivheader"><FiMoreHorizontal color="white" /></div>{open() ? <FiChevronDown onClick={checkOpen} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" /> : <FiChevronUp onClick={checkOpen} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" />}</div>
+      <div id="dragdiv" ref={ref} class="z-50 w-3/12 flex flex-col absolute" >
+        <div class="flex box-border border-2 bg-slate-800 "><div class="flex-initial w-3/4" ref={dragheader} id="dragdivheader"><FiMoreHorizontal color="white" /></div>{open() ? <FiChevronDown onClick={checkOpen} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" /> : <FiChevronUp onClick={checkOpen} color="white" class="custom-icon z-60 w-1/4 flex-initial" title="a11y" />}</div>
         <div id="menu" style={open() && { display: "none", visibility: "hidden" }} class="text-white flex flex-col h-full items-center justify-between bg-slate-800 ">
           <DropdownCipher />
           <br />

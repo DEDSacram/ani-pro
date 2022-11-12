@@ -1,5 +1,5 @@
 function makeResizableDiv(div : any, ref : any) {
-    const minimum_size = 209;
+    const minimum_size = 270;
     let width = 0
     let height = 0
       ref.addEventListener('mousedown', function (e: any) {
