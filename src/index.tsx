@@ -21,9 +21,9 @@ export const App: Component = () => {
   const [textEncryptionKey, setTextEncryptionKey] = createSignal('');
 
   //drag and resize references
-  let ref
-  let resizerright
-  let dragheader
+  let ref!: HTMLElement | ((el: HTMLDivElement) => void) | undefined
+  let resizerright!: SVGSVGElement | ((el: SVGSVGElement) => void)
+  let dragheader!: HTMLElement | ((el: HTMLDivElement) => void)
   // retain height reference
   let [heightbefore, setHeightBefore] = createSignal("fit-content")
 
@@ -60,7 +60,7 @@ export const App: Component = () => {
   // check out of bounds if is move to top
   function moveUp() {
     if (!open()) {
-      if (ref.offsetTop + heightbefore() >= window.innerHeight) {
+      if (ref.offsetTop + parseInt(heightbefore()) >= window.innerHeight) {
         let addto = ref.offsetTop
         ref.style.top = addto - (ref.offsetTop + heightbefore() - window.innerHeight) + "px"
       }

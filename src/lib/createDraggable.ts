@@ -9,7 +9,7 @@ function dragElement(elmnt: HTMLElement,header : HTMLElement) {
     }
   
     function dragMouseDown(e: Event | undefined) {
-      e = e || window.event;
+      // e = e || window.event;
       e?.preventDefault();
       // get the mouse cursor position at startup:
       pos3 = e?.clientX;
@@ -20,9 +20,10 @@ function dragElement(elmnt: HTMLElement,header : HTMLElement) {
     }
   
     function elementDrag(e: Event | undefined) {
-      e = e || window.event;
+      // e = e || window.event;
       e?.preventDefault();
       // calculate the new cursor position:
+      console.log(pos3)
       pos1 = pos3 - e?.clientX;
       pos2 = pos4 - e?.clientY;
       pos3 = e?.clientX;
@@ -32,16 +33,17 @@ function dragElement(elmnt: HTMLElement,header : HTMLElement) {
    
       elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
       elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-      if(elmnt.offsetTop <= 0){
+      console.log(e.clientX)
+      if(e.clientY <= 0){
         elmnt.style.top = 0+ "px";
       }
-      if(elmnt.offsetLeft <= 0){
+      if(e.clientX <= 0){
         elmnt.style.left = 0 + "px";
       }
-      if(elmnt.offsetLeft + elmnt.offsetWidth >= window.innerWidth){
+      if(e.clientX >= window.innerWidth){
         elmnt.style.left = window.innerWidth - elmnt.offsetWidth + "px";
       }
-      if(elmnt.offsetTop + elmnt.offsetHeight >= window.innerHeight){
+      if(e.clientY >= window.innerHeight){
         elmnt.style.top = window.innerHeight - elmnt.offsetHeight + "px";
       }
     }
