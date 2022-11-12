@@ -114,7 +114,7 @@ export const App: Component = () => {
     makeResizableDiv(ref, resizerright,270,270)
     dragElement(ref, dragheader);
     dragElement(ref2, dragheader2);
-    makeResizableDiv(ref2, resizerright2,450,64)
+    makeResizableDiv(ref2, resizerright2,450,81)
 
     //context of canvas n1
     const ctx = canvas.getContext("2d");
