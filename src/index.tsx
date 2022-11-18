@@ -24,6 +24,8 @@ export const App: Component = () => {
   const [backAdd, setBackAdd] = createSignal([])
   const [frontAdd, setFrontAdd] = createSignal([])
 
+  let submit = false
+
 
 
 
@@ -51,7 +53,7 @@ export const App: Component = () => {
         currentfunction = new caesar(backctx)
         break;
       case "2":
-        // code block
+        currentfunction = new playfair(backctx)
         break;
       default:
       // code block
@@ -71,13 +73,126 @@ export const App: Component = () => {
   //resize window
   function handleResize() {
     setSize({ width: document.documentElement.clientWidth, height: document.documentElement.clientHeight })
-    if (currentfunction) {
-      currentfunction()
+    if (currentfunction && submit) {
+      currentfunction(textEncryptionKey())
     }
 
   }
+
+  function onSubmit(){
+    if(textEncryption() && textEncryptionKey()){
+    submit = true
+    if (currentfunction && submit) {
+      backctx.clearRect(0, 0, canvas.width, canvas.height);
+      frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
+      currentfunction(textEncryptionKey())
+    }
+  }
+  }
   // calling timeout before resizing
   window.addEventListener('resize', debounce(handleResize, 500))
+
+  function tryout(ctx){
+    var radius
+    if(ctx.canvas.clientWidth > ctx.canvas.clientHeight){
+      radius = ctx.canvas.clientHeight/2
+    }
+    else{
+      radius = ctx.canvas.clientWidth/2
+    }
+    ctx.translate(ctx.canvas.clientWidth/2, ctx.canvas.clientHeight/2);
+    drawBackground(ctx, radius);
+    drawLetters(ctx, radius);
+  }
+
+
+function drawBackground(ctx, radius) {
+  ctx.beginPath();
+  ctx.arc(0, 0, radius, 0, 2*Math.PI);
+  ctx.fillStyle = 'white';
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(0,0,radius*0.7,0,radius*0.8);
+  ctx.lineWidth = 5;
+  ctx.strokeStyle = "black";
+  ctx.stroke();
+  ctx.lineWidth = 5;
+
+  ctx.fillStyle = '#333';
+}
+
+function drawFirst(ctx,radius,angledivider,by){
+  let first = 26 * Math.PI / angledivider;
+  ctx.rotate(first);
+  ctx.translate(0, -radius*by);
+  ctx.rotate(-first);
+  ctx.fillText("A".toString(), 0, 0);
+  ctx.rotate(first);
+  ctx.translate(0, radius*by);
+  ctx.rotate(-first);
+}
+
+function drawLetters(ctx, radius) {
+  var ang;
+  var num;
+  ctx.font = radius*0.1 + "px arial";
+  ctx.textBaseline="middle";
+  ctx.textAlign="center";
+  // num = 27
+  for(let heh = 1; heh < 57; heh++){
+    if(heh % 2 == 1){
+      drawBoundary(ctx,heh*Math.PI/26, radius, radius*0.01);
+    }
+  }
+
+
+
+
+  var angledivider = 26/2
+  drawFirst(ctx,radius,angledivider,0.85)
+  for(num = 1; num < 26; num++){
+    ang = num * Math.PI / angledivider;
+    ctx.rotate(ang);
+    ctx.translate(0, -radius*0.85);
+    ctx.rotate(-ang);
+    ctx.fillText(String.fromCharCode((num + 65)), 0, 0);
+    ctx.rotate(ang);
+    ctx.translate(0, radius*0.85);
+    ctx.rotate(-ang);
+  }
+  drawFirst(ctx,radius,angledivider,0.60)
+  for(num = 1; num < 26; num++){
+    ang = num * Math.PI / angledivider;
+    ctx.rotate(ang);
+    ctx.translate(0, -radius*0.60);
+    ctx.rotate(-ang);
+    ctx.fillText(String.fromCharCode((num + 65)), 0, 0);
+    ctx.rotate(ang);
+    ctx.translate(0, radius*0.60);
+    ctx.rotate(-ang);
+  }
+  ctx.beginPath();
+  ctx.arc(0, 0, radius*0.52, 0, 2*Math.PI);
+  ctx.fillStyle = "white";
+  ctx.fill();
+  ctx.lineWidth = 5;
+  ctx.strokeStyle = "black";
+  ctx.stroke();
+}
+
+
+function drawBoundary(ctx, pos, length, width) {
+    ctx.beginPath();
+    ctx.lineWidth = width;
+    ctx.lineCap = "round";
+    ctx.moveTo(0,0);
+    ctx.rotate(pos);
+    ctx.lineTo(0, -length);
+    ctx.stroke();
+    ctx.rotate(-pos);
+}
+
 
 
   function caesar(ctx) {
@@ -102,6 +217,7 @@ export const App: Component = () => {
 
   function playfair(ctx) {
     return function (pass) {
+      if(pass){
       let arr = ["A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
       let fixed = [...new Set(pass.toUpperCase().split(''))]
       fixed.forEach(element => {
@@ -127,12 +243,10 @@ export const App: Component = () => {
         ctx.stroke();
         ctx.fillText(arr[i], spacexby * (i % 5) + spacexby / 2, spaceyby * (Math.floor(i / 5)) + ((spaceyby) / 2));
       }
+    }
     };
   }
 
-  function draw() {
-
-  }
 
   //creating canvas back and overlay references
   let canvas!: { getContext: (arg0: string) => any; width: number; height: number; }
@@ -195,8 +309,8 @@ export const App: Component = () => {
     // resize and drag function on menu
     backctx = canvas.getContext("2d")
     frontctx = overlaycanvas.getContext("2d")
-    let x = playfair(backctx)
-    x("sus")
+
+    tryout(backctx)    
 
     makeResizableDiv(ref, resizerright, 270, 270)
     dragElement(ref, dragheader);
@@ -232,7 +346,7 @@ export const App: Component = () => {
               setTextEncryptionKey(e.target.value);
             }}
           />
-          <button type="submit" class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+          <button onClick={onSubmit} type="submit" class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
           <FiArrowDownRight ref={resizerright} class="self-end resizer"></FiArrowDownRight>
         </div>
       </div>
