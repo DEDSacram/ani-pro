@@ -1,5 +1,6 @@
 export function createCaesarWheel(ctx){
     return function (key){
+    var numkey = Number(key)
     var radius
     if(ctx.canvas.clientWidth > ctx.canvas.clientHeight){
       radius = ctx.canvas.clientHeight/2
@@ -9,7 +10,7 @@ export function createCaesarWheel(ctx){
     }
     ctx.translate(ctx.canvas.clientWidth/2, ctx.canvas.clientHeight/2);
     drawBackground(ctx, radius);
-    drawLetters(ctx, radius);
+    drawLetters(ctx, radius,numkey);
   }
   }
 
@@ -30,24 +31,25 @@ function drawBackground(ctx, radius) {
   ctx.fillStyle = '#333';
 }
 
-function drawFirst(ctx,radius,angledivider,by){
+function drawFirst(ctx,radius,angledivider,by,letter){
   let first = 26 * Math.PI / angledivider;
   ctx.rotate(first);
   ctx.translate(0, -radius*by);
   ctx.rotate(-first);
-  ctx.fillText("A".toString(), 0, 0);
+  ctx.fillText(letter, 0, 0);
   ctx.rotate(first);
   ctx.translate(0, radius*by);
   ctx.rotate(-first);
 }
 
-function drawLetters(ctx, radius) {
+function drawLetters(ctx, radius,key) {
   var ang;
   var num;
   ctx.font = radius*0.1 + "px arial";
   ctx.textBaseline="middle";
   ctx.textAlign="center";
-  // num = 27
+  let arrtext = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+  let arrcipher = arrtext.slice(key).concat(arrtext.slice(0,key))
   for(let heh = 1; heh < 57; heh++){
     if(heh % 2 == 1){
       drawBoundary(ctx,heh*Math.PI/26, radius, radius*0.01);
@@ -58,24 +60,25 @@ function drawLetters(ctx, radius) {
 
 
   var angledivider = 26/2
-  drawFirst(ctx,radius,angledivider,0.85)
-  for(num = 1; num < 26; num++){
+  drawFirst(ctx,radius,angledivider,0.85,arrtext[0])
+  for(num = 1; num < arrtext.length; num++){
     ang = num * Math.PI / angledivider;
     ctx.rotate(ang);
     ctx.translate(0, -radius*0.85);
     ctx.rotate(-ang);
-    ctx.fillText(String.fromCharCode((num + 65)), 0, 0);
+    ctx.fillText(arrtext[num], 0, 0);
     ctx.rotate(ang);
     ctx.translate(0, radius*0.85);
     ctx.rotate(-ang);
   }
-  drawFirst(ctx,radius,angledivider,0.60)
-  for(num = 1; num < 26; num++){
+  drawFirst(ctx,radius,angledivider,0.60,arrcipher[0])
+  arrcipher.splice(0,1)
+  for(num = 1; num < arrtext.length; num++){
     ang = num * Math.PI / angledivider;
     ctx.rotate(ang);
     ctx.translate(0, -radius*0.60);
     ctx.rotate(-ang);
-    ctx.fillText(String.fromCharCode((num + 65)), 0, 0);
+    ctx.fillText(arrcipher[num-1], 0, 0);
     ctx.rotate(ang);
     ctx.translate(0, radius*0.60);
     ctx.rotate(-ang);
