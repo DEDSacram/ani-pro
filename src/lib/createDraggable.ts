@@ -27,7 +27,6 @@ function dragElement(elmnt: HTMLElement,header : HTMLElement) {
       pos2 = pos4 - e?.clientY;
       pos3 = e?.clientX;
       pos4 = e?.clientY;
-      // console.log(e?.clientX)
       // set the element's new position:
    
       elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
@@ -63,7 +62,6 @@ function dragElement(elmnt: HTMLElement,header : HTMLElement) {
         if(elmnt.offsetHeight >window.innerHeight){
           elmnt.style.top = 0 + "px";
         }else{
-          console.log(window.innerHeight - elmnt.offsetHeight)
           elmnt.style.top = window.innerHeight - elmnt.offsetHeight + "px";
         }
         
