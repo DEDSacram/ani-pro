@@ -1,10 +1,7 @@
 import { render } from "solid-js/web";
-import { onMount, onCleanup, createEffect } from "solid-js";
+import { onMount} from "solid-js";
 import { Component } from "solid-js";
-import { lazy, Suspense, createSignal } from "solid-js";
-import { FiChevronDown, FiChevronUp, FiMoreHorizontal, FiArrowDownRight } from "solid-icons/fi";
-import dragElement from "./lib/createDraggable";
-import makeResizableDiv from "./lib/createResizable";
+import {Suspense, createSignal } from "solid-js";
 import { DropdownCipher } from "./components/dropdown";
 import { createPlayfair } from "./lib/createPlayfair";
 import { createCaesar } from "./lib/createCaesar";
@@ -12,26 +9,26 @@ import { createCaesarWheel } from "./lib/createCaesarWheel";
 import "./index.css"
 import Canvas from "./components/canvas";
 import { Menu } from "./components/menu";
+import {FiChevronsLeft,FiChevronLeft,FiPause,FiChevronRight,FiChevronsRight} from "solid-icons/fi";
 
 
 export const App: Component = () => {
   //window size
   const [size, setSize] = createSignal({ width: document.body.clientWidth, height: document.body.clientHeight });
-
-  //is menu opened
-  const [open, setOpen] = createSignal(false)
-  const [aniOpen, setAniOpen] = createSignal(false)
   // ciphers
   const [textEncryption, setTextEncryption] = createSignal('');
   const [textEncryptionKey, setTextEncryptionKey] = createSignal('')
   let currentfunction
   let backctx;
   let frontctx;
+  let currentcipher;
   //reset
   let submit = false;
 
+  
+
   const refCallback = (el) => {
-    console.log(el)
+    currentcipher = el
     switch (el) {
       case "1":
         currentfunction = new createCaesar(backctx)
@@ -43,7 +40,6 @@ export const App: Component = () => {
         currentfunction = new createPlayfair(backctx)
         break;
       default:
-      // code block
     }
   };
   // wait timer before window resize optimalization
@@ -63,7 +59,6 @@ export const App: Component = () => {
     if (currentfunction && submit) {
       currentfunction(textEncryptionKey())
     }
-
   }
 
   function onSubmit() {
@@ -77,28 +72,22 @@ export const App: Component = () => {
         resetContext(frontctx)
       }
     }
-
     function resetContext(ctx) {
       ctx.resetTransform();
-      ctx.strokeStyle = "#000"; ctx.lineWidth = 1; ctx.setLineDash([]);
+      ctx.strokeStyle = "#000000"; ctx.lineWidth = 1; ctx.setLineDash([]);
+      ctx.fillStyle = 'black';
     }
   }
   // calling timeout before resizing
   window.addEventListener('resize', debounce(handleResize, 500))
-
   //creating canvas back and overlay references
   let canvas!: { getContext: (arg0: string) => any; width: number; height: number; }
   let overlaycanvas!: { getContext: (arg0: string) => any; width: number; height: number; }
-
   // Mounting after dom was rendered
   onMount(() => {
-    // resize and drag function on menu
     backctx = canvas.getContext("2d")
     frontctx = overlaycanvas.getContext("2d")
   });
-
-
-
   return (
     <div>
       <Suspense fallback={<p>Loading...</p>}>
@@ -125,17 +114,14 @@ export const App: Component = () => {
       </Menu>
       <Menu title={"AniMenu"} itemid={"animenu"} minwidth={450} minheight={81}>
         <div >
-          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">AutoLeft</button>
-          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Left</button>
-          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Stop</button>
-          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Right</button>
-          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">AutoRight</button>
+          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsLeft/></button>
+          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronLeft/></button>
+          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiPause/></button>
+          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronRight/></button>
+          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsRight/></button>
         </div>
       </Menu>
     </div>
-
-
-
   );
 }
 
