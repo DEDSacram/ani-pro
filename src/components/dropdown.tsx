@@ -2,6 +2,8 @@ import { Component, onMount } from "solid-js";
 import { createSignal } from "solid-js";
 import "../dropdown.css"
 import {  FiChevronDown, FiChevronUp} from "solid-icons/fi";
+
+
 export const DropdownCipher : Component = (props) => {
 const [open, setOpen] = createSignal(false);
 const [cipher, setCipher] = createSignal("Select Cipher");
