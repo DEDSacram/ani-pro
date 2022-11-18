@@ -1,8 +1,8 @@
-import { Component } from "solid-js";
+import { Component, onMount } from "solid-js";
 import { createSignal } from "solid-js";
 import "../dropdown.css"
 import {  FiChevronDown, FiChevronUp} from "solid-icons/fi";
-export const DropdownCipher : Component = () => {
+export const DropdownCipher : Component = (props) => {
 const [open, setOpen] = createSignal(false);
 const [cipher, setCipher] = createSignal("Select Cipher");
 
@@ -12,8 +12,8 @@ function myFunction() {
   }
 
 function onChange(e){
- 
     setCipher(e.target.textContent)
+    props.PASSREF(e.target.id)
 }
   
   // Close the dropdown if the user clicks outside of it
@@ -40,8 +40,8 @@ return(
   {cipher()}
 </button>
   <div id="myDropdown" class="dropdown-content w-full text-center">
-    <a onClick={onChange}>Caesar</a>
-    <a onClick={onChange}>Playfair</a>
+    <a onClick={onChange} id="1">Caesar</a>
+    <a onClick={onChange} id="2">Playfair</a>
   </div>
 </div>
 )
