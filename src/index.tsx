@@ -31,9 +31,9 @@ export const App: Component = () => {
   // ciphers
   const [textEncryption, setTextEncryption] = createSignal('');
   const [textEncryptionKey, setTextEncryptionKey] = createSignal('')
-  let currentfunction
-  let backctx;
-  let frontctx;
+  let currentfunction: (arg0: string) => void
+  let backctx: { clearRect: (arg0: number, arg1: number, arg2: number, arg3: number) => void; };
+  let frontctx: { clearRect: (arg0: number, arg1: number, arg2: number, arg3: number) => void; };
   let currentcipher : number;
   //reset
   let submit = false;
@@ -42,7 +42,10 @@ export const App: Component = () => {
 
   //rescaling animation
 
-  let ratio = 1
+  let xratio = 1
+  let yratio = 1
+
+  let ongeneratedsize = {width : 0,height : 0}
 
   // response from
   let backres : Postres;
@@ -62,17 +65,17 @@ export const App: Component = () => {
         backres = data})
   }
 
-  const refCallback = (el) => {
+  const refCallback = (el: any) => {
     currentcipher = el
-    switch (el) {
-      case "1":
-        currentfunction = new createCaesar(backctx)
+    switch (Number.parseInt(el)) {
+      case 1:
+        currentfunction = createCaesar(backctx)
         break;
-      case "2":
-        currentfunction = new createCaesarWheel(backctx)
+      case 2:
+        currentfunction = createCaesarWheel(backctx)
         break;
-      case "3":
-        currentfunction = new createPlayfair(backctx)
+      case 3:
+        currentfunction = createPlayfair(backctx)
         break;
       default:
     }
@@ -90,6 +93,10 @@ export const App: Component = () => {
   }
   //resize window
   function handleResize() {
+    if(submit){
+      xratio = document.documentElement.clientWidth/ongeneratedsize.width
+      yratio = document.documentElement.clientHeight/ongeneratedsize.height
+    }
     setSize({ width: document.documentElement.clientWidth, height: document.documentElement.clientHeight })
     if (currentfunction && submit) {
       currentfunction(textEncryptionKey())
@@ -97,7 +104,7 @@ export const App: Component = () => {
   }
 
   async function onSubmit() {
-    if (textEncryption() && textEncryptionKey()) {
+    if (textEncryption() && textEncryptionKey() && currentcipher) {
       submit = true
       if (currentfunction && submit) {
         backctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -107,10 +114,11 @@ export const App: Component = () => {
         resetContext(frontctx)
         await res(new Postreq(currentcipher,textEncryption(),textEncryptionKey()),encrypt)
         console.log(backres.TextNow)
+        ongeneratedsize = {width : size().width,height : size().height}
 
       }
     }
-    function resetContext(ctx) {
+    function resetContext(ctx: { resetTransform: () => void; strokeStyle: string; lineWidth: number; setLineDash: (arg0: never[]) => void; fillStyle: string; }) {
       ctx.resetTransform();
       ctx.strokeStyle = "#000000"; ctx.lineWidth = 1; ctx.setLineDash([]);
       ctx.fillStyle = 'black';
