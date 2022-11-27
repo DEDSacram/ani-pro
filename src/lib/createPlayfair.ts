@@ -1,5 +1,5 @@
-export function createPlayfair(ctx) {
-    return function (pass) {
+export function createPlayfair(ctx: { clearRect?: (arg0: number, arg1: number, arg2: number, arg3: number) => void; canvas?: any; textAlign?: any; textBaseline?: any; font?: any; beginPath?: any; rect?: any; stroke?: any; fillText?: any; }) {
+    return function (pass: string) {
       if(pass){
       let arr = ["A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
       let fixed = [...new Set(pass.toUpperCase().split(''))]

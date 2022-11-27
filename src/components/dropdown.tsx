@@ -13,7 +13,7 @@ function myFunction() {
     document.getElementById("myDropdown").classList.toggle("show");
   }
 
-function onChange(e){
+function onChange(e: { target: { textContent: any; id: any; }; }){
     setCipher(e.target.textContent)
     props.PASSREF(e.target.id)
 }

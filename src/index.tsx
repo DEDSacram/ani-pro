@@ -31,14 +31,16 @@ export const App: Component = () => {
   // ciphers
   const [textEncryption, setTextEncryption] = createSignal('');
   const [textEncryptionKey, setTextEncryptionKey] = createSignal('')
-  let currentfunction: (arg0: string) => void
+  const [encryptedText,setEncryptedText] = createSignal('')
+  let currentfunction: (arg0: string, arg1: boolean) => void
+  let currentfunctionanimation: ((text: string, encrypted: string, key: number, encrypt: boolean) => void) | ((arg0: string, arg1: string, arg2: string, arg3: boolean) => void)
   let backctx: { clearRect: (arg0: number, arg1: number, arg2: number, arg3: number) => void; };
   let frontctx: { clearRect: (arg0: number, arg1: number, arg2: number, arg3: number) => void; };
   let currentcipher : number;
   //reset
   let submit = false;
 
-  let encrypt = false;
+  let [encrypt,setEncrypt] = createSignal(true);
 
   //rescaling animation
 
@@ -46,6 +48,8 @@ export const App: Component = () => {
   let yratio = 1
 
   let ongeneratedsize = {width : 0,height : 0}
+
+  let animationsteps = []
 
   // response from
   let backres : Postres;
@@ -70,9 +74,11 @@ export const App: Component = () => {
     switch (Number.parseInt(el)) {
       case 1:
         currentfunction = createCaesar(backctx)
+        currentfunctionanimation = setCaesar()
         break;
       case 2:
         currentfunction = createCaesarWheel(backctx)
+        currentfunctionanimation = setCaesarCircle()
         break;
       case 3:
         currentfunction = createPlayfair(backctx)
@@ -99,8 +105,15 @@ export const App: Component = () => {
     }
     setSize({ width: document.documentElement.clientWidth, height: document.documentElement.clientHeight })
     if (currentfunction && submit) {
-      currentfunction(textEncryptionKey())
+      currentfunction(textEncryptionKey(),encrypt())
     }
+  }
+
+  function switchOutputInput(){
+    let temp = encryptedText()
+    setEncryptedText(textEncryption())
+    setTextEncryption(temp)
+
   }
 
   async function onSubmit() {
@@ -109,11 +122,13 @@ export const App: Component = () => {
       if (currentfunction && submit) {
         backctx.clearRect(0, 0, canvas.width, canvas.height);
         frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-        currentfunction(textEncryptionKey())
+        currentfunction(textEncryptionKey(),encrypt())
         resetContext(backctx)
         resetContext(frontctx)
-        await res(new Postreq(currentcipher,textEncryption(),textEncryptionKey()),encrypt)
+        await res(new Postreq(currentcipher,textEncryption(),textEncryptionKey()),encrypt())
         console.log(backres.TextNow)
+        setEncryptedText(backres.TextNow)
+        currentfunctionanimation(backres.TextBefore,backres.TextNow,textEncryptionKey(),encrypt())
         ongeneratedsize = {width : size().width,height : size().height}
 
       }
@@ -122,6 +137,77 @@ export const App: Component = () => {
       ctx.resetTransform();
       ctx.strokeStyle = "#000000"; ctx.lineWidth = 1; ctx.setLineDash([]);
       ctx.fillStyle = 'black';
+    }
+  }
+
+  function setCaesar(){
+    return function GenerateStepsCaesar(text : string,encrypted : string,key : number,encrypt:boolean){
+
+      let echarindex = 0
+      let tcharindex = 0
+   
+      //pohyb doleva
+   
+      if(encrypt){
+        for(let i = 0; i<text.length;i++){
+          let isupper = false
+          if(text[i] == text[i].toUpperCase()){
+            isupper = true
+          }
+          if(isupper){
+            tcharindex = text.charCodeAt(i) - 65
+            echarindex = encrypted.charCodeAt(i) - 65
+          }else{
+            tcharindex = text.charCodeAt(i) - 97
+            echarindex = encrypted.charCodeAt(i) - 97
+          }
+          
+          let letters = [tcharindex]
+          //Move by 1 to include encrypted char
+          while(tcharindex != echarindex){
+            tcharindex++
+            if(tcharindex > 25){
+              tcharindex = 0
+            }
+            letters.push(tcharindex)
+          }
+          console.log(letters)
+        }
+      }
+      //pohyb doprava
+      else{
+        for(let i = 0; i<text.length;i++){
+          let isupper = false
+          if(text[i] == text[i].toUpperCase()){
+            isupper = true
+          }
+          if(isupper){
+            tcharindex = text.charCodeAt(i) - 65
+            echarindex = encrypted.charCodeAt(i) - 65
+          }else{
+            tcharindex = text.charCodeAt(i) - 97
+            echarindex = encrypted.charCodeAt(i) - 97
+          }
+          
+          let letters = [tcharindex]
+          //Move by 1 to include encrypted char
+          while(tcharindex != echarindex){
+            tcharindex--
+            if(tcharindex < 0){
+              tcharindex = 25
+            }
+            letters.push(tcharindex)
+          }
+          console.log(letters)
+        }
+      }
+    
+     
+      // animationsteps.push()
+    }
+  }
+  function setCaesarCircle(){
+    return function GenerateStepsCaesar(text : string,encrypted : string,key : number){
     }
   }
   // calling timeout before resizing
@@ -143,19 +229,27 @@ export const App: Component = () => {
       <Menu title={"CipMenu"} itemid={"menu"} minwidth={270} minheight={270}>
         <DropdownCipher PASSREF={refCallback} />
         <br />
+        <div>
+        <button onClick={()=>{setEncrypt(!encrypt())}} class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{(encrypt()) ? "Encrypt" : "Decrypt"}</button>    <button onClick={switchOutputInput} class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Switch</button>
+        </div>
+        <br />
         <label for="encrypttext">Text to Cipher</label>
         <br />
-        <input name="encrypttext" class="text-black bg-gray-50 border border-gray-30 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        <input name="encrypttext" value={textEncryption()} class="text-black bg-gray-50 border border-gray-30 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
           onInput={(e) => {
             setTextEncryption(e.target.value);
           }}
         />
         <label for="encrypttextkey">Cipher Key</label>
-        <input name="encrypttextkey" class="text-black bg-gray-50 border border-gray-30 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        <input name="encrypttextkey" value={textEncryptionKey()} class="text-black bg-gray-50 border border-gray-30 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
           onInput={(e) => {
             setTextEncryptionKey(e.target.value);
           }}
         />
+
+<label for="output">Output</label>
+        <input name="output" class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-gray-100 bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" value={encryptedText()} readOnly/>
+
         <button onClick={onSubmit} type="submit" class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
       </Menu>
       <Menu title={"AniMenu"} itemid={"animenu"} minwidth={450} minheight={81}>

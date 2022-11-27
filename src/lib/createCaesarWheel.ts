@@ -1,6 +1,9 @@
-export function createCaesarWheel(ctx){
-    return function (key){
-    var numkey = Number(key)
+export function createCaesarWheel(ctx: { clearRect?: (arg0: number, arg1: number, arg2: number, arg3: number) => void; canvas?: any; translate?: any }){
+    return function (key: any,encrypt : boolean){
+    var numkey = Number(key) % 26
+    if(!encrypt){
+      numkey = -numkey
+    }
     var radius
     if(ctx.canvas.clientWidth > ctx.canvas.clientHeight){
       radius = ctx.canvas.clientHeight/2
@@ -15,7 +18,7 @@ export function createCaesarWheel(ctx){
   }
 
 
-function drawBackground(ctx, radius) {
+function drawBackground(ctx: { beginPath: () => void; arc: (arg0: number, arg1: number, arg2: number, arg3: number, arg4: number) => void; fillStyle: string; fill: () => void; lineWidth: number; strokeStyle: string; stroke: () => void }, radius: number) {
   ctx.beginPath();
   ctx.arc(0, 0, radius, 0, 2*Math.PI);
   ctx.fillStyle = 'white';
@@ -31,7 +34,7 @@ function drawBackground(ctx, radius) {
   ctx.fillStyle = '#333';
 }
 
-function drawFirst(ctx,radius,angledivider,by,letter){
+function drawFirst(ctx: { rotate: (arg0: number) => void; translate: (arg0: number, arg1: number) => void; fillText: (arg0: any, arg1: number, arg2: number) => void },radius: number,angledivider: number,by: number,letter: string){
   let first = 26 * Math.PI / angledivider;
   ctx.rotate(first);
   ctx.translate(0, -radius*by);
@@ -42,7 +45,7 @@ function drawFirst(ctx,radius,angledivider,by,letter){
   ctx.rotate(-first);
 }
 
-function drawLetters(ctx, radius,key) {
+function drawLetters(ctx: { font: string; textBaseline: string; textAlign: string; rotate: (arg0: number) => void; translate: (arg0: number, arg1: number) => void; fillText: (arg0: string, arg1: number, arg2: number) => void; beginPath: () => void; arc: (arg0: number, arg1: number, arg2: number, arg3: number, arg4: number) => void; fillStyle: string; fill: () => void; lineWidth: number; strokeStyle: string; stroke: () => void }, radius: number,key: number | undefined) {
   var ang;
   var num;
   ctx.font = radius*0.1 + "px arial";
@@ -93,7 +96,7 @@ function drawLetters(ctx, radius,key) {
 }
 
 
-function drawBoundary(ctx, pos, length, width) {
+function drawBoundary(ctx: { beginPath: () => void; lineWidth: any; lineCap: string; moveTo: (arg0: number, arg1: number) => void; rotate: (arg0: number) => void; lineTo: (arg0: number, arg1: number) => void; stroke: () => void }, pos: number, length: number, width: number) {
     ctx.beginPath();
     ctx.lineWidth = width;
     ctx.lineCap = "round";

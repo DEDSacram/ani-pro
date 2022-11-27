@@ -1,4 +1,4 @@
-export function createCaesar(ctx) {
+export function createCaesar(ctx: { clearRect?: (arg0: number, arg1: number, arg2: number, arg3: number) => void; canvas?: any; textAlign?: any; textBaseline?: any; font?: any; beginPath?: any; rect?: any; stroke?: any; fillText?: any; }) {
     return function () {
       let sizeWidth = ctx.canvas.clientWidth;
       let sizeHeight = ctx.canvas.clientHeight;
