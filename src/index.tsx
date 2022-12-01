@@ -34,8 +34,8 @@ export const App: Component = () => {
   const [encryptedText,setEncryptedText] = createSignal('')
   let currentfunction: (arg0: string, arg1: boolean) => void
   let currentfunctionanimation: ((text: string, encrypted: string, key: number, encrypt: boolean) => void) | ((arg0: string, arg1: string, arg2: string, arg3: boolean) => void)
-  let backctx: { clearRect: (arg0: number, arg1: number, arg2: number, arg3: number) => void; };
-  let frontctx: { clearRect: (arg0: number, arg1: number, arg2: number, arg3: number) => void; };
+  let backctx: { clearRect?: any; canvas?: any; textAlign?: any; textBaseline?: any; font?: any; beginPath?: any; rect?: any; stroke?: any; fillText?: any; translate?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
+  let frontctx: { clearRect?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
   let currentcipher : number;
   //reset
   let submit = false;
@@ -48,6 +48,10 @@ export const App: Component = () => {
   let yratio = 1
 
   let ongeneratedsize = {width : 0,height : 0}
+
+  let animationtimer;
+  let innertimer;
+  let animationindex = 0
 
   let animationsteps = []
 
@@ -147,6 +151,7 @@ export const App: Component = () => {
       let tcharindex = 0
    
       //pohyb doleva
+      let lettersnum = []
    
       if(encrypt){
         for(let i = 0; i<text.length;i++){
@@ -171,7 +176,7 @@ export const App: Component = () => {
             }
             letters.push(tcharindex)
           }
-          console.log(letters)
+          lettersnum.push(letters)
         }
       }
       //pohyb doprava
@@ -198,17 +203,65 @@ export const App: Component = () => {
             }
             letters.push(tcharindex)
           }
-          console.log(letters)
+          lettersnum.push(letters)
         }
       }
-    
-     
-      // animationsteps.push()
+      let sizeWidth = backctx.canvas.clientWidth;
+      let spacexby = sizeWidth / 26
+      for (let i = 0; i < lettersnum.length; i++) {
+        let x = []
+        for(let j = 0; j < lettersnum[i].length;j++){
+          x.push([spacexby * (lettersnum[i][j]+1),0])
+        }
+        animationsteps.push(x)
+      }
+      console.log(animationsteps)
+      
     }
   }
   function setCaesarCircle(){
     return function GenerateStepsCaesar(text : string,encrypted : string,key : number){
     }
+  }
+
+
+
+  function autoRunLeft(){
+  }
+  function autoRunRight(){
+    let sizeWidth = backctx.canvas.clientWidth;
+    let spacexby = sizeWidth / 26
+    animationtimer = setInterval(() => {
+      clearInterval(innertimer)
+      let lendiff = animationsteps[animationindex][0][0] - animationsteps[animationindex][1][0]
+      let moveby = Math.abs(lendiff)*0.01
+      let curr = animationsteps[animationindex][0][0]
+      innertimer = setInterval(()=>{
+        frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
+        frontctx.beginPath()
+        frontctx.fillStyle = "green";
+        frontctx.rect(curr, 0, spacexby, 20);
+        frontctx.fill()
+        curr += moveby
+        if(curr>= animationsteps[animationindex][0][0]){
+          clearInterval(innertimer)
+        }
+      }, 10)
+      if(animationindex<animationsteps.length){
+        animationindex++
+      }
+    
+    }, 5000);
+    
+  }
+  function pause(){
+    clearInterval(animationtimer);
+    clearInterval(innertimer)
+  }
+  function moveLeft(){
+  }
+  function moveRight(){
+
   }
   // calling timeout before resizing
   window.addEventListener('resize', debounce(handleResize, 500))
@@ -254,11 +307,11 @@ export const App: Component = () => {
       </Menu>
       <Menu title={"AniMenu"} itemid={"animenu"} minwidth={450} minheight={81}>
         <div >
-          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsLeft /></button>
-          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronLeft /></button>
-          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiPause /></button>
-          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronRight /></button>
-          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsRight /></button>
+          <button onClick={autoRunLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsLeft /></button>
+          <button onClick={moveLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronLeft /></button>
+          <button onClick={pause} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiPause /></button>
+          <button onClick={moveRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronRight /></button>
+          <button onClick={autoRunRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsRight /></button>
         </div>
       </Menu>
     </div>
