@@ -49,8 +49,7 @@ export const App: Component = () => {
 
   let ongeneratedsize = {width : 0,height : 0}
 
-  let animationtimer;
-  let innertimer;
+  let pauseexec = false
   let animationindex = 0
 
   let animationsteps = []
@@ -211,11 +210,11 @@ export const App: Component = () => {
       for (let i = 0; i < lettersnum.length; i++) {
         let x = []
         for(let j = 0; j < lettersnum[i].length;j++){
-          x.push([spacexby * (lettersnum[i][j]+1),0])
+            // x.push([spacexby * (lettersnum[i][j]+1),0])
+            x.push([spacexby * lettersnum[i][j],0])
         }
         animationsteps.push(x)
       }
-      console.log(animationsteps)
       
     }
   }
@@ -224,39 +223,82 @@ export const App: Component = () => {
     }
   }
 
-
-
-  function autoRunLeft(){
+  var sussy = 2
+  function easeInOutQuart(t, b, c, d) {
+    if ((t /= d / 2) < 1) return c / 2 * t * t * t * t + b;
+    return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
   }
-  function autoRunRight(){
-    let sizeWidth = backctx.canvas.clientWidth;
-    let spacexby = sizeWidth / 26
-    animationtimer = setInterval(() => {
-      clearInterval(innertimer)
-      let lendiff = animationsteps[animationindex][0][0] - animationsteps[animationindex][1][0]
-      let moveby = Math.abs(lendiff)*0.01
-      let curr = animationsteps[animationindex][0][0]
-      innertimer = setInterval(()=>{
-        frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-        frontctx.beginPath()
-        frontctx.fillStyle = "green";
-        frontctx.rect(curr, 0, spacexby, 20);
-        frontctx.fill()
-        curr += moveby
-        if(curr>= animationsteps[animationindex][0][0]){
-          clearInterval(innertimer)
-        }
-      }, 10)
-      if(animationindex<animationsteps.length){
-        animationindex++
+  async function Animate(ctx,from,to,width,height,duration){
+    return await new Promise(resolve => {
+  
+    var start = new Date().getTime();
+    var innertimer = setInterval(function() {
+      var time = new Date().getTime() - start;
+      var x = easeInOutQuart(time, from, to - from, duration);
+      ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
+      ctx.beginPath()
+      ctx.fillStyle = "white";
+      ctx.rect(x, 0, width, height);
+      ctx.fill()
+      if (time >= duration) {
+        resolve('done');
+        clearInterval(innertimer)
       }
-    
-    }, 5000);
-    
+    }, 1000 / 60);
+  });
   }
+
+ 
+
+ 
+
+  async function autoRunLeft(){
+    // letters
+  let spacexby = size().width / 26
+  let spaceyby = size().height / 26
+  for(let i = animationsteps.length-1; i > -1; i--){
+    for(let j= animationsteps[i].length-1; j>-1;j--){
+        if(j-1 <0){
+          break
+        }
+        await Animate(frontctx,animationsteps[i][j][0],animationsteps[i][j-1][0],spacexby,spaceyby,1000)
+     
+    }
+  }
+  }
+  async function autoRunRight(){
+    let spacexby = size().width / 26
+    let spaceyby = size().height / 26
+    for(let i = 0 ; i < animationsteps.length ; i++){
+      //letter steps
+      for(let j=0; j< animationsteps[i].length;j++){
+          if(j+1 == animationsteps[i].length){
+            break
+          }
+          await Animate(frontctx,animationsteps[i][j][0],animationsteps[i][j+1][0],spacexby,spaceyby,1000)
+          if(pauseexec){
+            await recursiveCall()
+          }
+      }
+    }
+  }
+
+  const recursiveCall = async () => {
+    return await new Promise((resolve) => {
+      setTimeout(function() {
+        if (pauseexec) {
+          return resolve(recursiveCall())
+      } else {
+          return resolve("done")
+      }
+    }, 200);
+      
+    })
+}
+
   function pause(){
-    clearInterval(animationtimer);
-    clearInterval(innertimer)
+    pauseexec = !pauseexec
+    console.log(pauseexec)
   }
   function moveLeft(){
   }
@@ -308,9 +350,9 @@ export const App: Component = () => {
       <Menu title={"AniMenu"} itemid={"animenu"} minwidth={450} minheight={81}>
         <div >
           <button onClick={autoRunLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsLeft /></button>
-          <button onClick={moveLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronLeft /></button>
+          {/* <button onClick={moveLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronLeft /></button> */}
           <button onClick={pause} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiPause /></button>
-          <button onClick={moveRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronRight /></button>
+          {/* <button onClick={moveRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronRight /></button> */}
           <button onClick={autoRunRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsRight /></button>
         </div>
       </Menu>
