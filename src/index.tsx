@@ -124,13 +124,14 @@ export const App: Component = () => {
     if (textEncryption() && textEncryptionKey() && currentcipher) {
       submit = true
       if (currentfunction && submit) {
+        animationsteps = []; // clear ani steps
+
         backctx.clearRect(0, 0, canvas.width, canvas.height);
         frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
         currentfunction(textEncryptionKey(),encrypt())
         resetContext(backctx)
         resetContext(frontctx)
         await res(new Postreq(currentcipher,textEncryption(),textEncryptionKey()),encrypt())
-        console.log(backres.TextNow)
         setEncryptedText(backres.TextNow)
         currentfunctionanimation(backres.TextBefore,backres.TextNow,textEncryptionKey(),encrypt())
         ongeneratedsize = {width : size().width,height : size().height}
@@ -224,7 +225,6 @@ export const App: Component = () => {
     }
   }
 
-  var sussy = 2
   function easeInOutQuart(t, b, c, d) {
     if ((t /= d / 2) < 1) return c / 2 * t * t * t * t + b;
     return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
@@ -255,28 +255,32 @@ export const App: Component = () => {
 
   async function autoRunLeft(){
     // letters
-  let spacexby = size().width / 26
-  let spaceyby = size().height / 26
   for(let i = animationsteps.length-1; i > -1; i--){
     for(let j= animationsteps[i].length-1; j>-1;j--){
         if(j-1 <0){
           break
         }
-        await Animate(frontctx,animationsteps[i][j][0],animationsteps[i][j-1][0],spacexby,spaceyby,1000)
+        let spacexby = size().width / 26
+        let spaceyby = size().height / 26
+        await Animate(frontctx,animationsteps[i][j][0] * xratio,animationsteps[i][j-1][0] * xratio,spacexby,spaceyby,1000)
+        if(pauseexec()){
+          await recursiveCall()
+        }
      
     }
   }
   }
   async function autoRunRight(){
-    let spacexby = size().width / 26
-    let spaceyby = size().height / 26
+
     for(let i = 0 ; i < animationsteps.length ; i++){
       //letter steps
       for(let j=0; j< animationsteps[i].length;j++){
           if(j+1 == animationsteps[i].length){
             break
           }
-          await Animate(frontctx,animationsteps[i][j][0],animationsteps[i][j+1][0],spacexby,spaceyby,1000)
+          let spacexby = size().width / 26
+          let spaceyby = size().height / 26
+          await Animate(frontctx,animationsteps[i][j][0] * xratio,animationsteps[i][j+1][0] * xratio,spacexby,spaceyby,1000)
           if(pauseexec()){
             await recursiveCall()
           }
