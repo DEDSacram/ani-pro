@@ -9,7 +9,7 @@ import { createCaesarWheel } from "./lib/createCaesarWheel";
 import "./index.css"
 import Canvas from "./components/canvas";
 import { Menu } from "./components/menu";
-import { FiChevronsLeft, FiChevronLeft, FiPause, FiChevronRight, FiChevronsRight } from "solid-icons/fi";
+import { FiChevronsLeft, FiChevronLeft, FiPause, FiChevronRight, FiChevronsRight, FiPlay } from "solid-icons/fi";
 
 class Postreq {
   public Cipher: number;
@@ -32,6 +32,7 @@ export const App: Component = () => {
   const [textEncryption, setTextEncryption] = createSignal('');
   const [textEncryptionKey, setTextEncryptionKey] = createSignal('')
   const [encryptedText,setEncryptedText] = createSignal('')
+  const [pauseexec,setPauseExec] = createSignal(false)
   let currentfunction: (arg0: string, arg1: boolean) => void
   let currentfunctionanimation: ((text: string, encrypted: string, key: number, encrypt: boolean) => void) | ((arg0: string, arg1: string, arg2: string, arg3: boolean) => void)
   let backctx: { clearRect?: any; canvas?: any; textAlign?: any; textBaseline?: any; font?: any; beginPath?: any; rect?: any; stroke?: any; fillText?: any; translate?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
@@ -49,7 +50,7 @@ export const App: Component = () => {
 
   let ongeneratedsize = {width : 0,height : 0}
 
-  let pauseexec = false
+ 
   let animationindex = 0
 
   let animationsteps = []
@@ -276,7 +277,7 @@ export const App: Component = () => {
             break
           }
           await Animate(frontctx,animationsteps[i][j][0],animationsteps[i][j+1][0],spacexby,spaceyby,1000)
-          if(pauseexec){
+          if(pauseexec()){
             await recursiveCall()
           }
       }
@@ -286,7 +287,7 @@ export const App: Component = () => {
   const recursiveCall = async () => {
     return await new Promise((resolve) => {
       setTimeout(function() {
-        if (pauseexec) {
+        if (pauseexec()) {
           return resolve(recursiveCall())
       } else {
           return resolve("done")
@@ -297,8 +298,7 @@ export const App: Component = () => {
 }
 
   function pause(){
-    pauseexec = !pauseexec
-    console.log(pauseexec)
+    setPauseExec(!pauseexec())
   }
   function moveLeft(){
   }
@@ -351,7 +351,7 @@ export const App: Component = () => {
         <div >
           <button onClick={autoRunLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsLeft /></button>
           {/* <button onClick={moveLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronLeft /></button> */}
-          <button onClick={pause} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiPause /></button>
+          <button onClick={pause} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">{(pauseexec()) ? <FiPlay/> :<FiPause />}</button>
           {/* <button onClick={moveRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronRight /></button> */}
           <button onClick={autoRunRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsRight /></button>
         </div>
