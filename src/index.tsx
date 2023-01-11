@@ -9,7 +9,7 @@ import { createCaesarWheel } from "./lib/createCaesarWheel";
 import "./index.css"
 import Canvas from "./components/canvas";
 import { Menu } from "./components/menu";
-import { FiChevronsLeft, FiChevronLeft, FiPause, FiChevronRight, FiChevronsRight, FiPlay } from "solid-icons/fi";
+import { FiChevronsLeft, FiChevronLeft, FiChevronRight, FiChevronsRight } from "solid-icons/fi";
 
 class Postreq {
   public Cipher: number;
@@ -31,35 +31,44 @@ export const App: Component = () => {
   // ciphers
   const [textEncryption, setTextEncryption] = createSignal('');
   const [textEncryptionKey, setTextEncryptionKey] = createSignal('')
-  const [encryptedText,setEncryptedText] = createSignal('')
-  const [pauseexec,setPauseExec] = createSignal(false)
-  let currentfunction: (arg0: string, arg1: boolean) => void | string
-  let currentfunctionanimation: ((text: string, encrypted: string, key: number, encrypt: boolean) => void) | ((arg0: string, arg1: string, arg2: string, arg3: boolean) => void)
+  const [encryptedText, setEncryptedText] = createSignal('')
+  let currentfunction
+  let currentfunctionanimation
   let backctx: { clearRect?: any; canvas?: any; textAlign?: any; textBaseline?: any; font?: any; beginPath?: any; rect?: any; stroke?: any; fillText?: any; translate?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
   let frontctx: { clearRect?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
-  let currentcipher : number;
+  let currentcipher: number;
   //reset
   let submit = false;
 
-  let [encrypt,setEncrypt] = createSignal(true);
+  let [encrypt, setEncrypt] = createSignal(true);
 
   //rescaling animation
 
   let xratio = 1
   let yratio = 1
 
-  let ongeneratedsize = {width : 0,height : 0}
+  let spacex = 0
+  let spacey = 0
 
- 
-  let animationindex = 0
+  let currentstep = 0;
+  let currentmicrostep = 0;
+
+  let running = {
+    left: false,
+    right: false,
+    on: false
+  };
+
+
+  let ongeneratedsize = { width: 0, height: 0 }
 
   let polyalphabetic;
 
   let animationsteps = []
 
   // response from
-  let backres : Postres;
-  const res = async (data: Postreq,encrypt : boolean) => {
+  let backres: Postres;
+  const res = async (data: Postreq, encrypt: boolean) => {
     let url = 'http://localhost:5294/decrypt'
     if (encrypt) {
       url = 'http://localhost:5294/encrypt'
@@ -72,7 +81,8 @@ export const App: Component = () => {
       body: JSON.stringify(data),
     }).then((response) => response.json())
       .then((data) => {
-        backres = data})
+        backres = data
+      })
   }
 
 
@@ -82,6 +92,8 @@ export const App: Component = () => {
       case 1:
         currentfunction = createCaesar(backctx)
         currentfunctionanimation = setCaesar()
+        spacex = 26
+        spacey = 26
         break;
       case 2:
         currentfunction = createCaesarWheel(backctx)
@@ -89,6 +101,9 @@ export const App: Component = () => {
         break;
       case 3:
         currentfunction = createPlayfair(backctx)
+        currentfunctionanimation = setPlayfair()
+        spacex = 5
+        spacey = 5
         break;
       default:
     }
@@ -106,17 +121,22 @@ export const App: Component = () => {
   }
   //resize window
   function handleResize() {
-    if(submit){
-      xratio = document.documentElement.clientWidth/ongeneratedsize.width
-      yratio = document.documentElement.clientHeight/ongeneratedsize.height
+    if (submit) {
+      xratio = document.documentElement.clientWidth / ongeneratedsize.width
+      yratio = document.documentElement.clientHeight / ongeneratedsize.height
     }
     setSize({ width: document.documentElement.clientWidth, height: document.documentElement.clientHeight })
     if (currentfunction && submit) {
-      currentfunction(textEncryptionKey(),encrypt())
+      currentfunction(textEncryptionKey(), encrypt())
+
+      let spacexby = size().width / spacex
+      let spaceyby = size().height / spacey
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio,spacexby, spaceyby)
     }
+    
   }
 
-  function switchOutputInput(){
+  function switchOutputInput() {
     let temp = encryptedText()
     setEncryptedText(textEncryption())
     setTextEncryption(temp)
@@ -132,15 +152,39 @@ export const App: Component = () => {
         backctx.clearRect(0, 0, canvas.width, canvas.height);
         frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
 
-        polyalphabetic = currentfunction(textEncryptionKey(),encrypt())
+        polyalphabetic = currentfunction(textEncryptionKey())
 
         resetContext(backctx)
         resetContext(frontctx)
-        await res(new Postreq(currentcipher,textEncryption(),textEncryptionKey()),encrypt())
+        await res(new Postreq(currentcipher, textEncryption(), textEncryptionKey()), encrypt())
         setEncryptedText(backres.TextNow)
-        console.log(backres.TextNow)
-        currentfunctionanimation(backres.TextBefore,backres.TextNow,textEncryptionKey(),encrypt())
-        ongeneratedsize = {width : size().width,height : size().height}
+
+
+        switch (Number.parseInt(currentcipher)) {
+          case 1:
+            currentfunctionanimation(backres.TextBefore, backres.TextNow, textEncryptionKey(), encrypt())
+            break;
+          case 2:
+            currentfunctionanimation(backres.TextBefore, backres.TextNow, textEncryptionKey(), encrypt())
+            break;
+          case 3:
+            currentfunctionanimation(backres.TextBefore, backres.TextNow, polyalphabetic, encrypt())
+            break;
+          default:
+            console.log("FAIL")
+        }
+
+        
+        currentmicrostep=0
+        currentstep = 0
+        let spacexby = size().width / spacex
+        let spaceyby = size().height / spacey
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio,spacexby, spaceyby)
+
+        // currentfunctionanimation(backres.TextBefore,backres.TextNow,textEncryptionKey(),encrypt())
+
+
+        ongeneratedsize = { width: size().width, height: size().height }
 
       }
     }
@@ -150,35 +194,53 @@ export const App: Component = () => {
       ctx.fillStyle = 'black';
     }
   }
+  function setPlayfair() {
+    return function GenerateStepsPlayfair(text: string, encrypted: string, key: any, encrypt: boolean) {
+      if (encrypt) {
 
-  function setCaesar(){
-    return function GenerateStepsCaesar(text : string,encrypted : string,key : number,encrypt:boolean){
+      } else {
+
+      }
+
+
+
+      // pokud lichy X na konci
+
+      // kdyz jsou vedle sebe o jeden doprava
+
+      // kdyz jsou pod sebou o jeden dolu
+
+      // kdyz jsou jinde ctverec
+    }
+  }
+  function setCaesar() {
+    return function GenerateStepsCaesar(text: string, encrypted: string, key: number, encrypt: boolean) {
 
       let echarindex = 0
       let tcharindex = 0
-   
+
       //pohyb doleva
       let lettersnum = []
-   
-      if(encrypt){
-        for(let i = 0; i<text.length;i++){
+
+      if (encrypt) {
+        for (let i = 0; i < text.length; i++) {
           let isupper = false
-          if(text[i] == text[i].toUpperCase()){
+          if (text[i] == text[i].toUpperCase()) {
             isupper = true
           }
-          if(isupper){
+          if (isupper) {
             tcharindex = text.charCodeAt(i) - 65
             echarindex = encrypted.charCodeAt(i) - 65
-          }else{
+          } else {
             tcharindex = text.charCodeAt(i) - 97
             echarindex = encrypted.charCodeAt(i) - 97
           }
-          
+
           let letters = [tcharindex]
           //Move by 1 to include encrypted char
-          while(tcharindex != echarindex){
+          while (tcharindex != echarindex) {
             tcharindex++
-            if(tcharindex > 25){
+            if (tcharindex > 25) {
               tcharindex = 0
             }
             letters.push(tcharindex)
@@ -187,25 +249,25 @@ export const App: Component = () => {
         }
       }
       //pohyb doprava
-      else{
-        for(let i = 0; i<text.length;i++){
+      else {
+        for (let i = 0; i < text.length; i++) {
           let isupper = false
-          if(text[i] == text[i].toUpperCase()){
+          if (text[i] == text[i].toUpperCase()) {
             isupper = true
           }
-          if(isupper){
+          if (isupper) {
             tcharindex = text.charCodeAt(i) - 65
             echarindex = encrypted.charCodeAt(i) - 65
-          }else{
+          } else {
             tcharindex = text.charCodeAt(i) - 97
             echarindex = encrypted.charCodeAt(i) - 97
           }
-          
+
           let letters = [tcharindex]
           //Move by 1 to include encrypted char
-          while(tcharindex != echarindex){
+          while (tcharindex != echarindex) {
             tcharindex--
-            if(tcharindex < 0){
+            if (tcharindex < 0) {
               tcharindex = 25
             }
             letters.push(tcharindex)
@@ -217,17 +279,17 @@ export const App: Component = () => {
       let spacexby = sizeWidth / 26
       for (let i = 0; i < lettersnum.length; i++) {
         let x = []
-        for(let j = 0; j < lettersnum[i].length;j++){
-            // x.push([spacexby * (lettersnum[i][j]+1),0])
-            x.push([spacexby * lettersnum[i][j],0])
+        for (let j = 0; j < lettersnum[i].length; j++) {
+          // x.push([spacexby * (lettersnum[i][j]+1),0])
+          x.push([spacexby * lettersnum[i][j], 0])
         }
         animationsteps.push(x)
       }
-      
+
     }
   }
-  function setCaesarCircle(){
-    return function GenerateStepsCaesar(text : string,encrypted : string,key : number){
+  function setCaesarCircle() {
+    return function GenerateStepsCaesar(text: string, encrypted: string, key: number) {
     }
   }
 
@@ -235,86 +297,172 @@ export const App: Component = () => {
     if ((t /= d / 2) < 1) return c / 2 * t * t * t * t + b;
     return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
   }
-  async function Animate(ctx,from,to,width,height,duration){
+  async function Animate(ctx, from, to, width, height, duration, states, interrupt) {
     return await new Promise(resolve => {
-  
-    var start = new Date().getTime();
-    var innertimer = setInterval(function() {
-      var time = new Date().getTime() - start;
-      var x = easeInOutQuart(time, from, to - from, duration);
-      ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-      ctx.beginPath()
-      ctx.fillStyle = "white";
-      ctx.rect(x, 0, width, height);
-      ctx.fill()
-      if (time >= duration) {
-        resolve('done');
-        clearInterval(innertimer)
-      }
-    }, 1000 / 60);
-  });
+
+      var start = new Date().getTime();
+      var innertimer = setInterval(function () {
+        if (!running.on) {
+          clearTimeout(innertimer)
+          Promise.resolve(0)
+        }
+        if (interrupt == "left" && !states.left) {
+          clearTimeout(innertimer)
+          Promise.resolve(0)
+          running.on = false
+        }
+        if (interrupt == "right" && !states.right) {
+          clearTimeout(innertimer)
+          Promise.resolve(0)
+          running.on = false
+        }
+        var time = new Date().getTime() - start;
+        var x = easeInOutQuart(time, from, to - from, duration);
+        ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
+        ctx.beginPath()
+        ctx.fillStyle = "white";
+        ctx.rect(x, 0, width, height);
+        ctx.fill()
+        if (time >= duration) {
+          resolve('done');
+          clearInterval(innertimer)
+        }
+      }, 1000 / 60);
+    });
   }
 
- 
 
- 
 
-  async function autoRunLeft(){
+
+
+  async function autoRunLeft() {
+    if (running.on && running.left) {
+      return
+    }
+    running.left = true
+    running.right = false
+    running.on = true
+
     // letters
-  for(let i = animationsteps.length-1; i > -1; i--){
-    for(let j= animationsteps[i].length-1; j>-1;j--){
-        if(j-1 <0){
+    cancel:
+    for (currentstep; currentstep > -1; currentstep--) {
+      for (currentmicrostep; currentmicrostep > -1; currentmicrostep--) {
+        if (currentmicrostep - 1 < 0) {
           break
         }
-        let spacexby = size().width / 26
-        let spaceyby = size().height / 26
-        await Animate(frontctx,animationsteps[i][j][0] * xratio,animationsteps[i][j-1][0] * xratio,spacexby,spaceyby,1000)
-        if(pauseexec()){
-          await recursiveCall()
-        }
-     
+        let spacexby = size().width / spacex
+        let spaceyby = size().height / spacey
+        await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep - 1][0] * xratio, spacexby, spaceyby, 1000, running, "left")
+
+
+      }
+      currentmicrostep = animationsteps[currentstep - 1].length - 1
+      if (running.right || !running.on) {
+        break cancel;
+      }
     }
   }
-  }
-  async function autoRunRight(){
+  async function autoRunRight() {
+    if (running.on && running.right) {
+      return
+    }
+    running.left = false
+    running.right = true
+    running.on = true
 
-    for(let i = 0 ; i < animationsteps.length ; i++){
+    cancel:
+    for (currentstep; currentstep < animationsteps.length; currentstep++) {
       //letter steps
-      for(let j=0; j< animationsteps[i].length;j++){
-          if(j+1 == animationsteps[i].length){
-            break
-          }
-          let spacexby = size().width / 26
-          let spaceyby = size().height / 26
-          await Animate(frontctx,animationsteps[i][j][0] * xratio,animationsteps[i][j+1][0] * xratio,spacexby,spaceyby,1000)
-          if(pauseexec()){
-            await recursiveCall()
-          }
+      for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length; currentmicrostep++) {
+        if (currentmicrostep + 1 == animationsteps[currentstep].length) {
+          break
+        }
+        let spacexby = size().width / spacex
+        let spaceyby = size().height / spacey
+        await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep + 1][0] * xratio, spacexby, spaceyby, 1000, running, "right")
+      }
+      currentmicrostep = 0
+      if (running.left || !running.on) {
+        break cancel;
       }
     }
   }
 
-  const recursiveCall = async () => {
-    return await new Promise((resolve) => {
-      setTimeout(function() {
-        if (pauseexec()) {
-          return resolve(recursiveCall())
-      } else {
-          return resolve("done")
+  // const recursiveCall = async () => {
+  //   return await new Promise((resolve) => {
+  //     setTimeout(function () {
+  //       if (pauseexec()) {
+  //         return resolve(recursiveCall())
+  //       } else {
+  //         return resolve("done")
+  //       }
+  //     }, 200);
+
+  //   })
+  // }
+  function stop(){
+    running.on = false
+  }
+  function Selected(ctx,x,y,width,height){
+    ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
+    ctx.beginPath()
+    ctx.fillStyle = "white";
+    ctx.rect(x, 0, width, height);
+    ctx.fill()
+  }
+  function skipLeft() {
+    stop()
+    if(currentstep-1 > -1){
+      currentstep--;
+    }
+    // currentmicrostep=animationsteps[currentstep].length - 1
+    currentmicrostep=0
+    let spacexby = size().width / spacex
+    let spaceyby = size().height / spacey
+    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio,spacexby, spaceyby)
+  }
+  function stepLeft() {
+    stop()
+    currentmicrostep--
+    if(currentmicrostep < 0){
+      if(currentstep-1 > -1){
+        currentstep--
+        currentmicrostep = animationsteps[currentstep].length-1
+      }else{
+        currentmicrostep=0
       }
-    }, 200);
-      
-    })
-}
+    }
+    let spacexby = size().width / spacex
+    let spaceyby = size().height / spacey
+    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio,spacexby, spaceyby)
+   
+  }
+  function stepRight() {
+    stop()
+    currentmicrostep++
+    if(currentmicrostep > animationsteps[currentstep].length-1){
+      if(currentstep+1 < animationsteps.length){
+        currentstep++
+        currentmicrostep = 0
+      }else{
+        currentmicrostep = animationsteps[currentstep].length-1
+      }
+    }
+    let spacexby = size().width / spacex
+    let spaceyby = size().height / spacey
+    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio,spacexby, spaceyby)
+  }
+  function skipRight() {
+    stop()
+    if(currentstep < animationsteps.length-1){
+      currentstep++;
+    }
+    currentmicrostep=0
+    let spacexby = size().width / spacex
+    let spaceyby = size().height / spacey
+    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio,spacexby, spaceyby)
+  }
 
-  function pause(){
-    setPauseExec(!pauseexec())
-  }
-  function moveLeft(){
-  }
-  function moveRight(){
-
-  }
   // calling timeout before resizing
   window.addEventListener('resize', debounce(handleResize, 500))
   //creating canvas back and overlay references
@@ -335,7 +483,7 @@ export const App: Component = () => {
         <DropdownCipher PASSREF={refCallback} />
         <br />
         <div>
-        <button onClick={()=>{setEncrypt(!encrypt())}} class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{(encrypt()) ? "Encrypt" : "Decrypt"}</button>    <button onClick={switchOutputInput} class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Switch</button>
+          <button onClick={() => { setEncrypt(!encrypt()) }} class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{(encrypt()) ? "Encrypt" : "Decrypt"}</button>    <button onClick={switchOutputInput} class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Switch</button>
         </div>
         <br />
         <label for="encrypttext">Text to Cipher</label>
@@ -352,18 +500,19 @@ export const App: Component = () => {
           }}
         />
 
-<label for="output">Output</label>
-        <input name="output" class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-gray-100 bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" value={encryptedText()} readOnly/>
+        <label for="output">Output</label>
+        <input name="output" class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-gray-100 bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" value={encryptedText()} readOnly />
 
         <button onClick={onSubmit} type="submit" class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
       </Menu>
       <Menu title={"AniMenu"} itemid={"animenu"} minwidth={450} minheight={81}>
         <div >
-          <button onClick={autoRunLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsLeft /></button>
-          {/* <button onClick={moveLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronLeft /></button> */}
-          <button onClick={pause} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">{(pauseexec()) ? <FiPlay/> :<FiPause />}</button>
-          {/* <button onClick={moveRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronRight /></button> */}
-          <button onClick={autoRunRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsRight /></button>
+          <button onClick={autoRunLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><div class="flex"><FiChevronsLeft /><FiChevronsLeft /></div></button>
+          <button onClick={skipLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsLeft /></button>
+          <button onClick={stepLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronLeft /></button>
+          <button onClick={stepRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronRight /> </button>
+          <button onClick={skipRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsRight /> </button>
+          <button onClick={autoRunRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><div class="flex"><FiChevronsRight /><FiChevronsRight /></div></button>
         </div>
       </Menu>
     </div>
