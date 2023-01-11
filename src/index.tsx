@@ -33,7 +33,7 @@ export const App: Component = () => {
   const [textEncryptionKey, setTextEncryptionKey] = createSignal('')
   const [encryptedText,setEncryptedText] = createSignal('')
   const [pauseexec,setPauseExec] = createSignal(false)
-  let currentfunction: (arg0: string, arg1: boolean) => void
+  let currentfunction: (arg0: string, arg1: boolean) => void | string
   let currentfunctionanimation: ((text: string, encrypted: string, key: number, encrypt: boolean) => void) | ((arg0: string, arg1: string, arg2: string, arg3: boolean) => void)
   let backctx: { clearRect?: any; canvas?: any; textAlign?: any; textBaseline?: any; font?: any; beginPath?: any; rect?: any; stroke?: any; fillText?: any; translate?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
   let frontctx: { clearRect?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
@@ -52,6 +52,8 @@ export const App: Component = () => {
 
  
   let animationindex = 0
+
+  let polyalphabetic;
 
   let animationsteps = []
 
@@ -72,6 +74,7 @@ export const App: Component = () => {
       .then((data) => {
         backres = data})
   }
+
 
   const refCallback = (el: any) => {
     currentcipher = el
@@ -128,11 +131,14 @@ export const App: Component = () => {
 
         backctx.clearRect(0, 0, canvas.width, canvas.height);
         frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-        currentfunction(textEncryptionKey(),encrypt())
+
+        polyalphabetic = currentfunction(textEncryptionKey(),encrypt())
+
         resetContext(backctx)
         resetContext(frontctx)
         await res(new Postreq(currentcipher,textEncryption(),textEncryptionKey()),encrypt())
         setEncryptedText(backres.TextNow)
+        console.log(backres.TextNow)
         currentfunctionanimation(backres.TextBefore,backres.TextNow,textEncryptionKey(),encrypt())
         ongeneratedsize = {width : size().width,height : size().height}
 
