@@ -67,7 +67,7 @@ export const App: Component = () => {
 
   let polyalphabetic;
 
-  let animationsteps = []
+  let animationsteps: (number[][] | number[][][])[] = []
 
   // response from
   let backres: Postres;
@@ -363,17 +363,13 @@ export const App: Component = () => {
         if (row == undefined) {
           var x = easeInOutQuart(time, from, to - from, duration);
           ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-          ctx.beginPath()
           ctx.fillStyle = "white";
-          ctx.rect(x, col, width, height);
-          ctx.fill()
+          ctx.fillRect(x, col, width, height);
         } else {
           var y = easeInOutQuart(time, from, to - from, duration);
           ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-          ctx.beginPath()
           ctx.fillStyle = "white";
-          ctx.rect(row, y, width, height);
-          ctx.fill()
+          ctx.fillRect(row, y, width, height);
         }
 
         if (time >= duration) {
@@ -424,7 +420,7 @@ export const App: Component = () => {
     }
   }
 
-  function arrayDepth(a) {
+  function arrayDepth(a: (number[][] | number[][][])[]) {
     var depth = 0;
     if (Array.isArray(a)) {
       for (var i in a) {
@@ -475,7 +471,6 @@ export const App: Component = () => {
     } else {
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
     }
-
   }
   function stepRight() {
     stop()
