@@ -131,9 +131,9 @@ export const App: Component = () => {
 
       let spacexby = size().width / spacex
       let spaceyby = size().height / spacey
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio,spacexby, spaceyby)
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
     }
-    
+
   }
 
   function switchOutputInput() {
@@ -174,13 +174,13 @@ export const App: Component = () => {
             console.log("FAIL")
         }
 
-        
-        currentmicrostep=0
+
+        currentmicrostep = 0
         currentstep = 0
         let spacexby = size().width / spacex
         let spaceyby = size().height / spacey
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio,spacexby, spaceyby)
-
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+        console.log(animationsteps)
         // currentfunctionanimation(backres.TextBefore,backres.TextNow,textEncryptionKey(),encrypt())
 
 
@@ -196,11 +196,38 @@ export const App: Component = () => {
   }
   function setPlayfair() {
     return function GenerateStepsPlayfair(text: string, encrypted: string, key: any, encrypt: boolean) {
-      if (encrypt) {
-
-      } else {
-
+      let temp = []
+      for (let i = 0; i < 5; i++) {
+        let temp2 = []
+        for (let j = 0; j < 5; j++) {
+          temp2.push(key[(i * 5) + j])
+        }
+        temp.push(temp2)
       }
+      if (text.length % 2 == 1) {
+        text += 'X'
+      }
+      text = text.replace('J', 'I')
+
+
+      for (let y = 1; y < text.length; y += 2) {
+        let step = []
+        let x1 = checkArray(temp, text[y - 1])
+        let x2 = checkColumn(temp, text[y], x1[1])
+        if (x1 && x2) {
+          step.push([x1, checkColumn(temp, encrypted[y - 1], x1[1])], [x2, checkColumn(temp, encrypted[y], x2[1])])
+        }
+        else if (x1 && (x2 = checkRow(temp, text[y], x1[0]))) {
+          step.push([x1, checkRow(temp, encrypted[y - 1], x1[0])], [x2, checkRow(temp, encrypted[y], x2[0])])
+        }
+        else {
+          x2 = checkArray(temp, text[y])
+          step.push([x1, [x1[0], x2[1]]], [x2, [x2[0], x1[1]]])
+        }
+        animationsteps.push(step)
+      }
+
+
 
 
 
@@ -212,6 +239,32 @@ export const App: Component = () => {
 
       // kdyz jsou jinde ctverec
     }
+  }
+  function checkArray(arr, find) {
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = 0; j < arr[i].length; j++) {
+        if (arr[i][j] == find) {
+          return [i, j]
+        }
+      }
+    }
+    return undefined
+  }
+  function checkColumn(arr, find, col) {
+    for (let r = 0; r < arr.length; r++) {
+      if (arr[r][col] == find) {
+        return [r, col]
+      }
+    }
+    return undefined
+  }
+  function checkRow(arr, find, row) {
+    for (let r = 0; r < arr.length; r++) {
+      if (arr[row][r] == find) {
+        return [row, r]
+      }
+    }
+    return undefined
   }
   function setCaesar() {
     return function GenerateStepsCaesar(text: string, encrypted: string, key: number, encrypt: boolean) {
@@ -400,10 +453,10 @@ export const App: Component = () => {
 
   //   })
   // }
-  function stop(){
+  function stop() {
     running.on = false
   }
-  function Selected(ctx,x,y,width,height){
+  function Selected(ctx, x, y, width, height) {
     ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
     ctx.beginPath()
     ctx.fillStyle = "white";
@@ -412,55 +465,55 @@ export const App: Component = () => {
   }
   function skipLeft() {
     stop()
-    if(currentstep-1 > -1){
+    if (currentstep - 1 > -1) {
       currentstep--;
     }
     // currentmicrostep=animationsteps[currentstep].length - 1
-    currentmicrostep=0
+    currentmicrostep = 0
     let spacexby = size().width / spacex
     let spaceyby = size().height / spacey
-    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio,spacexby, spaceyby)
+    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
   }
   function stepLeft() {
     stop()
     currentmicrostep--
-    if(currentmicrostep < 0){
-      if(currentstep-1 > -1){
+    if (currentmicrostep < 0) {
+      if (currentstep - 1 > -1) {
         currentstep--
-        currentmicrostep = animationsteps[currentstep].length-1
-      }else{
-        currentmicrostep=0
+        currentmicrostep = animationsteps[currentstep].length - 1
+      } else {
+        currentmicrostep = 0
       }
     }
     let spacexby = size().width / spacex
     let spaceyby = size().height / spacey
-    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio,spacexby, spaceyby)
-   
+    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+
   }
   function stepRight() {
     stop()
     currentmicrostep++
-    if(currentmicrostep > animationsteps[currentstep].length-1){
-      if(currentstep+1 < animationsteps.length){
+    if (currentmicrostep > animationsteps[currentstep].length - 1) {
+      if (currentstep + 1 < animationsteps.length) {
         currentstep++
         currentmicrostep = 0
-      }else{
-        currentmicrostep = animationsteps[currentstep].length-1
+      } else {
+        currentmicrostep = animationsteps[currentstep].length - 1
       }
     }
     let spacexby = size().width / spacex
     let spaceyby = size().height / spacey
-    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio,spacexby, spaceyby)
+    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
   }
   function skipRight() {
     stop()
-    if(currentstep < animationsteps.length-1){
+    if (currentstep < animationsteps.length - 1) {
       currentstep++;
     }
-    currentmicrostep=0
+    currentmicrostep = 0
     let spacexby = size().width / spacex
     let spaceyby = size().height / spacey
-    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio,spacexby, spaceyby)
+    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
   }
 
   // calling timeout before resizing
