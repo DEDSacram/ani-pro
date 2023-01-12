@@ -42,8 +42,7 @@ export const App: Component = () => {
 
   let [encrypt, setEncrypt] = createSignal(true);
 
-  //rescaling animation
-
+  //rescaling animation + sizes
   let xratio = 1
   let yratio = 1
 
@@ -52,13 +51,14 @@ export const App: Component = () => {
 
   let spacexby = 0
   let spaceyby = 0
+  //
 
+  //animation control
   let currentstep = 0;
   let currentmicrostep = 0;
+  //
 
   let running = {
-    left: false,
-    right: false,
     on: false
   };
 
@@ -87,7 +87,6 @@ export const App: Component = () => {
         backres = data
       })
   }
-
 
   const refCallback = (el: any) => {
     currentcipher = el
@@ -132,8 +131,8 @@ export const App: Component = () => {
     if (currentfunction && submit) {
       currentfunction(textEncryptionKey(), encrypt())
 
-      let spacexby = size().width / spacex
-      let spaceyby = size().height / spacey
+      spacexby = size().width / spacex
+      spaceyby = size().height / spacey
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
     }
 
@@ -162,6 +161,8 @@ export const App: Component = () => {
         await res(new Postreq(currentcipher, textEncryption(), textEncryptionKey()), encrypt())
         setEncryptedText(backres.TextNow)
 
+        spacexby = size().width / spacex
+        spaceyby = size().height / spacey
 
         switch (Number.parseInt(currentcipher)) {
           case 1:
@@ -176,19 +177,11 @@ export const App: Component = () => {
           default:
             console.log("FAIL")
         }
-
-
         currentmicrostep = 0
         currentstep = 0
-        let spacexby = size().width / spacex
-        let spaceyby = size().height / spacey
         frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
         Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
-        // currentfunctionanimation(backres.TextBefore,backres.TextNow,textEncryptionKey(),encrypt())
-
-
         ongeneratedsize = { width: size().width, height: size().height }
-
       }
     }
     function resetContext(ctx: { resetTransform: () => void; strokeStyle: string; lineWidth: number; setLineDash: (arg0: never[]) => void; fillStyle: string; }) {
@@ -211,10 +204,6 @@ export const App: Component = () => {
         text += 'X'
       }
       text = text.replace('J', 'I')
-
-      let spacexby = size().width / spacex
-      let spaceyby = size().height / spacey
-
       for (let y = 1; y < text.length; y += 2) {
         let step = []
         let x1 = checkArray(temp, text[y - 1])
@@ -224,22 +213,19 @@ export const App: Component = () => {
         if (x1 && x2) {
           step1 = checkColumn(temp, encrypted[y - 1], x1[0])
           step2 = checkColumn(temp, encrypted[y], x2[0])
-          step.push([[x1[0]*spacexby,x1[1]*spaceyby], [step1[0]*spacexby,step1[1]*spaceyby]], [[x2[0]*spacexby,x2[1]*spaceyby], [step2[0]*spacexby,step2[1]*spaceyby]])
+          step.push([[x1[0] * spacexby, x1[1] * spaceyby], [step1[0] * spacexby, step1[1] * spaceyby]], [[x2[0] * spacexby, x2[1] * spaceyby], [step2[0] * spacexby, step2[1] * spaceyby]])
         }
         else if (x1 && (x2 = checkRow(temp, text[y], x1[1]))) {
           step1 = checkRow(temp, encrypted[y - 1], x1[1])
           step2 = checkRow(temp, encrypted[y], x2[1])
-          step.push([[x1[0]*spacexby,x1[1]*spaceyby], [step1[0]*spacexby,step1[1]*spaceyby]], [[x2[0]*spacexby,x2[1]*spaceyby],[step2[0]*spacexby,step2[1]*spaceyby]])
+          step.push([[x1[0] * spacexby, x1[1] * spaceyby], [step1[0] * spacexby, step1[1] * spaceyby]], [[x2[0] * spacexby, x2[1] * spaceyby], [step2[0] * spacexby, step2[1] * spaceyby]])
         }
         else {
           x2 = checkArray(temp, text[y])
-          step.push([[x1[0]*spacexby,x1[1]*spaceyby], [x2[0]*spacexby, x1[1]*spaceyby]], [[x2[0]*spacexby,x2[1]*spaceyby], [x1[0]*spacexby,x2[1]*spaceyby ]])
+          step.push([[x1[0] * spacexby, x1[1] * spaceyby], [x2[0] * spacexby, x1[1] * spaceyby]], [[x2[0] * spacexby, x2[1] * spaceyby], [x1[0] * spacexby, x2[1] * spaceyby]])
         }
         animationsteps.push(step)
       }
-
-
-
       // Functional normal coords
 
       // for (let y = 1; y < text.length; y += 2) {
@@ -292,8 +278,6 @@ export const App: Component = () => {
 
       let echarindex = 0
       let tcharindex = 0
-
-      //pohyb doleva
       let lettersnum = []
 
       if (encrypt) {
@@ -311,7 +295,6 @@ export const App: Component = () => {
           }
 
           let letters = [tcharindex]
-          //Move by 1 to include encrypted char
           while (tcharindex != echarindex) {
             tcharindex++
             if (tcharindex > 25) {
@@ -322,7 +305,6 @@ export const App: Component = () => {
           lettersnum.push(letters)
         }
       }
-      //pohyb doprava
       else {
         for (let i = 0; i < text.length; i++) {
           let isupper = false
@@ -338,7 +320,6 @@ export const App: Component = () => {
           }
 
           let letters = [tcharindex]
-          //Move by 1 to include encrypted char
           while (tcharindex != echarindex) {
             tcharindex--
             if (tcharindex < 0) {
@@ -349,12 +330,9 @@ export const App: Component = () => {
           lettersnum.push(letters)
         }
       }
-      let sizeWidth = backctx.canvas.clientWidth;
-      let spacexby = sizeWidth / 26
       for (let i = 0; i < lettersnum.length; i++) {
         let x = []
         for (let j = 0; j < lettersnum[i].length; j++) {
-          // x.push([spacexby * (lettersnum[i][j]+1),0])
           x.push([spacexby * lettersnum[i][j], 0])
         }
         animationsteps.push(x)
@@ -372,7 +350,7 @@ export const App: Component = () => {
     return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
   }
 
-    async function Animate(ctx, from, to,col,row, width, height, duration, states, interrupt) {
+  async function Animate(ctx, from, to, col, row, width, height, duration, states) {
     return await new Promise(resolve => {
 
       var start = new Date().getTime();
@@ -381,25 +359,15 @@ export const App: Component = () => {
           clearTimeout(innertimer)
           Promise.resolve(0)
         }
-        if (interrupt == "left" && !states.left) {
-          clearTimeout(innertimer)
-          Promise.resolve(0)
-          running.on = false
-        }
-        if (interrupt == "right" && !states.right) {
-          clearTimeout(innertimer)
-          Promise.resolve(0)
-          running.on = false
-        }
         var time = new Date().getTime() - start;
-        if(row == undefined){
+        if (row == undefined) {
           var x = easeInOutQuart(time, from, to - from, duration);
           ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
           ctx.beginPath()
           ctx.fillStyle = "white";
           ctx.rect(x, col, width, height);
           ctx.fill()
-        }else{
+        } else {
           var y = easeInOutQuart(time, from, to - from, duration);
           ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
           ctx.beginPath()
@@ -407,7 +375,7 @@ export const App: Component = () => {
           ctx.rect(row, y, width, height);
           ctx.fill()
         }
-     
+
         if (time >= duration) {
           resolve('done');
           clearInterval(innertimer)
@@ -416,156 +384,56 @@ export const App: Component = () => {
     });
   }
 
-
-
-
-
-  async function autoRunLeft() {
-    if (running.on && running.left) {
-      return
-    }
-    running.left = true
-    running.right = false
-    running.on = true
-
-    // letters
-    cancel:
-    for (currentstep; currentstep > -1; currentstep--) {
-      for (currentmicrostep; currentmicrostep > -1; currentmicrostep--) {
-        if (currentmicrostep - 1 < 0) {
-          break
-        }
-        let spacexby = size().width / spacex
-        let spaceyby = size().height / spacey
-
-   
-
-        if(Array.isArray(animationsteps[currentstep][currentmicrostep][0])){
-         
-          if(animationsteps[currentstep][currentmicrostep][0][0] == animationsteps[currentstep][currentmicrostep][1][0]){
-            //"sameROW"
-            
-            await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][1] * yratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio,undefined,animationsteps[currentstep][currentmicrostep][1][0] * xratio, spacexby, spaceyby, 1000, running, "right")
-
-          }else{
-            //"column"
-            await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][1][0] * xratio,animationsteps[currentstep][currentmicrostep][1][1] * yratio,undefined, spacexby, spaceyby, 1000, running, "right")
-          }
-
-          // Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby)
-          // Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby)
-        }else{
-          await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep - 1][0] * xratio,animationsteps[currentstep][currentmicrostep][1]*yratio,undefined, spacexby, spaceyby, 1000, running, "left")
-        }
-
-
-      }
-      currentmicrostep = animationsteps[currentstep - 1].length - 1
-      if (running.right || !running.on) {
-        break cancel;
-      }
-    }
-  }
   async function autoRunRight() {
-    if (running.on && running.right) {
+    if (running.on) {
       return
     }
-    running.left = false
-    running.right = true
     running.on = true
     let depth = arrayDepth(animationsteps)
-    if(depth > 3){
-    cancel:
-    for (currentstep; currentstep < animationsteps.length; currentstep++) {
-      //letter steps
-      for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length; currentmicrostep++) {
-        let spacexby = size().width / spacex
-        let spaceyby = size().height / spacey
-        if(animationsteps[currentstep][currentmicrostep][0][0] == animationsteps[currentstep][currentmicrostep][1][0]){
-          //"sameROW"
-          await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][1] * yratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio,undefined,animationsteps[currentstep][currentmicrostep][0][0] * xratio, spacexby, spaceyby, 1000, running, "right")
-
-        }else{
-          //"column"
-          await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][1][0] * xratio,animationsteps[currentstep][currentmicrostep][1][1] * yratio,undefined, spacexby, spaceyby, 1000, running, "right")
-        }
-      }
-      currentmicrostep = 0
-      if (running.left || !running.on) {
-        break cancel;
-      }
-    }
-    }else{
+    if (depth > 3) {
       cancel:
       for (currentstep; currentstep < animationsteps.length; currentstep++) {
         //letter steps
-        for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length-1; currentmicrostep++) {
-          let spacexby = size().width / spacex
-          let spaceyby = size().height / spacey
-          await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep+1][0] * xratio,animationsteps[currentstep][currentmicrostep][1] * yratio,undefined, spacexby, spaceyby, 1000, running, "right")
+        for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length; currentmicrostep++) {
+          if (animationsteps[currentstep][currentmicrostep][0][0] == animationsteps[currentstep][currentmicrostep][1][0]) {
+            //"sameROW"
+            await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][1] * yratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, animationsteps[currentstep][currentmicrostep][0][0] * xratio, spacexby, spaceyby, 1000, running)
+
+          } else {
+            //"column"
+            await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, spacexby, spaceyby, 1000, running)
+          }
         }
         currentmicrostep = 0
-        if (running.left || !running.on) {
+        if (!running.on) {
+          break cancel;
+        }
+      }
+    } else {
+      cancel:
+      for (currentstep; currentstep < animationsteps.length; currentstep++) {
+        //letter steps
+        for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length - 1; currentmicrostep++) {
+          await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep + 1][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, undefined, spacexby, spaceyby, 1000, running)
+        }
+        currentmicrostep = 0
+        if (!running.on) {
           break cancel;
         }
       }
     }
-     
-     
-
-
-            //        if(animationsteps[currentstep][currentmicrostep][i-1][0] == animationsteps[currentstep][currentmicrostep][i][0]){
-            //   //"sameROW"
-            //   await Animate(frontctx, animationsteps[currentstep][currentmicrostep][i-1][1] * yratio, animationsteps[currentstep][currentmicrostep][i][1] * yratio,undefined,animationsteps[currentstep][currentmicrostep][i][0] * xratio, spacexby, spaceyby, 1000, running, "right")
-  
-            // }else{
-            //   //"column"
-            //   await Animate(frontctx, animationsteps[currentstep][currentmicrostep][i-1][0] * xratio, animationsteps[currentstep][currentmicrostep][i][0] * xratio,animationsteps[currentstep][currentmicrostep][i][1] * yratio,undefined, spacexby, spaceyby, 1000, running, "right")
-            // }
-
-
-        // if(Array.isArray(animationsteps[currentstep][currentmicrostep][0])){
-        //   if(animationsteps[currentstep][currentmicrostep][0][0] == animationsteps[currentstep][currentmicrostep][1][0]){
-        //     //"sameROW"
-        //     await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][1] * yratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio,undefined,animationsteps[currentstep][currentmicrostep][1][0] * xratio, spacexby, spaceyby, 1000, running, "right")
-
-        //   }else{
-        //     //"column"
-        //     await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][1][0] * xratio,animationsteps[currentstep][currentmicrostep][1][1] * yratio,undefined, spacexby, spaceyby, 1000, running, "right")
-        //   }
-
-        //   // Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby)
-        //   // Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby)
-        // }else{
-        //   await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep + 1][0] * xratio,animationsteps[currentstep][currentmicrostep][1],undefined, spacexby, spaceyby, 1000, running, "right")
-        // }
-        // // await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep + 1][0] * xratio, spacexby, spaceyby, 1000, running, "right")
-      
   }
 
-
-  function arrayDepth(a) { 
-    var depth = 0; 
-    if (Array.isArray(a)) { 
-        for (var i in a) { 
-            depth = Math.max(depth, arrayDepth(a[i])); 
-        } 
-        depth++; 
-    } 
-    return depth; 
-} 
-  // const recursiveCall = async () => {
-  //   return await new Promise((resolve) => {
-  //     setTimeout(function () {
-  //       if (pauseexec()) {
-  //         return resolve(recursiveCall())
-  //       } else {
-  //         return resolve("done")
-  //       }
-  //     }, 200);
-
-  //   })
-  // }
+  function arrayDepth(a) {
+    var depth = 0;
+    if (Array.isArray(a)) {
+      for (var i in a) {
+        depth = Math.max(depth, arrayDepth(a[i]));
+      }
+      depth++;
+    }
+    return depth;
+  }
   function stop() {
     running.on = false
   }
@@ -580,15 +448,12 @@ export const App: Component = () => {
     if (currentstep - 1 > -1) {
       currentstep--;
     }
-    // currentmicrostep=animationsteps[currentstep].length - 1
     currentmicrostep = 0
-    let spacexby = size().width / spacex
-    let spaceyby = size().height / spacey
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    if(Array.isArray(animationsteps[currentstep][currentmicrostep][0])){
+    if (Array.isArray(animationsteps[currentstep][currentmicrostep][0])) {
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby)
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby)
-    }else{
+    } else {
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
     }
   }
@@ -603,13 +468,11 @@ export const App: Component = () => {
         currentmicrostep = 0
       }
     }
-    let spacexby = size().width / spacex
-    let spaceyby = size().height / spacey
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    if(Array.isArray(animationsteps[currentstep][currentmicrostep][0])){
+    if (Array.isArray(animationsteps[currentstep][currentmicrostep][0])) {
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby)
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby)
-    }else{
+    } else {
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
     }
 
@@ -625,13 +488,11 @@ export const App: Component = () => {
         currentmicrostep = animationsteps[currentstep].length - 1
       }
     }
-    let spacexby = size().width / spacex
-    let spaceyby = size().height / spacey
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    if(Array.isArray(animationsteps[currentstep][currentmicrostep][0])){
+    if (Array.isArray(animationsteps[currentstep][currentmicrostep][0])) {
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby)
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby)
-    }else{
+    } else {
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
     }
   }
@@ -641,13 +502,11 @@ export const App: Component = () => {
       currentstep++;
     }
     currentmicrostep = 0
-    let spacexby = size().width / spacex
-    let spaceyby = size().height / spacey
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    if(Array.isArray(animationsteps[currentstep][currentmicrostep][0])){
+    if (Array.isArray(animationsteps[currentstep][currentmicrostep][0])) {
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby)
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby)
-    }else{
+    } else {
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
     }
   }
@@ -696,7 +555,6 @@ export const App: Component = () => {
       </Menu>
       <Menu title={"AniMenu"} itemid={"animenu"} minwidth={450} minheight={81}>
         <div >
-          <button onClick={autoRunLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><div class="flex"><FiChevronsLeft /><FiChevronsLeft /></div></button>
           <button onClick={skipLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsLeft /></button>
           <button onClick={stepLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronLeft /></button>
           <button onClick={stepRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronRight /> </button>
