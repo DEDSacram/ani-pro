@@ -216,17 +216,11 @@ export const App: Component = () => {
         let step = []
         let x1 = checkArray(temp, text[y - 1])
         let x2 = checkColumn(temp, text[y], x1[0])
-        let step1
-        let step2
         if (x1 && x2) {
-          step1 = checkColumn(temp, encrypted[y - 1], x1[0])
-          step2 = checkColumn(temp, encrypted[y], x2[0])
-          step.push([[x1[0]*spacexby,x1[1]*spaceyby], [step1[0]*spacexby,step1[1]*spaceyby]], [[x2[0]*spacexby,x2[1]*spaceyby], [step2[0]*spacexby,step2[1]*spaceyby]])
+          step.push([[x1[0]*spacexby,x1[1]*spaceyby], checkColumn(temp, encrypted[y - 1], x1[0])], [[x2[0]*spacexby,x2[1]*spaceyby], checkColumn(temp, encrypted[y], x2[0])])
         }
         else if (x1 && (x2 = checkRow(temp, text[y], x1[1]))) {
-          step1 = checkRow(temp, encrypted[y - 1], x1[1])
-          step2 = checkRow(temp, encrypted[y], x2[1])
-          step.push([[x1[0]*spacexby,x1[1]*spaceyby], [step1[0]*spacexby,step1[1]*spaceyby]], [[x2[0]*spacexby,x2[1]*spaceyby],[step2[0]*spacexby,step2[1]*spaceyby]])
+          step.push([[x1[0]*spacexby,x1[1]*spaceyby], checkRow(temp, encrypted[y - 1], x1[1])], [[x2[0]*spacexby,x2[1]*spaceyby], checkRow(temp, encrypted[y], x2[1])])
         }
         else {
           x2 = checkArray(temp, text[y])
