@@ -399,11 +399,14 @@ export const App: Component = () => {
             //"column"
             await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, spacexby, spaceyby, 1000, running)
           }
+          if (!running.on) {
+            break cancel;
+          }
         }
         currentmicrostep = 0
-        if (!running.on) {
-          break cancel;
-        }
+        // if (!running.on) {
+        //   break cancel;
+        // }
       }
     } else {
       cancel:
@@ -411,11 +414,15 @@ export const App: Component = () => {
         //letter steps
         for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length - 1; currentmicrostep++) {
           await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep + 1][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, undefined, spacexby, spaceyby, 1000, running)
+          //to be removed
+          if (!running.on) {
+            break cancel;
+          }
         }
         currentmicrostep = 0
-        if (!running.on) {
-          break cancel;
-        }
+        // if (!running.on) {
+        //   break cancel;
+        // }
       }
     }
   }
@@ -431,6 +438,7 @@ export const App: Component = () => {
     return depth;
   }
   function stop() {
+    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
     running.on = false
   }
   function Selected(ctx, x, y, width, height) {
@@ -440,7 +448,11 @@ export const App: Component = () => {
     ctx.fill()
   }
   function skipLeft() {
-    stop()
+    if(!animationsteps.length) return
+    if(running.on){
+      stop()
+      return
+    }
     if (currentstep - 1 > -1) {
       currentstep--;
     }
@@ -454,7 +466,12 @@ export const App: Component = () => {
     }
   }
   function stepLeft() {
-    stop()
+    if(!animationsteps.length) return
+    if(running.on){
+      currentmicrostep++
+      stop()
+      return
+    }
     currentmicrostep--
     if (currentmicrostep < 0) {
       if (currentstep - 1 > -1) {
@@ -473,7 +490,11 @@ export const App: Component = () => {
     }
   }
   function stepRight() {
-    stop()
+    if(!animationsteps.length) return
+    if(running.on){
+      stop()
+      return
+    }
     currentmicrostep++
     if (currentmicrostep > animationsteps[currentstep].length - 1) {
       if (currentstep + 1 < animationsteps.length) {
@@ -492,7 +513,11 @@ export const App: Component = () => {
     }
   }
   function skipRight() {
-    stop()
+    if(!animationsteps.length) return
+    if(running.on){
+      stop()
+      return
+    }
     if (currentstep < animationsteps.length - 1) {
       currentstep++;
     }
