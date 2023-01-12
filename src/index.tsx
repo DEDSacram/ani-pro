@@ -179,8 +179,8 @@ export const App: Component = () => {
         currentstep = 0
         let spacexby = size().width / spacex
         let spaceyby = size().height / spacey
+        frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
         Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
-        console.log(animationsteps)
         // currentfunctionanimation(backres.TextBefore,backres.TextNow,textEncryptionKey(),encrypt())
 
 
@@ -209,42 +209,54 @@ export const App: Component = () => {
       }
       text = text.replace('J', 'I')
 
+      let spacexby = size().width / spacex
+      let spaceyby = size().height / spacey
 
       for (let y = 1; y < text.length; y += 2) {
         let step = []
         let x1 = checkArray(temp, text[y - 1])
-        let x2 = checkColumn(temp, text[y], x1[1])
+        let x2 = checkColumn(temp, text[y], x1[0])
         if (x1 && x2) {
-          step.push([x1, checkColumn(temp, encrypted[y - 1], x1[1])], [x2, checkColumn(temp, encrypted[y], x2[1])])
+          step.push([[x1[0]*spacexby,x1[1]*spaceyby], checkColumn(temp, encrypted[y - 1], x1[0])], [[x2[0]*spacexby,x2[1]*spaceyby], checkColumn(temp, encrypted[y], x2[0])])
         }
-        else if (x1 && (x2 = checkRow(temp, text[y], x1[0]))) {
-          step.push([x1, checkRow(temp, encrypted[y - 1], x1[0])], [x2, checkRow(temp, encrypted[y], x2[0])])
+        else if (x1 && (x2 = checkRow(temp, text[y], x1[1]))) {
+          step.push([[x1[0]*spacexby,x1[1]*spaceyby], checkRow(temp, encrypted[y - 1], x1[1])], [[x2[0]*spacexby,x2[1]*spaceyby], checkRow(temp, encrypted[y], x2[1])])
         }
         else {
           x2 = checkArray(temp, text[y])
-          step.push([x1, [x1[0], x2[1]]], [x2, [x2[0], x1[1]]])
+          step.push([[x1[0]*spacexby,x1[1]*spaceyby], [x2[0]*spacexby, x1[1]*spaceyby]], [[x2[0]*spacexby,x2[1]*spaceyby], [x1[0]*spacexby,x2[1]*spaceyby ]])
         }
         animationsteps.push(step)
       }
 
 
 
+      // Functional 
 
-
-      // pokud lichy X na konci
-
-      // kdyz jsou vedle sebe o jeden doprava
-
-      // kdyz jsou pod sebou o jeden dolu
-
-      // kdyz jsou jinde ctverec
+      // for (let y = 1; y < text.length; y += 2) {
+      //   let step = []
+      //   let x1 = checkArray(temp, text[y - 1])
+      //   let x2 = checkColumn(temp, text[y], x1[0])
+      //   if (x1 && x2) {
+      //     step.push([x1, checkColumn(temp, encrypted[y - 1], x1[0])], [x2, checkColumn(temp, encrypted[y], x2[0])])
+      //   }
+      //   else if (x1 && (x2 = checkRow(temp, text[y], x1[1]))) {
+      //     step.push([x1, checkRow(temp, encrypted[y - 1], x1[1])], [x2, checkRow(temp, encrypted[y], x2[1])])
+      //   }
+      //   else {
+      //     x2 = checkArray(temp, text[y])
+      //     step.push([x1, [x2[0], x1[1]]], [x2, [x1[0],x2[1] ]])
+      //   }
+      //   animationsteps.push(step)
+      // }
+      // console.log(animationsteps)
     }
   }
   function checkArray(arr, find) {
     for (let i = 0; i < arr.length; i++) {
       for (let j = 0; j < arr[i].length; j++) {
         if (arr[i][j] == find) {
-          return [i, j]
+          return [j, i]
         }
       }
     }
@@ -253,7 +265,7 @@ export const App: Component = () => {
   function checkColumn(arr, find, col) {
     for (let r = 0; r < arr.length; r++) {
       if (arr[r][col] == find) {
-        return [r, col]
+        return [col, r]
       }
     }
     return undefined
@@ -261,7 +273,7 @@ export const App: Component = () => {
   function checkRow(arr, find, row) {
     for (let r = 0; r < arr.length; r++) {
       if (arr[row][r] == find) {
-        return [row, r]
+        return [r, row]
       }
     }
     return undefined
@@ -457,10 +469,9 @@ export const App: Component = () => {
     running.on = false
   }
   function Selected(ctx, x, y, width, height) {
-    ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
     ctx.beginPath()
     ctx.fillStyle = "white";
-    ctx.rect(x, 0, width, height);
+    ctx.rect(x, y, width, height);
     ctx.fill()
   }
   function skipLeft() {
@@ -472,6 +483,7 @@ export const App: Component = () => {
     currentmicrostep = 0
     let spacexby = size().width / spacex
     let spaceyby = size().height / spacey
+    frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
     Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
   }
   function stepLeft() {
@@ -487,7 +499,13 @@ export const App: Component = () => {
     }
     let spacexby = size().width / spacex
     let spaceyby = size().height / spacey
-    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+    frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
+    if(Array.isArray(animationsteps[currentstep][currentmicrostep][0])){
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby)
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby)
+    }else{
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+    }
 
   }
   function stepRight() {
@@ -503,7 +521,13 @@ export const App: Component = () => {
     }
     let spacexby = size().width / spacex
     let spaceyby = size().height / spacey
-    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+    frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
+    if(Array.isArray(animationsteps[currentstep][currentmicrostep][0])){
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby)
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby)
+    }else{
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+    }
   }
   function skipRight() {
     stop()
@@ -513,6 +537,7 @@ export const App: Component = () => {
     currentmicrostep = 0
     let spacexby = size().width / spacex
     let spaceyby = size().height / spacey
+    frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
     Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
   }
 
