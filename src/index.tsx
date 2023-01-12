@@ -57,6 +57,7 @@ export const App: Component = () => {
   let currentstep = 0;
   let currentmicrostep = 0;
   //
+  let depth = 0;
 
   let running = {
     on: false
@@ -133,7 +134,14 @@ export const App: Component = () => {
 
       spacexby = size().width / spacex
       spaceyby = size().height / spacey
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+
+      if (currentmicrostep == 0) {
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
+      } else if (currentmicrostep == animationsteps[currentstep].length - 1) {
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "green")
+      } else {
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+      }
     }
 
   }
@@ -206,6 +214,9 @@ export const App: Component = () => {
       text = text.replace('J', 'I')
       for (let y = 1; y < text.length; y += 2) {
         let step = []
+        if(text[y - 1] == text[y]){
+          text = setCharAt(text,y,"X");
+        }
         let x1 = checkArray(temp, text[y - 1])
         let x2 = checkColumn(temp, text[y], x1[0])
         let step1
@@ -247,6 +258,12 @@ export const App: Component = () => {
       // console.log(animationsteps)
     }
   }
+
+  function setCharAt(str,index,chr) {
+    if(index > str.length-1) return str;
+    return str.substring(0,index) + chr + str.substring(index+1);
+}
+
   function checkArray(arr, find) {
     for (let i = 0; i < arr.length; i++) {
       for (let j = 0; j < arr[i].length; j++) {
@@ -350,7 +367,7 @@ export const App: Component = () => {
     return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
   }
 
-  async function Animate(ctx, from, to, col, row, width, height, duration, states) {
+  async function Animate(ctx, from, to, col, row, width, height, duration, states,color = "white") {
     return await new Promise(resolve => {
 
       var start = new Date().getTime();
@@ -363,12 +380,12 @@ export const App: Component = () => {
         if (row == undefined) {
           var x = easeInOutQuart(time, from, to - from, duration);
           ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-          ctx.fillStyle = "white";
+          ctx.fillStyle = color;
           ctx.fillRect(x, col, width, height);
         } else {
           var y = easeInOutQuart(time, from, to - from, duration);
           ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-          ctx.fillStyle = "white";
+          ctx.fillStyle = color;
           ctx.fillRect(row, y, width, height);
         }
 
@@ -385,7 +402,7 @@ export const App: Component = () => {
       return
     }
     running.on = true
-    let depth = arrayDepth(animationsteps)
+    depth = arrayDepth(animationsteps)
     if (depth > 3) {
       cancel:
       for (currentstep; currentstep < animationsteps.length; currentstep++) {
@@ -411,10 +428,20 @@ export const App: Component = () => {
     } else {
       cancel:
       for (currentstep; currentstep < animationsteps.length; currentstep++) {
-        //letter steps
-        for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length - 1; currentmicrostep++) {
-          await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep + 1][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, undefined, spacexby, spaceyby, 1000, running)
-          //to be removed
+        for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length-1; currentmicrostep++) {
+          // if(currentmicrostep+1 > animationsteps[currentstep].length){
+          //   break cancel;
+          // }
+          if(currentmicrostep == 0){
+            await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep + 1][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, undefined, spacexby, spaceyby, 1000, running,"red")
+          }else if (currentmicrostep+1 == animationsteps[currentstep].length-1){
+            await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep + 1][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, undefined, spacexby, spaceyby, 1000, running,"green")
+          }else{
+            await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep + 1][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, undefined, spacexby, spaceyby, 1000, running)
+          }
+
+        
+        
           if (!running.on) {
             break cancel;
           }
@@ -424,6 +451,10 @@ export const App: Component = () => {
         //   break cancel;
         // }
       }
+    }
+    // problem with for loop out of bounds
+    if(currentstep>animationsteps.length-1){
+      currentstep--
     }
   }
 
@@ -438,11 +469,23 @@ export const App: Component = () => {
     return depth;
   }
   function stop() {
-    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+    frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
+    if(depth>3){
+
+    }else{
+      if (currentmicrostep == 0) {
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
+      } else if (currentmicrostep == animationsteps[currentstep].length - 2) {
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "green")
+      } else {
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+      }
+    }
+  
     running.on = false
   }
-  function Selected(ctx, x, y, width, height,color) {
-    if(!color){
+  function Selected(ctx, x, y, width, height, color) {
+    if (!color) {
       color = "white"
     }
     ctx.beginPath()
@@ -453,8 +496,8 @@ export const App: Component = () => {
     // ctx.rect(x, y, width, height);
   }
   function skipLeft() {
-    if(!animationsteps.length) return
-    if(running.on){
+    if (!animationsteps.length) return
+    if (running.on) {
       stop()
       return
     }
@@ -464,17 +507,17 @@ export const App: Component = () => {
     currentmicrostep = 0
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
     if (Array.isArray(animationsteps[currentstep][currentmicrostep][0])) {
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby,"red")
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby,"green")
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
     } else {
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
     }
   }
   function stepLeft() {
-    if(!animationsteps.length) return
-    if(running.on){
-      currentmicrostep++
+    if (!animationsteps.length) return
+    if (running.on) {
       stop()
+      currentmicrostep++
       return
     }
     currentmicrostep--
@@ -488,15 +531,23 @@ export const App: Component = () => {
     }
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
     if (Array.isArray(animationsteps[currentstep][currentmicrostep][0])) {
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby,"red")
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby,"green")
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
     } else {
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+
+      if (currentmicrostep == 0) {
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
+      } else if (currentmicrostep == animationsteps[currentstep].length - 1) {
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "green")
+      } else {
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+      }
+
     }
   }
   function stepRight() {
-    if(!animationsteps.length) return
-    if(running.on){
+    if (!animationsteps.length) return
+    if (running.on) {
       stop()
       return
     }
@@ -511,15 +562,21 @@ export const App: Component = () => {
     }
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
     if (Array.isArray(animationsteps[currentstep][currentmicrostep][0])) {
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby,"red")
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby,"green")
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
     } else {
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+      if (currentmicrostep == 0) {
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
+      } else if (currentmicrostep == animationsteps[currentstep].length - 1) {
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "green")
+      } else {
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+      }
     }
   }
   function skipRight() {
-    if(!animationsteps.length) return
-    if(running.on){
+    if (!animationsteps.length) return
+    if (running.on) {
       stop()
       return
     }
@@ -529,10 +586,10 @@ export const App: Component = () => {
     currentmicrostep = 0
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
     if (Array.isArray(animationsteps[currentstep][currentmicrostep][0])) {
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby,"red")
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby,"green")
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
     } else {
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
     }
   }
 
