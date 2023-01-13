@@ -135,6 +135,10 @@ export const App: Component = () => {
       spacexby = size().width / spacex
       spaceyby = size().height / spacey
 
+      if(depth>3){
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+      }else{
       if (currentmicrostep == 0) {
         Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
       } else if (currentmicrostep == animationsteps[currentstep].length - 1) {
@@ -143,6 +147,8 @@ export const App: Component = () => {
         Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
       }
     }
+  }
+
 
   }
 
@@ -188,7 +194,7 @@ export const App: Component = () => {
         currentmicrostep = 0
         currentstep = 0
         frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby,"red")
         ongeneratedsize = { width: size().width, height: size().height }
       }
     }
