@@ -24,7 +24,7 @@ class Postreq {
 interface Postres {
   TextBefore: string;
   TextNow: string;
-  Ani :  number[][][];
+  Ani :  number[][][][];
   Cipher : string;
   Display : string[] | string[][];
 
@@ -218,47 +218,16 @@ export const App: Component = () => {
   }
   function setPlayfair() {
     return function GenerateStepsPlayfair(text: string, encrypted: string, key: any, encrypt: boolean) {
-      // let temp = []
-      // for (let i = 0; i < 5; i++) {
-      //   let temp2 = []
-      //   for (let j = 0; j < 5; j++) {
-      //     temp2.push(key[(i * 5) + j])
-      //   }
-      //   temp.push(temp2)
-      // }
-      // if (text.length % 2 == 1) {
-      //   text += 'X'
-      // }
-
-      // text = text.replace('J', 'I')
-      
-      // for (let y = 1; y < text.length; y += 2) {
-      //   let step = []
-      //   if(text[y - 1] == text[y]){
-      //     text = setCharAt(text,y,"X");
-      //   }
-      //   let x1 = checkArray(temp, text[y - 1])
-      //   let x2 = checkColumn(temp, text[y], x1[0])
-      //   let step1
-      //   let step2
-      //   if (x1 && x2) {
-      //     step1 = checkColumn(temp, encrypted[y - 1], x1[0])
-      //     step2 = checkColumn(temp, encrypted[y], x2[0])
-      //     step.push([[x1[0] * spacexby, x1[1] * spaceyby], [step1[0] * spacexby, step1[1] * spaceyby]], [[x2[0] * spacexby, x2[1] * spaceyby], [step2[0] * spacexby, step2[1] * spaceyby]])
-      //   }
-      //   else if (x1 && (x2 = checkRow(temp, text[y], x1[1]))) {
-      //     step1 = checkRow(temp, encrypted[y - 1], x1[1])
-      //     step2 = checkRow(temp, encrypted[y], x2[1])
-      //     step.push([[x1[0] * spacexby, x1[1] * spaceyby], [step1[0] * spacexby, step1[1] * spaceyby]], [[x2[0] * spacexby, x2[1] * spaceyby], [step2[0] * spacexby, step2[1] * spaceyby]])
-      //   }
-      //   else {
-      //     x2 = checkArray(temp, text[y])
-      //     step.push([[x1[0] * spacexby, x1[1] * spaceyby], [x2[0] * spacexby, x1[1] * spaceyby]], [[x2[0] * spacexby, x2[1] * spaceyby], [x1[0] * spacexby, x2[1] * spaceyby]])
-      //   }
-      //   animationsteps.push(step)
-      // }
-
+      for(let i = 0; i < backres.Ani.length;i++){
+        let step = []
+        for(let j=0; j < backres.Ani[i][0].length;j++){
+          let microstep = [backres.Ani[i][0][j][1] * spacexby,backres.Ani[i][0][j][0] * spaceyby]
+          step.push(microstep)
+        }
+        animationsteps.push([step])
+      }
     }
+    console.log(arrayDepth(animationsteps))
   }
 
 //   function setCharAt(str,index,chr) {
@@ -297,17 +266,14 @@ export const App: Component = () => {
     return function GenerateStepsCaesar(text: string, encrypted: string, key: number, encrypt: boolean) {
       for(let i = 0; i < backres.Ani.length;i++){
         let step = []
-        for(let j=0; j < backres.Ani[i].length;j++){
-          let microstep = [backres.Ani[i][j][0] * spacexby,backres.Ani[i][j][1] * spaceyby]
+        for(let j=0; j < backres.Ani[i][0].length;j++){
+          let microstep = [backres.Ani[i][0][j][0] * spacexby,backres.Ani[i][0][j][1] * spaceyby]
           step.push(microstep)
         }
         animationsteps.push([step])
       }
-      //fix
-      // console.log(arrayDepth(animationsteps))
-      // console.log(backres.Ani)
-      // console.log(animationsteps)
     }
+    console.log(arrayDepth(animationsteps))
   }
   function setCaesarCircle() {
     return function GenerateStepsCaesar(text: string, encrypted: string, key: number) {
