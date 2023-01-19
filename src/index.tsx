@@ -24,6 +24,10 @@ class Postreq {
 interface Postres {
   TextBefore: string;
   TextNow: string;
+  Ani :  number[][][];
+  Cipher : string;
+  Display : string[] | string[][];
+
 }
 export const App: Component = () => {
   //window size
@@ -32,8 +36,8 @@ export const App: Component = () => {
   const [textEncryption, setTextEncryption] = createSignal('');
   const [textEncryptionKey, setTextEncryptionKey] = createSignal('')
   const [encryptedText, setEncryptedText] = createSignal('')
-  let currentfunction
-  let currentfunctionanimation
+  let currentfunction: ((key: any, encrypt: boolean) => void) | ((arg0: string, arg1: boolean | undefined) => void)
+  let currentfunctionanimation: ((text: string, encrypted: string, key: number, encrypt: boolean) => void) | ((arg0: string, arg1: string, arg2: string, arg3: boolean) => void)
   let backctx: { clearRect?: any; canvas?: any; textAlign?: any; textBaseline?: any; font?: any; beginPath?: any; rect?: any; stroke?: any; fillText?: any; translate?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
   let frontctx: { clearRect?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
   let currentcipher: number;
@@ -63,12 +67,13 @@ export const App: Component = () => {
     on: false
   };
 
-
+  //stays
   let ongeneratedsize = { width: 0, height: 0 }
 
   let polyalphabetic;
 
   let animationsteps: (number[][] | number[][][])[] = []
+
 
   // response from
   let backres: Postres;
@@ -85,10 +90,11 @@ export const App: Component = () => {
       body: JSON.stringify(data),
     }).then((response) => response.json())
       .then((data) => {
+        console.log(data)
         backres = data
       })
   }
-
+  //stays
   const refCallback = (el: any) => {
     currentcipher = el
     switch (Number.parseInt(el)) {
@@ -122,7 +128,7 @@ export const App: Component = () => {
       }, ms)
     };
   }
-  //resize window
+  //resize window stays
   function handleResize() {
     if (submit) {
       xratio = document.documentElement.clientWidth / ongeneratedsize.width
@@ -152,11 +158,11 @@ export const App: Component = () => {
 
   }
 
+  //stays
   function switchOutputInput() {
     let temp = encryptedText()
     setEncryptedText(textEncryption())
     setTextEncryption(temp)
-
   }
 
   async function onSubmit() {
@@ -173,6 +179,8 @@ export const App: Component = () => {
         resetContext(backctx)
         resetContext(frontctx)
         await res(new Postreq(currentcipher, textEncryption(), textEncryptionKey()), encrypt())
+
+   
         setEncryptedText(backres.TextNow)
 
         spacexby = size().width / spacex
@@ -191,10 +199,14 @@ export const App: Component = () => {
           default:
             console.log("FAIL")
         }
+
+
+      
+        console.log(arrayDepth(backres.Ani))
+
         currentmicrostep = 0
         currentstep = 0
         frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby,"red")
         ongeneratedsize = { width: size().width, height: size().height }
       }
     }
@@ -206,161 +218,95 @@ export const App: Component = () => {
   }
   function setPlayfair() {
     return function GenerateStepsPlayfair(text: string, encrypted: string, key: any, encrypt: boolean) {
-      let temp = []
-      for (let i = 0; i < 5; i++) {
-        let temp2 = []
-        for (let j = 0; j < 5; j++) {
-          temp2.push(key[(i * 5) + j])
-        }
-        temp.push(temp2)
-      }
-      if (text.length % 2 == 1) {
-        text += 'X'
-      }
-      text = text.replace('J', 'I')
-      for (let y = 1; y < text.length; y += 2) {
-        let step = []
-        if(text[y - 1] == text[y]){
-          text = setCharAt(text,y,"X");
-        }
-        let x1 = checkArray(temp, text[y - 1])
-        let x2 = checkColumn(temp, text[y], x1[0])
-        let step1
-        let step2
-        if (x1 && x2) {
-          step1 = checkColumn(temp, encrypted[y - 1], x1[0])
-          step2 = checkColumn(temp, encrypted[y], x2[0])
-          step.push([[x1[0] * spacexby, x1[1] * spaceyby], [step1[0] * spacexby, step1[1] * spaceyby]], [[x2[0] * spacexby, x2[1] * spaceyby], [step2[0] * spacexby, step2[1] * spaceyby]])
-        }
-        else if (x1 && (x2 = checkRow(temp, text[y], x1[1]))) {
-          step1 = checkRow(temp, encrypted[y - 1], x1[1])
-          step2 = checkRow(temp, encrypted[y], x2[1])
-          step.push([[x1[0] * spacexby, x1[1] * spaceyby], [step1[0] * spacexby, step1[1] * spaceyby]], [[x2[0] * spacexby, x2[1] * spaceyby], [step2[0] * spacexby, step2[1] * spaceyby]])
-        }
-        else {
-          x2 = checkArray(temp, text[y])
-          step.push([[x1[0] * spacexby, x1[1] * spaceyby], [x2[0] * spacexby, x1[1] * spaceyby]], [[x2[0] * spacexby, x2[1] * spaceyby], [x1[0] * spacexby, x2[1] * spaceyby]])
-        }
-        animationsteps.push(step)
-      }
-      // Functional normal coords
+      // let temp = []
+      // for (let i = 0; i < 5; i++) {
+      //   let temp2 = []
+      //   for (let j = 0; j < 5; j++) {
+      //     temp2.push(key[(i * 5) + j])
+      //   }
+      //   temp.push(temp2)
+      // }
+      // if (text.length % 2 == 1) {
+      //   text += 'X'
+      // }
 
+      // text = text.replace('J', 'I')
+      
       // for (let y = 1; y < text.length; y += 2) {
       //   let step = []
+      //   if(text[y - 1] == text[y]){
+      //     text = setCharAt(text,y,"X");
+      //   }
       //   let x1 = checkArray(temp, text[y - 1])
       //   let x2 = checkColumn(temp, text[y], x1[0])
+      //   let step1
+      //   let step2
       //   if (x1 && x2) {
-      //     step.push([x1, checkColumn(temp, encrypted[y - 1], x1[0])], [x2, checkColumn(temp, encrypted[y], x2[0])])
+      //     step1 = checkColumn(temp, encrypted[y - 1], x1[0])
+      //     step2 = checkColumn(temp, encrypted[y], x2[0])
+      //     step.push([[x1[0] * spacexby, x1[1] * spaceyby], [step1[0] * spacexby, step1[1] * spaceyby]], [[x2[0] * spacexby, x2[1] * spaceyby], [step2[0] * spacexby, step2[1] * spaceyby]])
       //   }
       //   else if (x1 && (x2 = checkRow(temp, text[y], x1[1]))) {
-      //     step.push([x1, checkRow(temp, encrypted[y - 1], x1[1])], [x2, checkRow(temp, encrypted[y], x2[1])])
+      //     step1 = checkRow(temp, encrypted[y - 1], x1[1])
+      //     step2 = checkRow(temp, encrypted[y], x2[1])
+      //     step.push([[x1[0] * spacexby, x1[1] * spaceyby], [step1[0] * spacexby, step1[1] * spaceyby]], [[x2[0] * spacexby, x2[1] * spaceyby], [step2[0] * spacexby, step2[1] * spaceyby]])
       //   }
       //   else {
       //     x2 = checkArray(temp, text[y])
-      //     step.push([x1, [x2[0], x1[1]]], [x2, [x1[0],x2[1] ]])
+      //     step.push([[x1[0] * spacexby, x1[1] * spaceyby], [x2[0] * spacexby, x1[1] * spaceyby]], [[x2[0] * spacexby, x2[1] * spaceyby], [x1[0] * spacexby, x2[1] * spaceyby]])
       //   }
       //   animationsteps.push(step)
       // }
-      // console.log(animationsteps)
+
     }
   }
 
-  function setCharAt(str,index,chr) {
-    if(index > str.length-1) return str;
-    return str.substring(0,index) + chr + str.substring(index+1);
-}
+//   function setCharAt(str,index,chr) {
+//     if(index > str.length-1) return str;
+//     return str.substring(0,index) + chr + str.substring(index+1);
+// }
 
-  function checkArray(arr, find) {
-    for (let i = 0; i < arr.length; i++) {
-      for (let j = 0; j < arr[i].length; j++) {
-        if (arr[i][j] == find) {
-          return [j, i]
-        }
-      }
-    }
-    return undefined
-  }
-  function checkColumn(arr, find, col) {
-    for (let r = 0; r < arr.length; r++) {
-      if (arr[r][col] == find) {
-        return [col, r]
-      }
-    }
-    return undefined
-  }
-  function checkRow(arr, find, row) {
-    for (let r = 0; r < arr.length; r++) {
-      if (arr[row][r] == find) {
-        return [r, row]
-      }
-    }
-    return undefined
-  }
+//   function checkArray(arr, find) {
+//     for (let i = 0; i < arr.length; i++) {
+//       for (let j = 0; j < arr[i].length; j++) {
+//         if (arr[i][j] == find) {
+//           return [j, i]
+//         }
+//       }
+//     }
+//     return undefined
+//   }
+//   function checkColumn(arr, find, col) {
+//     for (let r = 0; r < arr.length; r++) {
+//       if (arr[r][col] == find) {
+//         return [col, r]
+//       }
+//     }
+//     return undefined
+//   }
+//   function checkRow(arr, find, row) {
+//     for (let r = 0; r < arr.length; r++) {
+//       if (arr[row][r] == find) {
+//         return [r, row]
+//       }
+//     }
+//     return undefined
+//   }
+
   function setCaesar() {
     return function GenerateStepsCaesar(text: string, encrypted: string, key: number, encrypt: boolean) {
-
-      let echarindex = 0
-      let tcharindex = 0
-      let lettersnum = []
-
-      if (encrypt) {
-        for (let i = 0; i < text.length; i++) {
-          let isupper = false
-          if (text[i] == text[i].toUpperCase()) {
-            isupper = true
-          }
-          if (isupper) {
-            tcharindex = text.charCodeAt(i) - 65
-            echarindex = encrypted.charCodeAt(i) - 65
-          } else {
-            tcharindex = text.charCodeAt(i) - 97
-            echarindex = encrypted.charCodeAt(i) - 97
-          }
-
-          let letters = [tcharindex]
-          while (tcharindex != echarindex) {
-            tcharindex++
-            if (tcharindex > 25) {
-              tcharindex = 0
-            }
-            letters.push(tcharindex)
-          }
-          lettersnum.push(letters)
+      for(let i = 0; i < backres.Ani.length;i++){
+        let step = []
+        for(let j=0; j < backres.Ani[i].length;j++){
+          let microstep = [backres.Ani[i][j][0] * spacexby,backres.Ani[i][j][1] * spaceyby]
+          step.push(microstep)
         }
+        animationsteps.push([step])
       }
-      else {
-        for (let i = 0; i < text.length; i++) {
-          let isupper = false
-          if (text[i] == text[i].toUpperCase()) {
-            isupper = true
-          }
-          if (isupper) {
-            tcharindex = text.charCodeAt(i) - 65
-            echarindex = encrypted.charCodeAt(i) - 65
-          } else {
-            tcharindex = text.charCodeAt(i) - 97
-            echarindex = encrypted.charCodeAt(i) - 97
-          }
-
-          let letters = [tcharindex]
-          while (tcharindex != echarindex) {
-            tcharindex--
-            if (tcharindex < 0) {
-              tcharindex = 25
-            }
-            letters.push(tcharindex)
-          }
-          lettersnum.push(letters)
-        }
-      }
-      for (let i = 0; i < lettersnum.length; i++) {
-        let x = []
-        for (let j = 0; j < lettersnum[i].length; j++) {
-          x.push([spacexby * lettersnum[i][j], 0])
-        }
-        animationsteps.push(x)
-      }
-
+      //fix
+      // console.log(arrayDepth(animationsteps))
+      // console.log(backres.Ani)
+      // console.log(animationsteps)
     }
   }
   function setCaesarCircle() {
@@ -368,12 +314,12 @@ export const App: Component = () => {
     }
   }
 
-  function easeInOutQuart(t, b, c, d) {
+  function easeInOutQuart(t : number, b : number, c : number, d : number) {
     if ((t /= d / 2) < 1) return c / 2 * t * t * t * t + b;
     return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
   }
 
-  async function Animate(ctx, from, to, col, row, width, height, duration, states,color = "white") {
+  async function Animate(ctx: { clearRect: any; resetTransform?: (() => void) | undefined; strokeStyle?: string | undefined; lineWidth?: number | undefined; setLineDash?: ((arg0: never[]) => void) | undefined; fillStyle: any; fillRect?: any; }, from: number, to: number, col: number | undefined, row: number | undefined, width: number, height: number, duration: number, states: { on: boolean; },color = "white") {
     return await new Promise(resolve => {
 
       var start = new Date().getTime();
@@ -571,13 +517,14 @@ export const App: Component = () => {
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
     } else {
-      if (currentmicrostep == 0) {
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
-      } else if (currentmicrostep == animationsteps[currentstep].length - 1) {
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "green")
-      } else {
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
-      }
+      // if (currentmicrostep == 0) {
+      //   Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
+      // } else if (currentmicrostep == animationsteps[currentstep].length - 1) {
+      //   Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "green")
+      // } else {
+      //   Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+      // }
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
     }
   }
   function skipRight() {
