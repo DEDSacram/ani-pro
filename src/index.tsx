@@ -403,9 +403,23 @@ function linearrow (ctx,p1, p2, size) {
     }
     currentmicrostep = 0
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    for(let i = 0; i <  animationsteps[currentstep].length; i++){
-      Selected(frontctx, animationsteps[currentstep][i][0][0] * xratio, animationsteps[currentstep][i][0][1] * yratio, spacexby, spaceyby, "red")
-      Selected(frontctx, animationsteps[currentstep][i][1][0] * xratio, animationsteps[currentstep][i][1][1] * yratio, spacexby, spaceyby, "green")
+    switch (Number.parseInt(backres.Cipher)) {
+      case 1:
+        // normal caesar
+        drawcurvewitharrow(frontctx,{x: (animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][0][0][1]+spaceyby) * yratio},{x: ((animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio + (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[currentstep][0][0][1]+spaceyby*2) * yratio+(animationsteps[currentstep][0][1][1]+spaceyby*2) * yratio)/2},{x: (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][0][1][1]+spaceyby) * yratio},10)
+        break;
+      case 2:
+        // wheel caesar
+        
+        break;
+      case 3:
+       //Playfair
+       for(let i = 0; i < animationsteps[currentstep].length; i++){
+        Selected(frontctx, animationsteps[currentstep][i][0][0] * xratio, animationsteps[currentstep][i][0][1] * yratio, spacexby, spaceyby, "red")
+        Selected(frontctx, animationsteps[currentstep][i][1][0] * xratio, animationsteps[currentstep][i][1][1] * yratio, spacexby, spaceyby, "green")
+       }
+        break;
+      default:
     }
   }
   function stepLeft() {
@@ -415,6 +429,8 @@ function linearrow (ctx,p1, p2, size) {
       currentmicrostep++
       return
     }
+
+
     currentmicrostep--
     if (currentmicrostep < 0) {
       if (currentstep - 1 > -1) {
@@ -425,9 +441,22 @@ function linearrow (ctx,p1, p2, size) {
       }
     }
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-    Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-
+    switch (Number.parseInt(backres.Cipher)) {
+      case 1:
+        // normal caesar
+        drawcurvewitharrow(frontctx,{x: (animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][0][0][1]+spaceyby) * yratio},{x: ((animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio + (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[currentstep][0][0][1]+spaceyby*2) * yratio+(animationsteps[currentstep][0][1][1]+spaceyby*2) * yratio)/2},{x: (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][0][1][1]+spaceyby) * yratio},10)
+        break;
+      case 2:
+        // wheel caesar
+        
+        break;
+      case 3:
+       //Playfair
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+        break;
+      default:
+    }
   }
   function stepRight() {
     if (!animationsteps.length) return
@@ -435,18 +464,36 @@ function linearrow (ctx,p1, p2, size) {
       stop()
       return
     }
+  
     currentmicrostep++
+
     if (currentmicrostep > animationsteps[currentstep].length - 1) {
       if (currentstep + 1 < animationsteps.length) {
         currentstep++
         currentmicrostep = 0
+        console.log(animationsteps.length)
+        console.log(currentstep)
       } else {
         currentmicrostep = animationsteps[currentstep].length - 1
       }
     }
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-    Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+      switch (Number.parseInt(backres.Cipher)) {
+      case 1:
+        // normal caesar
+        drawcurvewitharrow(frontctx,{x: (animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][0][0][1]+spaceyby) * yratio},{x: ((animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio + (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[currentstep][0][0][1]+spaceyby*2) * yratio+(animationsteps[currentstep][0][1][1]+spaceyby*2) * yratio)/2},{x: (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][0][1][1]+spaceyby) * yratio},10)
+        break;
+      case 2:
+        // wheel caesar
+        
+        break;
+      case 3:
+       //Playfair
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+        break;
+      default:
+    }
   }
   function skipRight() {
     if (!animationsteps.length) return
@@ -459,14 +506,24 @@ function linearrow (ctx,p1, p2, size) {
     }
     currentmicrostep = 0
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    for(let i = 0; i < animationsteps[currentstep].length; i++){
-      //Playfair
-      // Selected(frontctx, animationsteps[currentstep][i][0][0] * xratio, animationsteps[currentstep][i][0][1] * yratio, spacexby, spaceyby, "red")
-      // Selected(frontctx, animationsteps[currentstep][i][1][0] * xratio, animationsteps[currentstep][i][1][1] * yratio, spacexby, spaceyby, "green")
 
-      // Caesar
-      drawcurvewitharrow(frontctx,{x: (animationsteps[currentstep][i][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][i][0][1]+spaceyby) * yratio},{x: ((animationsteps[currentstep][i][0][0]+(spacexby/2)) * xratio + (animationsteps[currentstep][i][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[currentstep][i][0][1]+spaceyby*2) * yratio+(animationsteps[currentstep][i][1][1]+spaceyby*2) * yratio)/2},{x: (animationsteps[currentstep][i][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][i][1][1]+spaceyby) * yratio},10)
-     
+    switch (Number.parseInt(backres.Cipher)) {
+      case 1:
+        // normal caesar
+        drawcurvewitharrow(frontctx,{x: (animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][0][0][1]+spaceyby) * yratio},{x: ((animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio + (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[currentstep][0][0][1]+spaceyby*2) * yratio+(animationsteps[currentstep][0][1][1]+spaceyby*2) * yratio)/2},{x: (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][0][1][1]+spaceyby) * yratio},10)
+        break;
+      case 2:
+        // wheel caesar
+        
+        break;
+      case 3:
+       //Playfair
+       for(let i = 0; i < animationsteps[currentstep].length; i++){
+        Selected(frontctx, animationsteps[currentstep][i][0][0] * xratio, animationsteps[currentstep][i][0][1] * yratio, spacexby, spaceyby, "red")
+        Selected(frontctx, animationsteps[currentstep][i][1][0] * xratio, animationsteps[currentstep][i][1][1] * yratio, spacexby, spaceyby, "green")
+       }
+        break;
+      default:
     }
   }
 
