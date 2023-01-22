@@ -24,9 +24,9 @@ class Postreq {
 interface Postres {
   TextBefore: string;
   TextNow: string;
-  Ani :  number[][][][];
-  Cipher : string;
-  Display : string[] | string[][];
+  Ani: number[][][][];
+  Cipher: string;
+  Display: string[] | string[][];
 
 }
 export const App: Component = () => {
@@ -141,19 +141,12 @@ export const App: Component = () => {
       spacexby = size().width / spacex
       spaceyby = size().height / spacey
 
-      if(depth>3){
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-      }else{
-      if (currentmicrostep == 0) {
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
-      } else if (currentmicrostep == animationsteps[currentstep].length - 1) {
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "green")
-      } else {
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
-      }
+
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+
+
     }
-  }
 
 
   }
@@ -180,7 +173,7 @@ export const App: Component = () => {
         resetContext(frontctx)
         await res(new Postreq(currentcipher, textEncryption(), textEncryptionKey()), encrypt())
 
-   
+
         setEncryptedText(backres.TextNow)
 
         spacexby = size().width / spacex
@@ -199,11 +192,6 @@ export const App: Component = () => {
           default:
             console.log("FAIL")
         }
-
-
-      
-        console.log(arrayDepth(backres.Ani))
-
         currentmicrostep = 0
         currentstep = 0
         frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
@@ -218,74 +206,68 @@ export const App: Component = () => {
   }
   function setPlayfair() {
     return function GenerateStepsPlayfair(text: string, encrypted: string, key: any, encrypt: boolean) {
-      for(let i = 0; i < backres.Ani.length;i++){
+      // console.log(backres.Ani[0])
+      // console.log(backres.Ani[1])
+      // console.log(backres.Ani[0][0])
+      // console.log(backres.Ani[0][1])
+      for (let i = 0; i < backres.Ani.length; i++) {
         let step = []
-        for(let j=0; j < backres.Ani[i][0].length;j++){
-          let microstep = [backres.Ani[i][0][j][1] * spacexby,backres.Ani[i][0][j][0] * spaceyby]
-          step.push(microstep)
+     
+        // for (let j = 0; j < backres.Ani[i].length; j++) {
+        //   console.log(backres.Ani[i][j])
+        //   // let microstep = [backres.Ani[i][0][j][1] * spacexby, backres.Ani[i][0][j][0] * spaceyby]
+        //   // step.push(microstep)
+        //   // microstep = [backres.Ani[i][1][j][1] * spacexby, backres.Ani[i][1][j][0] * spaceyby]
+        //   // step.push(microstep)
+        // }
+
+        for (let j = 0; j < backres.Ani[i].length; j++) {
+           let letter = []
+           for(let z = 0; z < backres.Ani[i][j].length;z++){
+            // console.log(backres.Ani[i][j][z][0],backres.Ani[i][j][z][1])
+            letter.push([backres.Ani[i][j][z][1]*spacexby,backres.Ani[i][j][z][0]*spaceyby])
+           }
+          //  console.log("New")
+           step.push(letter)
+
         }
-        animationsteps.push([step])
+        // console.log(step)
+
+        //one
+        // console.log(backres.Ani[i][0])
+        console.log("HH")
+        animationsteps.push(step)
+        console.log(animationsteps)
+    
+   
       }
+    
     }
-    console.log(arrayDepth(animationsteps))
+   
   }
-
-//   function setCharAt(str,index,chr) {
-//     if(index > str.length-1) return str;
-//     return str.substring(0,index) + chr + str.substring(index+1);
-// }
-
-//   function checkArray(arr, find) {
-//     for (let i = 0; i < arr.length; i++) {
-//       for (let j = 0; j < arr[i].length; j++) {
-//         if (arr[i][j] == find) {
-//           return [j, i]
-//         }
-//       }
-//     }
-//     return undefined
-//   }
-//   function checkColumn(arr, find, col) {
-//     for (let r = 0; r < arr.length; r++) {
-//       if (arr[r][col] == find) {
-//         return [col, r]
-//       }
-//     }
-//     return undefined
-//   }
-//   function checkRow(arr, find, row) {
-//     for (let r = 0; r < arr.length; r++) {
-//       if (arr[row][r] == find) {
-//         return [r, row]
-//       }
-//     }
-//     return undefined
-//   }
-
   function setCaesar() {
     return function GenerateStepsCaesar(text: string, encrypted: string, key: number, encrypt: boolean) {
-      for(let i = 0; i < backres.Ani.length;i++){
+      for (let i = 0; i < backres.Ani.length; i++) {
         let step = []
-        for(let j=0; j < backres.Ani[i][0].length;j++){
-          let microstep = [backres.Ani[i][0][j][0] * spacexby,backres.Ani[i][0][j][1] * spaceyby]
+        for (let j = 0; j < backres.Ani[i][0].length; j++) {
+          let microstep = [backres.Ani[i][0][j][0] * spacexby, backres.Ani[i][0][j][1] * spaceyby]
           step.push(microstep)
         }
         animationsteps.push([step])
       }
     }
-    console.log(arrayDepth(animationsteps))
   }
   function setCaesarCircle() {
     return function GenerateStepsCaesar(text: string, encrypted: string, key: number) {
     }
   }
 
-  function easeInOutQuart(t : number, b : number, c : number, d : number) {
+  function easeInOutQuart(t: number, b: number, c: number, d: number) {
     if ((t /= d / 2) < 1) return c / 2 * t * t * t * t + b;
     return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
   }
 
-  async function Animate(ctx: { clearRect: any; resetTransform?: (() => void) | undefined; strokeStyle?: string | undefined; lineWidth?: number | undefined; setLineDash?: ((arg0: never[]) => void) | undefined; fillStyle: any; fillRect?: any; }, from: number, to: number, col: number | undefined, row: number | undefined, width: number, height: number, duration: number, states: { on: boolean; },color = "white") {
+  async function Animate(ctx: { clearRect: any; resetTransform?: (() => void) | undefined; strokeStyle?: string | undefined; lineWidth?: number | undefined; setLineDash?: ((arg0: never[]) => void) | undefined; fillStyle: any; fillRect?: any; }, from: number, to: number, col: number | undefined, row: number | undefined, width: number, height: number, duration: number, states: { on: boolean; }, color = "white") {
     return await new Promise(resolve => {
 
       var start = new Date().getTime();
@@ -315,13 +297,15 @@ export const App: Component = () => {
     });
   }
 
+  function Animove() {
+
+  }
+
   async function autoRunRight() {
     if (running.on) {
       return
     }
     running.on = true
-    depth = arrayDepth(animationsteps)
-    if (depth > 3) {
       cancel:
       for (currentstep; currentstep < animationsteps.length; currentstep++) {
         //letter steps
@@ -339,79 +323,35 @@ export const App: Component = () => {
           }
         }
         currentmicrostep = 0
-        // if (!running.on) {
-        //   break cancel;
-        // }
       }
-    } else {
-      cancel:
-      for (currentstep; currentstep < animationsteps.length; currentstep++) {
-        for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length-1; currentmicrostep++) {
-          // if(currentmicrostep+1 > animationsteps[currentstep].length){
-          //   break cancel;
-          // }
-          if(currentmicrostep == 0){
-            await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep + 1][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, undefined, spacexby, spaceyby, 1000, running,"red")
-          }else if (currentmicrostep+1 == animationsteps[currentstep].length-1){
-            await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep + 1][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, undefined, spacexby, spaceyby, 1000, running,"green")
-          }else{
-            await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep + 1][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, undefined, spacexby, spaceyby, 1000, running)
-          }
-
-        
-        
-          if (!running.on) {
-            break cancel;
-          }
-        }
-        currentmicrostep = 0
-        // if (!running.on) {
-        //   break cancel;
-        // }
-      }
-    }
+    
     // problem with for loop out of bounds
-    if(currentstep>animationsteps.length-1){
+    if (currentstep > animationsteps.length - 1) {
       currentstep--
     }
   }
 
-  function arrayDepth(a: (number[][] | number[][][])[]) {
-    var depth = 0;
-    if (Array.isArray(a)) {
-      for (var i in a) {
-        depth = Math.max(depth, arrayDepth(a[i]));
-      }
-      depth++;
-    }
-    return depth;
-  }
+  // function arrayDepth(a: (number[][] | number[][][])[]) {
+  //   var depth = 0;
+  //   if (Array.isArray(a)) {
+  //     for (var i in a) {
+  //       depth = Math.max(depth, arrayDepth(a[i]));
+  //     }
+  //     depth++;
+  //   }
+  //   return depth;
+  // }
+
   function stop() {
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    if(depth>3){
-
-    }else{
-      if (currentmicrostep == 0) {
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
-      } else if (currentmicrostep == animationsteps[currentstep].length - 2) {
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "green")
-      } else {
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
-      }
-    }
-  
+    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
     running.on = false
   }
-  function Selected(ctx, x, y, width, height, color) {
-    if (!color) {
-      color = "white"
-    }
+  function Selected(ctx, x, y, width, height, color = "white") {
     ctx.beginPath()
     ctx.fillStyle = color;
     ctx.rect(x, y, width, height);
     ctx.fill()
-    // ctx.fillStyle = color;
-    // ctx.rect(x, y, width, height);
   }
   function skipLeft() {
     if (!animationsteps.length) return
@@ -424,11 +364,9 @@ export const App: Component = () => {
     }
     currentmicrostep = 0
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    if (Array.isArray(animationsteps[currentstep][currentmicrostep][0])) {
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-    } else {
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
+    for(let i = 0; i <  animationsteps[currentstep].length; i++){
+      Selected(frontctx, animationsteps[currentstep][i][0][0] * xratio, animationsteps[currentstep][i][0][1] * yratio, spacexby, spaceyby, "red")
+      Selected(frontctx, animationsteps[currentstep][i][1][0] * xratio, animationsteps[currentstep][i][1][1] * yratio, spacexby, spaceyby, "green")
     }
   }
   function stepLeft() {
@@ -448,20 +386,9 @@ export const App: Component = () => {
       }
     }
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    if (Array.isArray(animationsteps[currentstep][currentmicrostep][0])) {
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-    } else {
+    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+    Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
 
-      if (currentmicrostep == 0) {
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
-      } else if (currentmicrostep == animationsteps[currentstep].length - 1) {
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "green")
-      } else {
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
-      }
-
-    }
   }
   function stepRight() {
     if (!animationsteps.length) return
@@ -479,19 +406,8 @@ export const App: Component = () => {
       }
     }
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    if (Array.isArray(animationsteps[currentstep][currentmicrostep][0])) {
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-    } else {
-      // if (currentmicrostep == 0) {
-      //   Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
-      // } else if (currentmicrostep == animationsteps[currentstep].length - 1) {
-      //   Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "green")
-      // } else {
-      //   Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
-      // }
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
-    }
+    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+    Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
   }
   function skipRight() {
     if (!animationsteps.length) return
@@ -504,12 +420,15 @@ export const App: Component = () => {
     }
     currentmicrostep = 0
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    if (Array.isArray(animationsteps[currentstep][currentmicrostep][0])) {
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-    } else {
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby, "red")
+    for(let i = 0; i <  animationsteps[currentstep].length; i++){
+      Selected(frontctx, animationsteps[currentstep][i][0][0] * xratio, animationsteps[currentstep][i][0][1] * yratio, spacexby, spaceyby, "red")
+      Selected(frontctx, animationsteps[currentstep][i][1][0] * xratio, animationsteps[currentstep][i][1][1] * yratio, spacexby, spaceyby, "green")
     }
+    // Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+    // Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+    // Selected(frontctx, animationsteps[currentstep][currentmicrostep+1][0][0] * xratio, animationsteps[currentstep][currentmicrostep+1][0][1] * yratio, spacexby, spaceyby, "red")
+    // Selected(frontctx, animationsteps[currentstep][currentmicrostep+1][1][0] * xratio, animationsteps[currentstep][currentmicrostep+1][1][1] * yratio, spacexby, spaceyby, "green")
+
   }
 
   // calling timeout before resizing
