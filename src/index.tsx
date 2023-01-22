@@ -206,40 +206,16 @@ export const App: Component = () => {
   }
   function setPlayfair() {
     return function GenerateStepsPlayfair(text: string, encrypted: string, key: any, encrypt: boolean) {
-      // console.log(backres.Ani[0])
-      // console.log(backres.Ani[1])
-      // console.log(backres.Ani[0][0])
-      // console.log(backres.Ani[0][1])
       for (let i = 0; i < backres.Ani.length; i++) {
         let step = []
-     
-        // for (let j = 0; j < backres.Ani[i].length; j++) {
-        //   console.log(backres.Ani[i][j])
-        //   // let microstep = [backres.Ani[i][0][j][1] * spacexby, backres.Ani[i][0][j][0] * spaceyby]
-        //   // step.push(microstep)
-        //   // microstep = [backres.Ani[i][1][j][1] * spacexby, backres.Ani[i][1][j][0] * spaceyby]
-        //   // step.push(microstep)
-        // }
-
         for (let j = 0; j < backres.Ani[i].length; j++) {
            let letter = []
            for(let z = 0; z < backres.Ani[i][j].length;z++){
-            // console.log(backres.Ani[i][j][z][0],backres.Ani[i][j][z][1])
             letter.push([backres.Ani[i][j][z][1]*spacexby,backres.Ani[i][j][z][0]*spaceyby])
            }
-          //  console.log("New")
            step.push(letter)
-
         }
-        // console.log(step)
-
-        //one
-        // console.log(backres.Ani[i][0])
-        console.log("HH")
         animationsteps.push(step)
-        console.log(animationsteps)
-    
-   
       }
     
     }
@@ -342,6 +318,69 @@ export const App: Component = () => {
   //   return depth;
   // }
 
+//p1 start p2 end size: size of arrow
+// function arrow (p1, p2, size) {
+//   var angle = Math.atan2((p2.y - p1.y) , (p2.x - p1.x));
+//   var hyp = Math.sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
+
+//   ctx.save();
+//   ctx.translate(p1.x, p1.y);
+//   ctx.rotate(angle);
+
+//   // line
+//   ctx.beginPath();	
+//   ctx.moveTo(0, 0);
+//   ctx.lineTo(hyp - size, 0);
+//   ctx.stroke();
+
+//   // triangle
+//   ctx.fillStyle = 'blue';
+//   ctx.beginPath();
+//   ctx.lineTo(hyp - size, size);
+//   ctx.lineTo(hyp, 0);
+//   ctx.lineTo(hyp - size, -size);
+//   ctx.fill();
+
+//   ctx.restore();
+// }
+
+
+
+
+
+
+
+  function arrow (ctx,p1, p2, size) {
+    var angle = Math.atan2((p2.y - p1.y) , (p2.x - p1.x));
+    var hyp = Math.sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
+    ctx.save();
+    ctx.translate(p1.x, p1.y);
+    ctx.rotate(angle);
+    // triangle
+    ctx.fillStyle = 'red';
+    ctx.strokeStyle = 'white';
+    ctx.beginPath();
+    ctx.lineWidth = 3;
+    ctx.lineTo(hyp - size, size);
+    ctx.lineTo(hyp, 0);
+    ctx.lineTo(hyp - size, -size);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawcurvewitharrow(ctx,startpoint,control_p,endpoint){
+  ctx.beginPath();
+  ctx.moveTo(startpoint.x, startpoint.y);
+  ctx.quadraticCurveTo(control_p.x, control_p.y, endpoint.x, endpoint.y);
+  ctx.lineWidth = 4;
+  ctx.stroke();
+  arrow(ctx,control_p, {x: endpoint.x, y: endpoint.y}, 20);
+  }
+
+
+
+
   function stop() {
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
     Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
@@ -420,15 +459,13 @@ export const App: Component = () => {
     }
     currentmicrostep = 0
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    for(let i = 0; i <  animationsteps[currentstep].length; i++){
+    for(let i = 0; i < animationsteps[currentstep].length; i++){
       Selected(frontctx, animationsteps[currentstep][i][0][0] * xratio, animationsteps[currentstep][i][0][1] * yratio, spacexby, spaceyby, "red")
       Selected(frontctx, animationsteps[currentstep][i][1][0] * xratio, animationsteps[currentstep][i][1][1] * yratio, spacexby, spaceyby, "green")
+      // let cp = {x: (animationsteps[currentstep][i][0][0] * xratio + animationsteps[currentstep][i][1][0] * xratio)/2,y: (animationsteps[currentstep][i][0][1] * yratio+animationsteps[currentstep][i][1][1] * yratio)/2}
+      // drawcurvewitharrow(frontctx,{x: animationsteps[currentstep][i][0][0] * xratio,y:animationsteps[currentstep][i][0][1] * yratio},cp,{x: animationsteps[currentstep][i][1][0] * xratio, y: animationsteps[currentstep][i][1][1] * yratio})
+     
     }
-    // Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-    // Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-    // Selected(frontctx, animationsteps[currentstep][currentmicrostep+1][0][0] * xratio, animationsteps[currentstep][currentmicrostep+1][0][1] * yratio, spacexby, spaceyby, "red")
-    // Selected(frontctx, animationsteps[currentstep][currentmicrostep+1][1][0] * xratio, animationsteps[currentstep][currentmicrostep+1][1][1] * yratio, spacexby, spaceyby, "green")
-
   }
 
   // calling timeout before resizing
@@ -441,6 +478,8 @@ export const App: Component = () => {
     backctx = canvas.getContext("2d")
     frontctx = overlaycanvas.getContext("2d")
   });
+
+
   return (
     <div>
       <Suspense fallback={<p>Loading...</p>}>
