@@ -319,30 +319,30 @@ export const App: Component = () => {
   // }
 
 //p1 start p2 end size: size of arrow
-// function arrow (p1, p2, size) {
-//   var angle = Math.atan2((p2.y - p1.y) , (p2.x - p1.x));
-//   var hyp = Math.sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
+function linearrow (ctx,p1, p2, size) {
+  var angle = Math.atan2((p2.y - p1.y) , (p2.x - p1.x));
+  var hyp = Math.sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
 
-//   ctx.save();
-//   ctx.translate(p1.x, p1.y);
-//   ctx.rotate(angle);
+  ctx.save();
+  ctx.translate(p1.x, p1.y);
+  ctx.rotate(angle);
 
-//   // line
-//   ctx.beginPath();	
-//   ctx.moveTo(0, 0);
-//   ctx.lineTo(hyp - size, 0);
-//   ctx.stroke();
+  // line
+  ctx.beginPath();	
+  ctx.moveTo(0, 0);
+  ctx.lineTo(hyp - size, 0);
+  ctx.stroke();
 
-//   // triangle
-//   ctx.fillStyle = 'blue';
-//   ctx.beginPath();
-//   ctx.lineTo(hyp - size, size);
-//   ctx.lineTo(hyp, 0);
-//   ctx.lineTo(hyp - size, -size);
-//   ctx.fill();
+  // triangle
+  ctx.fillStyle = 'blue';
+  ctx.beginPath();
+  ctx.lineTo(hyp - size, size);
+  ctx.lineTo(hyp, 0);
+  ctx.lineTo(hyp - size, -size);
+  ctx.fill();
 
-//   ctx.restore();
-// }
+  ctx.restore();
+}
 
 
 
@@ -369,13 +369,13 @@ export const App: Component = () => {
     ctx.restore();
   }
 
-  function drawcurvewitharrow(ctx,startpoint,control_p,endpoint){
+  function drawcurvewitharrow(ctx,startpoint,control_p,endpoint,arrowsize){
   ctx.beginPath();
   ctx.moveTo(startpoint.x, startpoint.y);
   ctx.quadraticCurveTo(control_p.x, control_p.y, endpoint.x, endpoint.y);
   ctx.lineWidth = 4;
   ctx.stroke();
-  arrow(ctx,control_p, {x: endpoint.x, y: endpoint.y}, 20);
+  arrow(ctx,control_p, {x: endpoint.x, y: endpoint.y}, arrowsize);
   }
 
 
@@ -460,10 +460,12 @@ export const App: Component = () => {
     currentmicrostep = 0
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
     for(let i = 0; i < animationsteps[currentstep].length; i++){
-      Selected(frontctx, animationsteps[currentstep][i][0][0] * xratio, animationsteps[currentstep][i][0][1] * yratio, spacexby, spaceyby, "red")
-      Selected(frontctx, animationsteps[currentstep][i][1][0] * xratio, animationsteps[currentstep][i][1][1] * yratio, spacexby, spaceyby, "green")
-      // let cp = {x: (animationsteps[currentstep][i][0][0] * xratio + animationsteps[currentstep][i][1][0] * xratio)/2,y: (animationsteps[currentstep][i][0][1] * yratio+animationsteps[currentstep][i][1][1] * yratio)/2}
-      // drawcurvewitharrow(frontctx,{x: animationsteps[currentstep][i][0][0] * xratio,y:animationsteps[currentstep][i][0][1] * yratio},cp,{x: animationsteps[currentstep][i][1][0] * xratio, y: animationsteps[currentstep][i][1][1] * yratio})
+      //Playfair
+      // Selected(frontctx, animationsteps[currentstep][i][0][0] * xratio, animationsteps[currentstep][i][0][1] * yratio, spacexby, spaceyby, "red")
+      // Selected(frontctx, animationsteps[currentstep][i][1][0] * xratio, animationsteps[currentstep][i][1][1] * yratio, spacexby, spaceyby, "green")
+
+      // Caesar
+      drawcurvewitharrow(frontctx,{x: (animationsteps[currentstep][i][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][i][0][1]+spaceyby) * yratio},{x: ((animationsteps[currentstep][i][0][0]+(spacexby/2)) * xratio + (animationsteps[currentstep][i][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[currentstep][i][0][1]+spaceyby*2) * yratio+(animationsteps[currentstep][i][1][1]+spaceyby*2) * yratio)/2},{x: (animationsteps[currentstep][i][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][i][1][1]+spaceyby) * yratio},10)
      
     }
   }
