@@ -12,10 +12,10 @@ import { Menu } from "./components/menu";
 import { FiChevronsLeft, FiChevronLeft, FiChevronRight, FiChevronsRight } from "solid-icons/fi";
 
 class Postreq {
-  public Cipher: number;
+  public Cipher: string;
   public Text: string;
   public Key: string | number;
-  constructor(cipher: number, text: string, key: string | number) {
+  constructor(cipher: string, text: string, key: string | number) {
     this.Cipher = cipher
     this.Text = text
     this.Key = key
@@ -40,7 +40,7 @@ export const App: Component = () => {
   let currentfunctionanimation: ((text: string, encrypted: string, key: number, encrypt: boolean) => void) | ((arg0: string, arg1: string, arg2: string, arg3: boolean) => void)
   let backctx: { clearRect?: any; canvas?: any; textAlign?: any; textBaseline?: any; font?: any; beginPath?: any; rect?: any; stroke?: any; fillText?: any; translate?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
   let frontctx: { clearRect?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
-  let currentcipher: number;
+  let currentcipher: string;
   //reset
   let submit = false;
 
@@ -72,7 +72,7 @@ export const App: Component = () => {
 
   let polyalphabetic;
 
-  let animationsteps: (number[][] | number[][][])[] = []
+  let animationsteps: ( number[][][])[] = []
 
 
   // response from
@@ -167,7 +167,7 @@ export const App: Component = () => {
         backctx.clearRect(0, 0, canvas.width, canvas.height);
         frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
 
-        polyalphabetic = currentfunction(textEncryptionKey())
+        polyalphabetic = currentfunction(textEncryptionKey(),encrypt())
 
         resetContext(backctx)
         resetContext(frontctx)
@@ -179,7 +179,7 @@ export const App: Component = () => {
         spacexby = size().width / spacex
         spaceyby = size().height / spacey
 
-        switch (Number.parseInt(currentcipher)) {
+        switch (parseInt(currentcipher)) {
           case 1:
             currentfunctionanimation(backres.TextBefore, backres.TextNow, textEncryptionKey(), encrypt())
             break;
@@ -319,7 +319,7 @@ export const App: Component = () => {
   // }
 
 //p1 start p2 end size: size of arrow
-function linearrow (ctx,p1, p2, size) {
+function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) => void; rotate: (arg0: number) => void; beginPath: () => void; moveTo: (arg0: number, arg1: number) => void; lineTo: (arg0: number, arg1: number) => void; stroke: () => void; fillStyle: string; fill: () => void; restore: () => void; },p1: { y: number; x: number; }, p2: { y: number; x: number; }, size: number) {
   var angle = Math.atan2((p2.y - p1.y) , (p2.x - p1.x));
   var hyp = Math.sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
 
@@ -350,7 +350,7 @@ function linearrow (ctx,p1, p2, size) {
 
 
 
-  function arrow (ctx,p1, p2, size) {
+  function arrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) => void; rotate: (arg0: number) => void; fillStyle: string; strokeStyle: string; beginPath: () => void; lineWidth: number; lineTo: (arg0: number, arg1: number) => void; fill: () => void; stroke: () => void; restore: () => void; },p1: { y: number; x: number; }, p2: { x: any; y: any; }, size: number) {
     var angle = Math.atan2((p2.y - p1.y) , (p2.x - p1.x));
     var hyp = Math.sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
     ctx.save();
@@ -369,7 +369,7 @@ function linearrow (ctx,p1, p2, size) {
     ctx.restore();
   }
 
-  function drawcurvewitharrow(ctx,startpoint,control_p,endpoint,arrowsize){
+  function drawcurvewitharrow(ctx: { clearRect?: any; resetTransform?: (() => void) | undefined; strokeStyle?: string | undefined; lineWidth: any; setLineDash?: ((arg0: never[]) => void) | undefined; fillStyle?: string | undefined; beginPath?: any; moveTo?: any; quadraticCurveTo?: any; stroke?: any; },startpoint: { x: any; y: any; },control_p: { x: any; y: any; },endpoint: { x: any; y: any; },arrowsize: number){
   ctx.beginPath();
   ctx.moveTo(startpoint.x, startpoint.y);
   ctx.quadraticCurveTo(control_p.x, control_p.y, endpoint.x, endpoint.y);
@@ -386,7 +386,7 @@ function linearrow (ctx,p1, p2, size) {
     Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
     running.on = false
   }
-  function Selected(ctx, x, y, width, height, color = "white") {
+  function Selected(ctx: { clearRect?: any; resetTransform?: (() => void) | undefined; strokeStyle?: string | undefined; lineWidth?: number | undefined; setLineDash?: ((arg0: never[]) => void) | undefined; fillStyle: any; beginPath?: any; rect?: any; fill?: any; }, x: number, y: number, width: number, height: number, color = "white") {
     ctx.beginPath()
     ctx.fillStyle = color;
     ctx.rect(x, y, width, height);
