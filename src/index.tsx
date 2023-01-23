@@ -36,8 +36,8 @@ export const App: Component = () => {
   const [textEncryption, setTextEncryption] = createSignal('');
   const [textEncryptionKey, setTextEncryptionKey] = createSignal('')
   const [encryptedText, setEncryptedText] = createSignal('')
-  let currentfunction: ((key: any, encrypt: boolean) => void) | ((arg0: string, arg1: boolean | undefined) => void)
-  let currentfunctionanimation: ((text: string, encrypted: string, key: number, encrypt: boolean) => void) | ((arg0: string, arg1: string, arg2: string, arg3: boolean) => void)
+  let currentfunction: ((key: any, encrypt: boolean) => void) | ((display: any, spacexby: number, spaceyby: number, fontsize: number) => void) | ((arg0: string | string[] | string[][], arg1: number | boolean, arg2: number | undefined, arg3: number | undefined) => void)
+  let currentfunctionanimation: () => void
   let backctx: { clearRect?: any; canvas?: any; textAlign?: any; textBaseline?: any; font?: any; beginPath?: any; rect?: any; stroke?: any; fillText?: any; translate?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
   let frontctx: { clearRect?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
   let currentcipher: string;
@@ -70,7 +70,7 @@ export const App: Component = () => {
   //stays
   let ongeneratedsize = { width: 0, height: 0 }
 
-  let polyalphabetic;
+ 
 
   let animationsteps: ( number[][][])[] = []
 
@@ -136,7 +136,7 @@ export const App: Component = () => {
     }
     setSize({ width: document.documentElement.clientWidth, height: document.documentElement.clientHeight })
     if (currentfunction && submit) {
-      currentfunction(textEncryptionKey(), encrypt())
+      currentfunction(backres.Display,spacexby,spaceyby,(ongeneratedsize.height*yratio) / 5)
 
       spacexby = size().width / spacex
       spaceyby = size().height / spacey
@@ -167,27 +167,29 @@ export const App: Component = () => {
         backctx.clearRect(0, 0, canvas.width, canvas.height);
         frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
 
-        polyalphabetic = currentfunction(textEncryptionKey(),encrypt())
+        // polyalphabetic = currentfunction(textEncryptionKey(),encrypt())
 
         resetContext(backctx)
         resetContext(frontctx)
         await res(new Postreq(currentcipher, textEncryption(), textEncryptionKey()), encrypt())
 
-
-        setEncryptedText(backres.TextNow)
-
+        ongeneratedsize = { width: size().width, height: size().height }
         spacexby = size().width / spacex
         spaceyby = size().height / spacey
 
+        currentfunction(backres.Display,spacexby,spaceyby,((ongeneratedsize.height*yratio) / spacey))
+
+        setEncryptedText(backres.TextNow)
+
         switch (parseInt(currentcipher)) {
           case 1:
-            currentfunctionanimation(backres.TextBefore, backres.TextNow, textEncryptionKey(), encrypt())
+            currentfunctionanimation()
             break;
           case 2:
-            currentfunctionanimation(backres.TextBefore, backres.TextNow, textEncryptionKey(), encrypt())
+            currentfunctionanimation()
             break;
           case 3:
-            currentfunctionanimation(backres.TextBefore, backres.TextNow, polyalphabetic, encrypt())
+            currentfunctionanimation()
             break;
           default:
             console.log("FAIL")
@@ -195,7 +197,6 @@ export const App: Component = () => {
         currentmicrostep = 0
         currentstep = 0
         frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-        ongeneratedsize = { width: size().width, height: size().height }
       }
     }
     function resetContext(ctx: { resetTransform: () => void; strokeStyle: string; lineWidth: number; setLineDash: (arg0: never[]) => void; fillStyle: string; }) {
@@ -205,7 +206,7 @@ export const App: Component = () => {
     }
   }
   function setPlayfair() {
-    return function GenerateStepsPlayfair(text: string, encrypted: string, key: any, encrypt: boolean) {
+    return function GenerateStepsPlayfair() {
       for (let i = 0; i < backres.Ani.length; i++) {
         let step = []
         for (let j = 0; j < backres.Ani[i].length; j++) {
@@ -222,7 +223,7 @@ export const App: Component = () => {
    
   }
   function setCaesar() {
-    return function GenerateStepsCaesar(text: string, encrypted: string, key: number, encrypt: boolean) {
+    return function GenerateStepsCaesar() {
       for (let i = 0; i < backres.Ani.length; i++) {
         let step = []
         for (let j = 0; j < backres.Ani[i][0].length; j++) {
@@ -234,7 +235,7 @@ export const App: Component = () => {
     }
   }
   function setCaesarCircle() {
-    return function GenerateStepsCaesar(text: string, encrypted: string, key: number) {
+    return function GenerateStepsCaesar() {
     }
   }
 
