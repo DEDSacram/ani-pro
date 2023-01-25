@@ -1,0 +1,17 @@
+{
+    "by": "move by",
+    "right": "right",
+    "left": "left",
+    "down": "down",
+    "up": "up",
+    "why": "because",
+    "enciphering": "enciphering",
+    "deciphering": "deciphering",
+    "playfair": {
+    "rules": ["Remove one letter from the alphabet so it creates a 5x5 square","Same row move by one to the right", "Same column move by one down","Same row and column letter is appended by filler, treat the same","Different row and column create a rectangle/square, enciphering to opposing edges on horizontal axis"]
+    },
+    "caesar":{
+    "rules": ["Shift an alphabet by a given number right or left encipher to the same position"]
+    }
+  }
+  

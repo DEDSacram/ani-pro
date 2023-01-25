@@ -8,6 +8,9 @@ import { createCaesar } from "./lib/createCaesar";
 import { createCaesarWheel } from "./lib/createCaesarWheel";
 import "./index.css"
 import Canvas from "./components/canvas";
+
+import * as popis from './popis.json';
+
 import { Menu } from "./components/menu";
 import { FiChevronsLeft, FiChevronLeft, FiChevronRight, FiChevronsRight } from "solid-icons/fi";
 
@@ -66,6 +69,9 @@ export const App: Component = () => {
   let running = {
     on: false
   };
+
+  //json
+  console.log(popis)
 
   //stays
   let ongeneratedsize = { width: 0, height: 0 }
@@ -136,19 +142,12 @@ export const App: Component = () => {
     }
     setSize({ width: document.documentElement.clientWidth, height: document.documentElement.clientHeight })
     if (currentfunction && submit) {
-      currentfunction(backres.Display,spacexby,spaceyby,(ongeneratedsize.height*yratio) / 5)
-
       spacexby = size().width / spacex
       spaceyby = size().height / spacey
-
-
+      currentfunction(backres.Display,spacexby,spaceyby,(ongeneratedsize.height*yratio) / 5)
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-
-
     }
-
-
   }
 
   //stays
@@ -273,11 +272,6 @@ export const App: Component = () => {
       }, 1000 / 60);
     });
   }
-
-  function Animove() {
-
-  }
-
   async function autoRunRight() {
     if (running.on) {
       return
@@ -307,17 +301,6 @@ export const App: Component = () => {
       currentstep--
     }
   }
-
-  // function arrayDepth(a: (number[][] | number[][][])[]) {
-  //   var depth = 0;
-  //   if (Array.isArray(a)) {
-  //     for (var i in a) {
-  //       depth = Math.max(depth, arrayDepth(a[i]));
-  //     }
-  //     depth++;
-  //   }
-  //   return depth;
-  // }
 
 //p1 start p2 end size: size of arrow
 function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) => void; rotate: (arg0: number) => void; beginPath: () => void; moveTo: (arg0: number, arg1: number) => void; lineTo: (arg0: number, arg1: number) => void; stroke: () => void; fillStyle: string; fill: () => void; restore: () => void; },p1: { y: number; x: number; }, p2: { y: number; x: number; }, size: number) {
@@ -457,15 +440,18 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
         Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
         break;
       default:
+      return
     }
   }
+
+
   function stepRight() {
     if (!animationsteps.length) return
     if (running.on) {
       stop()
       return
     }
-  
+
     currentmicrostep++
 
     if (currentmicrostep > animationsteps[currentstep].length - 1) {
@@ -479,23 +465,28 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
       }
     }
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-      switch (Number.parseInt(backres.Cipher)) {
-      case 1:
-        // normal caesar
-        drawcurvewitharrow(frontctx,{x: (animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][0][0][1]+spaceyby) * yratio},{x: ((animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio + (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[currentstep][0][0][1]+spaceyby*2) * yratio+(animationsteps[currentstep][0][1][1]+spaceyby*2) * yratio)/2},{x: (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][0][1][1]+spaceyby) * yratio},10)
-        break;
-      case 2:
-        // wheel caesar
-        
-        break;
-      case 3:
-       //Playfair
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-        break;
-      default:
-    }
+    switch (Number.parseInt(backres.Cipher)) {
+    case 1:
+      // normal caesar
+      drawcurvewitharrow(frontctx,{x: (animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][0][0][1]+spaceyby) * yratio},{x: ((animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio + (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[currentstep][0][0][1]+spaceyby*2) * yratio+(animationsteps[currentstep][0][1][1]+spaceyby*2) * yratio)/2},{x: (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][0][1][1]+spaceyby) * yratio},10)
+      break;
+    case 2:
+      // wheel caesar
+      
+      break;
+    case 3:
+     //Playfair
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+      break;
+    default:
   }
+  
+  }
+
+
+
+  
   function skipRight() {
     if (!animationsteps.length) return
     if (running.on) {
