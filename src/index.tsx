@@ -12,7 +12,7 @@ import Canvas from "./components/canvas";
 import * as popis from './popis.json';
 
 import { Menu } from "./components/menu";
-import { FiChevronsLeft, FiChevronLeft, FiChevronRight, FiChevronsRight } from "solid-icons/fi";
+import { FiChevronsLeft, FiChevronLeft, FiChevronRight, FiChevronsRight, FiArrowRight } from "solid-icons/fi";
 
 class Postreq {
   public Cipher: string;
@@ -58,20 +58,18 @@ export const App: Component = () => {
 
   let spacexby = 0
   let spaceyby = 0
-  //
 
   //animation control
   let currentstep = 0;
   let currentmicrostep = 0;
-  //
-  let depth = 0;
 
   let running = {
     on: false
   };
 
   //json
-  console.log(popis)
+  let [rules,setRules] = createSignal([]);
+ 
 
   //stays
   let ongeneratedsize = { width: 0, height: 0 }
@@ -166,8 +164,6 @@ export const App: Component = () => {
         backctx.clearRect(0, 0, canvas.width, canvas.height);
         frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
 
-        // polyalphabetic = currentfunction(textEncryptionKey(),encrypt())
-
         resetContext(backctx)
         resetContext(frontctx)
         await res(new Postreq(currentcipher, textEncryption(), textEncryptionKey()), encrypt())
@@ -183,12 +179,15 @@ export const App: Component = () => {
         switch (parseInt(currentcipher)) {
           case 1:
             currentfunctionanimation()
+            setRules(popis.caesar.rules) 
             break;
           case 2:
             currentfunctionanimation()
+            setRules(popis.caesar.rules) 
             break;
           case 3:
             currentfunctionanimation()
+            setRules(popis.playfair.rules) 
             break;
           default:
             console.log("FAIL")
@@ -530,7 +529,6 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
     frontctx = overlaycanvas.getContext("2d")
   });
 
-
   return (
     <div>
       <Suspense fallback={<p>Loading...</p>}>
@@ -572,7 +570,21 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
           <button onClick={autoRunRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><div class="flex"><FiChevronsRight /><FiChevronsRight /></div></button>
         </div>
       </Menu>
+
+      <Menu title={"Description"} itemid={"descmenu"} minwidth={0} minheight={0}>
+        <div class="w-full">
+          <div class="flex justify-around items-center flex-row"> <h1>ABCDE</h1><FiArrowRight/><h1>ABCDE</h1></div>
+          <div class="flex justify-around items-center flex-row"> <h1>AB</h1><FiArrowRight/><h1>CD</h1></div>
+          <div>
+          <ul class="list-inside list-disc">
+            {rules().map((rule) =>  <li>{rule}</li>)}
+          </ul>
+          </div>
+        </div>
+      </Menu>
+
     </div>
+    
   );
 }
 
