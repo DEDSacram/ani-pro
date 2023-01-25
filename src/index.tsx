@@ -35,15 +35,25 @@ interface Postres {
 export const App: Component = () => {
   //window size
   const [size, setSize] = createSignal({ width: document.body.clientWidth, height: document.body.clientHeight });
-  // ciphers
+
+  //form inputs
   const [textEncryption, setTextEncryption] = createSignal('');
   const [textEncryptionKey, setTextEncryptionKey] = createSignal('')
   const [encryptedText, setEncryptedText] = createSignal('')
+
+  //closure for graphical creation of cipher
   let currentfunction: ((key: any, encrypt: boolean) => void) | ((display: any, spacexby: number, spaceyby: number, fontsize: number) => void) | ((arg0: string | string[] | string[][], arg1: number | boolean, arg2: number | undefined, arg3: number | undefined) => void)
+
+  //closure for generation of steps for animation
   let currentfunctionanimation: () => void
+
+  //canvas context
   let backctx: { clearRect?: any; canvas?: any; textAlign?: any; textBaseline?: any; font?: any; beginPath?: any; rect?: any; stroke?: any; fillText?: any; translate?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
   let frontctx: { clearRect?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
+
+  // id of cipher
   let currentcipher: string;
+
   //reset
   let submit = false;
 
@@ -63,19 +73,27 @@ export const App: Component = () => {
   let currentstep = 0;
   let currentmicrostep = 0;
 
+  //animation running reference
   let running = {
     on: false
   };
 
-  //json
+  //rules for cipher
   let [rules,setRules] = createSignal([]);
+
+  //Descryption
+  let [textbefore,setTextBefore] = createSignal('')
+  let [textnow,setTextNow] = createSignal('')
+
+  let [stepnow,setStepBefore] = createSignal('')
+  let [stepbefore,setStepNow] = createSignal('')
+  //
  
 
   //stays
   let ongeneratedsize = { width: 0, height: 0 }
 
- 
-
+  //animation
   let animationsteps: ( number[][][])[] = []
 
 
@@ -98,7 +116,7 @@ export const App: Component = () => {
         backres = data
       })
   }
-  //stays
+  //choosing cipher from menu
   const refCallback = (el: any) => {
     currentcipher = el
     switch (Number.parseInt(el)) {
@@ -121,7 +139,8 @@ export const App: Component = () => {
       default:
     }
   };
-  // wait timer before window resize optimalization
+
+  // wait timer before window resize
   function debounce(fn: { apply: (arg0: any, arg1: IArguments) => void; }, ms: number) {
     let timer: any
     return (_: any) => {
@@ -132,7 +151,7 @@ export const App: Component = () => {
       }, ms)
     };
   }
-  //resize window stays
+  //called after window resize
   function handleResize() {
     if (submit) {
       xratio = document.documentElement.clientWidth / ongeneratedsize.width
@@ -148,34 +167,49 @@ export const App: Component = () => {
     }
   }
 
-  //stays
+  //switch input output
   function switchOutputInput() {
     let temp = encryptedText()
     setEncryptedText(textEncryption())
     setTextEncryption(temp)
   }
 
+  // Submit form
   async function onSubmit() {
+     //check if key text to encrypt and cipher was chosen
     if (textEncryption() && textEncryptionKey() && currentcipher) {
+      //set form submit to true
       submit = true
-      if (currentfunction && submit) {
-        animationsteps = []; // clear ani steps
 
+      //check if both submit and cipher was chosen
+      if (currentfunction && submit) {
+
+        //clear animation steps
+        animationsteps = [];
+
+        //clear canvas
         backctx.clearRect(0, 0, canvas.width, canvas.height);
         frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
 
+        //clear canvas settings
         resetContext(backctx)
         resetContext(frontctx)
+
+        // backend response
         await res(new Postreq(currentcipher, textEncryption(), textEncryptionKey()), encrypt())
 
+        // keeping track of size on which it was generated
         ongeneratedsize = { width: size().width, height: size().height }
         spacexby = size().width / spacex
         spaceyby = size().height / spacey
 
+        // call to create graphics for given cipher
         currentfunction(backres.Display,spacexby,spaceyby,((ongeneratedsize.height*yratio) / spacey))
 
+        //set encrypted text
         setEncryptedText(backres.TextNow)
 
+        // create animation by cipher
         switch (parseInt(currentcipher)) {
           case 1:
             currentfunctionanimation()
@@ -192,17 +226,24 @@ export const App: Component = () => {
           default:
             console.log("FAIL")
         }
+
+        //clear global variables 
         currentmicrostep = 0
         currentstep = 0
-        frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
+
       }
     }
+    
+
+  }
+    //function to reset canvas settings
     function resetContext(ctx: { resetTransform: () => void; strokeStyle: string; lineWidth: number; setLineDash: (arg0: never[]) => void; fillStyle: string; }) {
       ctx.resetTransform();
       ctx.strokeStyle = "#000000"; ctx.lineWidth = 1; ctx.setLineDash([]);
       ctx.fillStyle = 'black';
     }
-  }
+  
+  // Playfair steps to coordinates
   function setPlayfair() {
     return function GenerateStepsPlayfair() {
       for (let i = 0; i < backres.Ani.length; i++) {
@@ -220,6 +261,7 @@ export const App: Component = () => {
     }
    
   }
+   // Caesar steps to coordinates
   function setCaesar() {
     return function GenerateStepsCaesar() {
       for (let i = 0; i < backres.Ani.length; i++) {
@@ -232,16 +274,19 @@ export const App: Component = () => {
       }
     }
   }
+   // Caesar steps to coordinates not yet
   function setCaesarCircle() {
     return function GenerateStepsCaesar() {
     }
   }
 
+  // function to calculate coordinate for quarctic movement
   function easeInOutQuart(t: number, b: number, c: number, d: number) {
     if ((t /= d / 2) < 1) return c / 2 * t * t * t * t + b;
     return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
   }
 
+  // function to animate at 60HZ
   async function Animate(ctx: { clearRect: any; resetTransform?: (() => void) | undefined; strokeStyle?: string | undefined; lineWidth?: number | undefined; setLineDash?: ((arg0: never[]) => void) | undefined; fillStyle: any; fillRect?: any; }, from: number, to: number, col: number | undefined, row: number | undefined, width: number, height: number, duration: number, states: { on: boolean; }, color = "white") {
     return await new Promise(resolve => {
 
@@ -271,15 +316,23 @@ export const App: Component = () => {
       }, 1000 / 60);
     });
   }
+
+  // run animation forward
   async function autoRunRight() {
+    //checking if animation is already running
     if (running.on) {
       return
     }
+    // if isnt running run
     running.on = true
+
+      // giving for loops a label to break from it later
       cancel:
       for (currentstep; currentstep < animationsteps.length; currentstep++) {
         //letter steps
         for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length; currentmicrostep++) {
+
+          // if to check if animation should be on X or Y axis
           if (animationsteps[currentstep][currentmicrostep][0][0] == animationsteps[currentstep][currentmicrostep][1][0]) {
             //"sameROW"
             await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][1] * yratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, animationsteps[currentstep][currentmicrostep][0][0] * xratio, spacexby, spaceyby, 1000, running)
@@ -292,6 +345,7 @@ export const App: Component = () => {
             break cancel;
           }
         }
+        // move in current step
         currentmicrostep = 0
       }
     
@@ -332,7 +386,7 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
 
 
 
-
+  // arrow at the end of a line
   function arrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) => void; rotate: (arg0: number) => void; fillStyle: string; strokeStyle: string; beginPath: () => void; lineWidth: number; lineTo: (arg0: number, arg1: number) => void; fill: () => void; stroke: () => void; restore: () => void; },p1: { y: number; x: number; }, p2: { x: any; y: any; }, size: number) {
     var angle = Math.atan2((p2.y - p1.y) , (p2.x - p1.x));
     var hyp = Math.sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
@@ -352,6 +406,7 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
     ctx.restore();
   }
 
+  // line with arrow estimate
   function drawcurvewitharrow(ctx: { clearRect?: any; resetTransform?: (() => void) | undefined; strokeStyle?: string | undefined; lineWidth: any; setLineDash?: ((arg0: never[]) => void) | undefined; fillStyle?: string | undefined; beginPath?: any; moveTo?: any; quadraticCurveTo?: any; stroke?: any; },startpoint: { x: any; y: any; },control_p: { x: any; y: any; },endpoint: { x: any; y: any; },arrowsize: number){
   ctx.beginPath();
   ctx.moveTo(startpoint.x, startpoint.y);
@@ -363,18 +418,21 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
 
 
 
-
+  // stop animation from running
   function stop() {
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
     Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
     running.on = false
   }
+  // color a rectangle
   function Selected(ctx: { clearRect?: any; resetTransform?: (() => void) | undefined; strokeStyle?: string | undefined; lineWidth?: number | undefined; setLineDash?: ((arg0: never[]) => void) | undefined; fillStyle: any; beginPath?: any; rect?: any; fill?: any; }, x: number, y: number, width: number, height: number, color = "white") {
     ctx.beginPath()
     ctx.fillStyle = color;
     ctx.rect(x, y, width, height);
     ctx.fill()
   }
+
+  // move to one step before
   function skipLeft() {
     if (!animationsteps.length) return
     if (running.on) {
@@ -393,7 +451,6 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
         break;
       case 2:
         // wheel caesar
-        
         break;
       case 3:
        //Playfair
@@ -405,6 +462,7 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
       default:
     }
   }
+  // move to microstep before
   function stepLeft() {
     if (!animationsteps.length) return
     if (running.on) {
@@ -431,7 +489,6 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
         break;
       case 2:
         // wheel caesar
-        
         break;
       case 3:
        //Playfair
@@ -443,7 +500,7 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
     }
   }
 
-
+  // move a microstep forward
   function stepRight() {
     if (!animationsteps.length) return
     if (running.on) {
@@ -457,8 +514,6 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
       if (currentstep + 1 < animationsteps.length) {
         currentstep++
         currentmicrostep = 0
-        console.log(animationsteps.length)
-        console.log(currentstep)
       } else {
         currentmicrostep = animationsteps[currentstep].length - 1
       }
@@ -485,7 +540,7 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
 
 
 
-  
+  // move step forward
   function skipRight() {
     if (!animationsteps.length) return
     if (running.on) {
@@ -505,7 +560,6 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
         break;
       case 2:
         // wheel caesar
-        
         break;
       case 3:
        //Playfair
@@ -573,8 +627,10 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
 
       <Menu title={"Description"} itemid={"descmenu"} minwidth={0} minheight={0}>
         <div class="w-full">
-          <div class="flex justify-around items-center flex-row"> <h1>ABCDE</h1><FiArrowRight/><h1>ABCDE</h1></div>
-          <div class="flex justify-around items-center flex-row"> <h1>AB</h1><FiArrowRight/><h1>CD</h1></div>
+          {/* <div class="flex justify-around items-center flex-row"> <h1>{updatebefore().slice(0,(curr()+1)*2)}</h1><FiArrowRight/><h1>{updatenow().slice(0,(curr()+1)*2)}</h1></div>
+          <div class="flex justify-around items-center flex-row"> <h1>{updatebefore().slice((curr())*2,(curr())*2+2)}</h1><FiArrowRight/><h1>{updatenow().slice((curr())*2,(curr())*2+2)}</h1></div> */}
+          <div class="flex justify-around items-center flex-row"> <h1>{}</h1><FiArrowRight/><h1>{}</h1></div>
+          <div class="flex justify-around items-center flex-row"> <h1>{}</h1><FiArrowRight/><h1>{}</h1></div>
           <div>
           <ul class="list-inside list-disc">
             {rules().map((rule) =>  <li>{rule}</li>)}

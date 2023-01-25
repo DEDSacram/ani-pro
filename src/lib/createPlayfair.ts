@@ -13,7 +13,7 @@ export function createPlayfair(ctx: { clearRect?: (arg0: number, arg1: number, a
           ctx.beginPath();
           ctx.rect(spacexby * (j), spaceyby * (i), spacexby, spaceyby);
           ctx.stroke();
-          if(display[i] == "I"){
+          if(display[i][j] == "I"){
             ctx.fillText("I/J", spacexby * (j) + spacexby / 2, spaceyby * (i) + ((spaceyby) / 2));
           }else{
             ctx.fillText(display[i][j], spacexby * (j) + spacexby / 2, spaceyby * (i) + ((spaceyby) / 2));
