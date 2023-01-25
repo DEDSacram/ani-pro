@@ -181,6 +181,10 @@ export const App: Component = () => {
       //set form submit to true
       submit = true
 
+      //clear canvas settings
+      resetContext(backctx)
+      resetContext(frontctx)
+
       //check if both submit and cipher was chosen
       if (currentfunction && submit) {
 
@@ -191,9 +195,6 @@ export const App: Component = () => {
         backctx.clearRect(0, 0, canvas.width, canvas.height);
         frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
 
-        //clear canvas settings
-        resetContext(backctx)
-        resetContext(frontctx)
 
         // backend response
         await res(new Postreq(currentcipher, textEncryption(), textEncryptionKey()), encrypt())
@@ -239,8 +240,8 @@ export const App: Component = () => {
     //function to reset canvas settings
     function resetContext(ctx: { resetTransform: () => void; strokeStyle: string; lineWidth: number; setLineDash: (arg0: never[]) => void; fillStyle: string; }) {
       ctx.resetTransform();
-      ctx.strokeStyle = "#000000"; ctx.lineWidth = 1; ctx.setLineDash([]);
-      ctx.fillStyle = 'black';
+      ctx.strokeStyle = "white"; ctx.lineWidth = 1; ctx.setLineDash([]);
+      ctx.fillStyle = 'white';
     }
   
   // Playfair steps to coordinates
