@@ -81,16 +81,20 @@ export const App: Component = () => {
   //rules for cipher
   let [rules,setRules] = createSignal([]);
 
-  //Descryption
+  //Description
   let [textbefore,setTextBefore] = createSignal('')
   let [textnow,setTextNow] = createSignal('')
 
   let [stepnow,setStepNow] = createSignal('')
   let [stepbefore,setStepBefore] = createSignal('')
   //
+
+  //steps
+  let savedsteps = []
+  let[showsteps,setShowSteps] = createSignal([])
  
 
-  //stays
+  // gv that holds size on which it was generated
   let ongeneratedsize = { width: 0, height: 0 }
 
   //animation
@@ -331,7 +335,7 @@ export const App: Component = () => {
       cancel:
       for (currentstep; currentstep < animationsteps.length; currentstep++) {
         //letter steps
-        
+
         //update description
         updateDescription()
 
@@ -663,17 +667,14 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
 
       <Menu title={"Steps"} itemid={"stepsmenu"} minwidth={200}>
         <div class="w-full">
-        
         <div class=" overflow-auto max-h-40 ">
-          {/* //content */}
+        <ul class="list-inside list-disc">
+            {showsteps().map((step) =>  <li>{step}</li>)}
+        </ul>
         </div>
-
         </div>
       </Menu>
-
     </div>
-    
   );
 }
-
 render(() => <App />, document.getElementById("root") as HTMLElement);

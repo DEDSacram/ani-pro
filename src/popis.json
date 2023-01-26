@@ -7,6 +7,10 @@
     "why": "because",
     "enciphering": "enciphering",
     "deciphering": "deciphering",
+    "r": "same row",
+    "c": "same column",
+    "rc": "same row and column",
+    "drc" : "different row and column",
     "playfair": {
     "rules": ["Remove one letter from the alphabet so it creates a 5x5 square","Same row move by one to the right", "Same column move by one down","Same row and column letter is appended by filler, treat the same","Different row and column create a rectangle/square, enciphering to opposing edges on horizontal axis"]
     },
