@@ -87,10 +87,12 @@ export const App: Component = () => {
 
   let [stepnow,setStepNow] = createSignal('')
   let [stepbefore,setStepBefore] = createSignal('')
+
+  let encrypttext = false
   //
 
   //steps
-  let savedsteps = []
+  let savedsteps : string[] = []
   let[showsteps,setShowSteps] = createSignal([])
  
 
@@ -189,6 +191,10 @@ export const App: Component = () => {
       resetContext(backctx)
       resetContext(frontctx)
 
+      //clear steps
+      setShowSteps([])
+      savedsteps = []
+
       //check if both submit and cipher was chosen
       if (currentfunction && submit) {
 
@@ -211,6 +217,8 @@ export const App: Component = () => {
         // call to create graphics for given cipher
         currentfunction(backres.Display,spacexby,spaceyby,((ongeneratedsize.height*yratio) / spacey))
 
+        encrypttext = encrypt()
+
         //set encrypted text
         setEncryptedText(backres.TextNow)
 
@@ -232,10 +240,32 @@ export const App: Component = () => {
             console.log("FAIL")
         }
 
+        //first
+        updateDescription()
+        let temp = [...showsteps()]
+        temp.unshift(savedsteps[currentstep])
+        setShowSteps(temp)
+        //
+
         //clear global variables 
         currentmicrostep = 0
         currentstep = 0
-
+        switch (Number.parseInt(backres.Cipher)) {
+          case 1:
+            // normal caesar
+            drawcurvewitharrow(frontctx,{x: (animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][0][0][1]+spaceyby) * yratio},{x: ((animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio + (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[currentstep][0][0][1]+spaceyby*2) * yratio+(animationsteps[currentstep][0][1][1]+spaceyby*2) * yratio)/2},{x: (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][0][1][1]+spaceyby) * yratio},10)
+            break;
+          case 2:
+            // wheel caesar
+            break;
+          case 3:
+           //Playfair
+            Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+            Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+            break;
+          default:
+          return
+        }
       }
     }
     
@@ -250,11 +280,45 @@ export const App: Component = () => {
   
   // Playfair steps to coordinates
   function setPlayfair() {
+
+
     return function GenerateStepsPlayfair() {
       for (let i = 0; i < backres.Ani.length; i++) {
         let step = []
+        // same row
+        let descript = ""
+
+        descript += backres.Display[backres.Ani[i][0][0][0]][backres.Ani[i][0][0][1]] + backres.Display[backres.Ani[i][1][0][0]][backres.Ani[i][1][0][1]] + "->"  + backres.Display[backres.Ani[i][0][1][0]][backres.Ani[i][0][1][1]] + backres.Display[backres.Ani[i][1][1][0]][backres.Ani[i][1][1][1]] + " "
+        if(backres.Ani[i][0][0][0] == backres.Ani[i][1][0][0]){
+        if(encrypttext){
+          descript += popis.r + popis.each + popis.by + "1 " + popis.right
+        }else{
+          descript += popis.r + popis.each + popis.by + "1 " + popis.left
+        }
+        }
+        //same column
+        else if(backres.Ani[i][0][0][1] == backres.Ani[i][1][0][1]){
+        if(encrypttext){
+          descript += popis.c + popis.each + popis.by +  + "1 " + popis.down
+        }else{
+          descript += popis.c + popis.each + popis.by + "1 " + popis.up
+        }
+        }
+        //different row and column
+        else{
+
+        if(encrypttext){
+          descript += popis.drc + popis.each + popis.hr
+        }else{
+          descript += popis.drc + popis.each + popis.hr
+        }
+        }
+        savedsteps.push(descript)
+
+          
         for (let j = 0; j < backres.Ani[i].length; j++) {
            let letter = []
+
            for(let z = 0; z < backres.Ani[i][j].length;z++){
             letter.push([backres.Ani[i][j][z][1]*spacexby,backres.Ani[i][j][z][0]*spaceyby])
            }
@@ -449,6 +513,11 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
     }
     if (currentstep - 1 > -1) {
       currentstep--;
+      //log
+      let temp = [...showsteps()]
+      temp.unshift(savedsteps[currentstep])
+      setShowSteps(temp)
+      //
     }
     currentmicrostep = 0
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
@@ -485,6 +554,11 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
     if (currentmicrostep < 0) {
       if (currentstep - 1 > -1) {
         currentstep--
+        //log
+        let temp = [...showsteps()]
+        temp.unshift(savedsteps[currentstep])
+        setShowSteps(temp)
+        //
         currentmicrostep = animationsteps[currentstep].length - 1
       } else {
         currentmicrostep = 0
@@ -525,6 +599,11 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
     if (currentmicrostep > animationsteps[currentstep].length - 1) {
       if (currentstep + 1 < animationsteps.length) {
         currentstep++
+        //log
+        let temp = [...showsteps()]
+        temp.unshift(savedsteps[currentstep])
+        setShowSteps(temp)
+        //
         currentmicrostep = 0
       } else {
         currentmicrostep = animationsteps[currentstep].length - 1
@@ -561,6 +640,11 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
     }
     if (currentstep < animationsteps.length - 1) {
       currentstep++;
+      //log
+      let temp = [...showsteps()]
+      temp.unshift(savedsteps[currentstep])
+      setShowSteps(temp)
+      //
     }
     currentmicrostep = 0
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
