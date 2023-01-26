@@ -85,8 +85,8 @@ export const App: Component = () => {
   let [textbefore,setTextBefore] = createSignal('')
   let [textnow,setTextNow] = createSignal('')
 
-  let [stepnow,setStepBefore] = createSignal('')
-  let [stepbefore,setStepNow] = createSignal('')
+  let [stepnow,setStepNow] = createSignal('')
+  let [stepbefore,setStepBefore] = createSignal('')
   //
  
 
@@ -462,6 +462,7 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
         break;
       default:
     }
+    updateDescription()
   }
   // move to microstep before
   function stepLeft() {
@@ -499,7 +500,10 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
       default:
       return
     }
+    updateDescription()
   }
+
+
 
   // move a microstep forward
   function stepRight() {
@@ -536,7 +540,7 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
       break;
     default:
   }
-  
+  updateDescription()
   }
 
 
@@ -571,6 +575,18 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
         break;
       default:
     }
+    updateDescription()
+  }
+
+  function updateDescription(){
+    let index = backres.Ani[currentstep].length*(currentstep+1)
+    let indexfrom = backres.Ani[currentstep].length*(currentstep+1) - backres.Ani[currentstep].length
+    //whole
+    setTextBefore(backres.TextBefore.slice(0,index))
+    setTextNow(backres.TextNow.slice(0,index))
+    //step
+    setStepBefore(backres.TextBefore.slice(indexfrom,index))
+    setStepNow(backres.TextNow.slice(indexfrom,index))
   }
 
   // calling timeout before resizing
@@ -630,8 +646,8 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
         <div class="w-full">
           {/* <div class="flex justify-around items-center flex-row"> <h1>{updatebefore().slice(0,(curr()+1)*2)}</h1><FiArrowRight/><h1>{updatenow().slice(0,(curr()+1)*2)}</h1></div>
           <div class="flex justify-around items-center flex-row"> <h1>{updatebefore().slice((curr())*2,(curr())*2+2)}</h1><FiArrowRight/><h1>{updatenow().slice((curr())*2,(curr())*2+2)}</h1></div> */}
-          <div class="flex justify-around items-center flex-row"> <h1>{}</h1><FiArrowRight/><h1>{}</h1></div>
-          <div class="flex justify-around items-center flex-row"> <h1>{}</h1><FiArrowRight/><h1>{}</h1></div>
+          <div class="flex justify-around items-center flex-row"> <h1>{textbefore()}</h1><FiArrowRight/><h1>{textnow()}</h1></div>
+          <div class="flex justify-around items-center flex-row"> <h1>{stepbefore()}</h1><FiArrowRight/><h1>{stepnow()}</h1></div>
           <div>
           <ul class="list-inside list-disc">
             {rules().map((rule) =>  <li>{rule}</li>)}
