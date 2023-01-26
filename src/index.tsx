@@ -161,7 +161,7 @@ export const App: Component = () => {
     if (currentfunction && submit) {
       spacexby = size().width / spacex
       spaceyby = size().height / spacey
-      currentfunction(backres.Display,spacexby,spaceyby,(ongeneratedsize.height*yratio) / 5)
+      currentfunction(backres.Display,spacexby,spaceyby,(ongeneratedsize.height*yratio) / spacey)
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
     }
@@ -331,8 +331,11 @@ export const App: Component = () => {
       cancel:
       for (currentstep; currentstep < animationsteps.length; currentstep++) {
         //letter steps
-        for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length; currentmicrostep++) {
+        
+        //update description
+        updateDescription()
 
+        for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length; currentmicrostep++) {
           // if to check if animation should be on X or Y axis
           if (animationsteps[currentstep][currentmicrostep][0][0] == animationsteps[currentstep][currentmicrostep][1][0]) {
             //"sameROW"
@@ -634,25 +637,37 @@ function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) =
       </Menu>
       <Menu title={"AniMenu"} itemid={"animenu"} minwidth={450} minheight={81}>
         <div >
+          <div>
           <button onClick={skipLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsLeft /></button>
           <button onClick={stepLeft} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronLeft /></button>
           <button onClick={stepRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronRight /> </button>
           <button onClick={skipRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsRight /> </button>
           <button onClick={autoRunRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><div class="flex"><FiChevronsRight /><FiChevronsRight /></div></button>
         </div>
+        <div class="w-full">
+        <div class="flex justify-around items-center flex-row"> <h1>{textbefore()}</h1><FiArrowRight/><h1>{textnow()}</h1></div>
+        <div class="flex justify-around items-center flex-row"> <h1>{stepbefore()}</h1><FiArrowRight/><h1>{stepnow()}</h1></div>
+        </div>
+        </div>
       </Menu>
 
-      <Menu title={"Description"} itemid={"descmenu"} minwidth={0} minheight={0}>
+      <Menu title={"Rules"} itemid={"rulesmenu"} minwidth={200}>
         <div class="w-full">
-          {/* <div class="flex justify-around items-center flex-row"> <h1>{updatebefore().slice(0,(curr()+1)*2)}</h1><FiArrowRight/><h1>{updatenow().slice(0,(curr()+1)*2)}</h1></div>
-          <div class="flex justify-around items-center flex-row"> <h1>{updatebefore().slice((curr())*2,(curr())*2+2)}</h1><FiArrowRight/><h1>{updatenow().slice((curr())*2,(curr())*2+2)}</h1></div> */}
-          <div class="flex justify-around items-center flex-row"> <h1>{textbefore()}</h1><FiArrowRight/><h1>{textnow()}</h1></div>
-          <div class="flex justify-around items-center flex-row"> <h1>{stepbefore()}</h1><FiArrowRight/><h1>{stepnow()}</h1></div>
-          <div>
+          <div class=" overflow-auto max-h-40 ">
           <ul class="list-inside list-disc">
             {rules().map((rule) =>  <li>{rule}</li>)}
           </ul>
           </div>
+        </div>
+      </Menu>
+
+      <Menu title={"Steps"} itemid={"stepsmenu"} minwidth={200}>
+        <div class="w-full">
+        
+        <div class=" overflow-auto max-h-40 ">
+          {/* //content */}
+        </div>
+
         </div>
       </Menu>
 
