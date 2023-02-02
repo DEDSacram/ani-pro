@@ -49,7 +49,7 @@ export const Menu : Component = (props) => {
         <div class="flex items-center justify-between box-border border-2 bg-slate-800 "><div class="flex flex-row justify-around items-center w-2/3" ref={dragheader} id="dragdivheader"><FiMoreHorizontal color="white" /><h1 class="select-none">{props.title}</h1></div>{open() ? <FiChevronDown onClick={checkOpen} color="white" class="custom-icon z-60 w-1/3" title="a11y" /> : <FiChevronUp onClick={checkOpen} color="white" class="custom-icon z-60 w-1/3" title="a11y" />}</div>
         <div style={open() && { display: "none", visibility: "hidden" }} class="text-white flex flex-col h-full items-center justify-between bg-slate-800 ">
             {(props.children) && props.children}
-          <FiArrowDownRight ref={resizerright} class="self-end resizer"></FiArrowDownRight>
+          <FiArrowDownRight ref={resizerright} class="self-end resizer z-40"></FiArrowDownRight>
         </div>
       </div>
     )
