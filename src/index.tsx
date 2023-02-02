@@ -15,6 +15,7 @@ import * as popis from './popis.json';
 
 import { Menu } from "./components/menu";
 import { FiChevronsLeft, FiChevronLeft, FiChevronRight, FiChevronsRight, FiArrowRight } from "solid-icons/fi";
+import { Slider } from "./components/slider";
 
 class Postreq {
   public Cipher: string;
@@ -104,6 +105,9 @@ export const App: Component = () => {
   //animation
   let animationsteps: ( number[][][])[] = []
 
+  let [duration,setDuration] = createSignal(1500)
+  
+
 
   // response from
   let backres: Postres;
@@ -147,6 +151,10 @@ export const App: Component = () => {
       default:
     }
   };
+
+  const sliderCallback = (d : number) => {
+    setDuration(d)
+  }
 
   // wait timer before window resize
   function debounce(fn: { apply: (arg0: any, arg1: IArguments) => void; }, ms: number) {
@@ -438,7 +446,7 @@ export const App: Component = () => {
             let cp = {x: ((animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio + (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[currentstep][0][0][1]+spaceyby*2) * yratio+(animationsteps[currentstep][0][1][1]+spaceyby*2) * yratio)/2}
             let cBez1=[{x: (animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][0][0][1]+spaceyby) * yratio},cp,cp,{x: (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][0][1][1]+spaceyby) * yratio}]
             let cPoints = BezPoints([{x: (animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][0][0][1]+spaceyby) * yratio},cp, cp,{x: (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][0][1][1]+spaceyby) * yratio}],5000)
-            await Animate_T(frontctx,cBez1,cPoints,0,1,1000,running)
+            await Animate_T(frontctx,cBez1,cPoints,0,1,duration(),running)
             break;
           case 2:
             // wheel caesar
@@ -449,11 +457,11 @@ export const App: Component = () => {
             // if to check if animation should be on X or Y axis
             if (animationsteps[currentstep][currentmicrostep][0][0] == animationsteps[currentstep][currentmicrostep][1][0]) {
               //"sameROW"
-              await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][1] * yratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, animationsteps[currentstep][currentmicrostep][0][0] * xratio, spacexby, spaceyby, 1000, running)
+              await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][1] * yratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, animationsteps[currentstep][currentmicrostep][0][0] * xratio, spacexby, spaceyby, duration(), running)
   
             } else {
               //"column"
-              await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, spacexby, spaceyby, 1000, running)
+              await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, spacexby, spaceyby, duration(), running)
             }
             if (!running.on) {
               break cancel;
@@ -713,6 +721,12 @@ export const App: Component = () => {
           <button onClick={stepRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronRight /> </button>
           <button onClick={skipRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><FiChevronsRight /> </button>
           <button onClick={autoRunRight} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"><div class="flex"><FiChevronsRight /><FiChevronsRight /></div></button>
+        </div>
+        <div class="w-full">
+         <div>       <span>Duration per step : {duration()}</span></div>
+ 
+        <Slider PASSREF={sliderCallback} Initial={duration()}></Slider>
+   
         </div>
         <div class="w-full">
         <div class="flex justify-around items-center flex-row"> <h1>{textbefore()}</h1><FiArrowRight/><h1>{textnow()}</h1></div>
