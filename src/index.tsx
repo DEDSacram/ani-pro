@@ -205,6 +205,13 @@ export const App: Component = () => {
       setShowSteps([])
       savedsteps = []
 
+      //clear step show under animaenu
+      setTextBefore(' ')
+      setTextNow(' ')
+      setStepBefore(' ')
+      setStepNow(' ')
+      //
+
       //check if both submit and cipher was chosen
       if (currentfunction && submit) {
 
@@ -251,12 +258,12 @@ export const App: Component = () => {
         }
 
         //first
+        currentmicrostep = 0
+        currentstep = 0
         updateDescription()
         let temp = [...showsteps()]
         temp.unshift(savedsteps[currentstep])
         setShowSteps(temp)  // line with arrow estimate
-        currentmicrostep = 0
-        currentstep = 0
         switch (Number.parseInt(backres.Cipher)) {
           case 1:
             // normal caesar
@@ -453,6 +460,14 @@ export const App: Component = () => {
             break;
           case 3:
            //Playfair
+
+
+          //  console.log(animationsteps[currentstep][0][0][1],animationsteps[currentstep][1][0][1])
+          // frontctx.arc(animationsteps[currentstep][0][0][0],animationsteps[currentstep][0][0][1],1,0,Math.PI*2);
+
+
+          // frontctx.fillRect(animationsteps[currentstep][0][0][0],animationsteps[currentstep][0][0][1], animationsteps[currentstep][0][0][0] + animationsteps[currentstep][0][1][0] - animationsteps[currentstep][0][0][0], animationsteps[currentstep][0][0][1] + animationsteps[currentstep][0][1][1] - animationsteps[currentstep][0][0][1] + spaceyby);
+
            for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length; currentmicrostep++) {
             // if to check if animation should be on X or Y axis
             if (animationsteps[currentstep][currentmicrostep][0][0] == animationsteps[currentstep][currentmicrostep][1][0]) {
