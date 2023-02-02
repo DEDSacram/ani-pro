@@ -7,6 +7,7 @@ import { createPlayfair } from "./lib/createPlayfair";
 import { createCaesar } from "./lib/createCaesar";
 import { createCaesarWheel } from "./lib/createCaesarWheel";
 import { drawcurvewitharrow } from "./lib/linearrow";
+import { getBezierAngle,BezPoints,drawPlots, drawArrow } from "./lib/cubic_bezier";
 import "./index.css"
 import Canvas from "./components/canvas";
 
@@ -357,25 +358,54 @@ export const App: Component = () => {
   async function Animate(ctx: { clearRect: any; resetTransform?: (() => void) | undefined; strokeStyle?: string | undefined; lineWidth?: number | undefined; setLineDash?: ((arg0: never[]) => void) | undefined; fillStyle: any; fillRect?: any; }, from: number, to: number, col: number | undefined, row: number | undefined, width: number, height: number, duration: number, states: { on: boolean; }, color = "white") {
     return await new Promise(resolve => {
 
-      var start = new Date().getTime();
-      var innertimer = setInterval(function () {
+      let start = new Date().getTime();
+      let innertimer = setInterval(function () {
         if (!running.on) {
           clearTimeout(innertimer)
           Promise.resolve(0)
         }
-        var time = new Date().getTime() - start;
+        let time = new Date().getTime() - start;
         if (row == undefined) {
-          var x = easeInOutQuart(time, from, to - from, duration);
+          let x = easeInOutQuart(time, from, to - from, duration);
           ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
           ctx.fillStyle = color;
           ctx.fillRect(x, col, width, height);
         } else {
-          var y = easeInOutQuart(time, from, to - from, duration);
+          let y = easeInOutQuart(time, from, to - from, duration);
           ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
           ctx.fillStyle = color;
           ctx.fillRect(row, y, width, height);
         }
 
+        if (time >= duration) {
+          resolve('done');
+          clearInterval(innertimer)
+        }
+      }, 1000 / 60);
+    });
+  }
+
+
+
+
+  async function Animate_T(ctx: any,cBez1 : any,cPoints : any,from : number,to : number,duration: number, states: { on: boolean; }, color = "white") {
+
+    return await new Promise(resolve => {
+
+      let start = new Date().getTime();
+      let innertimer = setInterval(function () {
+        if (!running.on) {
+          clearTimeout(innertimer)
+          Promise.resolve(0)
+        }
+
+        ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
+        let time = new Date().getTime() - start;
+        let x = easeInOutQuart(time, from, to - from, duration);
+        let endindex = Math.floor((cPoints.length-1)*x)
+        let angle = getBezierAngle(x,cBez1)
+        drawPlots(frontctx,endindex,cPoints);
+        drawArrow(frontctx,cPoints[endindex].x,cPoints[endindex].y,angle)
         if (time >= duration) {
           resolve('done');
           clearInterval(innertimer)
@@ -401,19 +431,36 @@ export const App: Component = () => {
         //update description
         updateDescription()
 
-        for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length; currentmicrostep++) {
-          // if to check if animation should be on X or Y axis
-          if (animationsteps[currentstep][currentmicrostep][0][0] == animationsteps[currentstep][currentmicrostep][1][0]) {
-            //"sameROW"
-            await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][1] * yratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, animationsteps[currentstep][currentmicrostep][0][0] * xratio, spacexby, spaceyby, 1000, running)
 
-          } else {
-            //"column"
-            await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, spacexby, spaceyby, 1000, running)
+        switch (Number.parseInt(backres.Cipher)) {
+          case 1:
+            // normal caesar
+            let cp = {x: ((animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio + (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[currentstep][0][0][1]+spaceyby*2) * yratio+(animationsteps[currentstep][0][1][1]+spaceyby*2) * yratio)/2}
+            let cBez1=[{x: (animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][0][0][1]+spaceyby) * yratio},cp,cp,{x: (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][0][1][1]+spaceyby) * yratio}]
+            let cPoints = BezPoints([{x: (animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][0][0][1]+spaceyby) * yratio},cp, cp,{x: (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][0][1][1]+spaceyby) * yratio}],5000)
+            await Animate_T(frontctx,cBez1,cPoints,0,1,1000,running)
+            break;
+          case 2:
+            // wheel caesar
+            break;
+          case 3:
+           //Playfair
+           for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length; currentmicrostep++) {
+            // if to check if animation should be on X or Y axis
+            if (animationsteps[currentstep][currentmicrostep][0][0] == animationsteps[currentstep][currentmicrostep][1][0]) {
+              //"sameROW"
+              await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][1] * yratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, animationsteps[currentstep][currentmicrostep][0][0] * xratio, spacexby, spaceyby, 1000, running)
+  
+            } else {
+              //"column"
+              await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, spacexby, spaceyby, 1000, running)
+            }
+            if (!running.on) {
+              break cancel;
+            }
           }
-          if (!running.on) {
-            break cancel;
-          }
+            break;
+          default:
         }
         // move in current step
         currentmicrostep = 0

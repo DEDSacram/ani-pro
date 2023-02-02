@@ -1,4 +1,4 @@
-export function findCBezPoints(b: any[],complexity : number){
+export function BezPoints(b: any[],complexity : number){
   let pts=[b[0]];
   let lastPt=b[0];
   for(let t=0;t<=complexity;t++){
@@ -39,6 +39,20 @@ export function getBezierAngle(t: number, b: { x: number, y: number; }[]) {
   let dy = Math.pow(1-t, 2)*(b[1].y-b[0].y) + 2*t*(1-t)*(b[2].y-b[1].y) + t * t * (b[3].y - b[2].y);
   return -Math.atan2(dx, dy) + 0.5*Math.PI;
 }
+
+export function drawArrow(ctx: any,x : number,y : number,angle:number){
+  ctx.save();
+  ctx.beginPath();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.moveTo(-10, -10);
+  ctx.lineTo(10, 0);
+  ctx.lineTo(-10, 10);
+  ctx.lineTo(-10, -10);
+  ctx.fillStyle = 'red';
+  ctx.fill();
+  ctx.restore();
+  }
 
 
 // Given the 4 control points on a Bezier curve 
