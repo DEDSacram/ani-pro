@@ -6,6 +6,7 @@ import { DropdownCipher } from "./components/dropdown";
 import { createPlayfair } from "./lib/createPlayfair";
 import { createCaesar } from "./lib/createCaesar";
 import { createCaesarWheel } from "./lib/createCaesarWheel";
+import { drawcurvewitharrow } from "./lib/linearrow";
 import "./index.css"
 import Canvas from "./components/canvas";
 
@@ -48,8 +49,8 @@ export const App: Component = () => {
   let currentfunctionanimation: () => void
 
   //canvas context
-  let backctx: { clearRect?: any; canvas?: any; textAlign?: any; textBaseline?: any; font?: any; beginPath?: any; rect?: any; stroke?: any; fillText?: any; translate?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
-  let frontctx: { clearRect?: any; resetTransform?: () => void; strokeStyle?: string; lineWidth?: number; setLineDash?: (arg0: never[]) => void; fillStyle?: string; }
+  let backctx: any
+  let frontctx: any
 
   // id of cipher
   let currentcipher: string;
@@ -60,8 +61,8 @@ export const App: Component = () => {
   let [encrypt, setEncrypt] = createSignal(true);
 
   //rescaling animation + sizes
-  let xratio = 1
-  let yratio = 1
+  let xratio : number = 1
+  let yratio : number = 1
 
   let spacex = 0
   let spacey = 0
@@ -244,10 +245,7 @@ export const App: Component = () => {
         updateDescription()
         let temp = [...showsteps()]
         temp.unshift(savedsteps[currentstep])
-        setShowSteps(temp)
-        //
-
-        //clear global variables 
+        setShowSteps(temp)  // line with arrow estimate
         currentmicrostep = 0
         currentstep = 0
         switch (Number.parseInt(backres.Cipher)) {
@@ -426,69 +424,6 @@ export const App: Component = () => {
       currentstep--
     }
   }
-
-//p1 start p2 end size: size of arrow
-function linearrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) => void; rotate: (arg0: number) => void; beginPath: () => void; moveTo: (arg0: number, arg1: number) => void; lineTo: (arg0: number, arg1: number) => void; stroke: () => void; fillStyle: string; fill: () => void; restore: () => void; },p1: { y: number; x: number; }, p2: { y: number; x: number; }, size: number) {
-  var angle = Math.atan2((p2.y - p1.y) , (p2.x - p1.x));
-  var hyp = Math.sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
-
-  ctx.save();
-  ctx.translate(p1.x, p1.y);
-  ctx.rotate(angle);
-
-  // line
-  ctx.beginPath();	
-  ctx.moveTo(0, 0);
-  ctx.lineTo(hyp - size, 0);
-  ctx.stroke();
-
-  // triangle
-  ctx.fillStyle = 'blue';
-  ctx.beginPath();
-  ctx.lineTo(hyp - size, size);
-  ctx.lineTo(hyp, 0);
-  ctx.lineTo(hyp - size, -size);
-  ctx.fill();
-
-  ctx.restore();
-}
-
-
-
-
-
-
-  // arrow at the end of a line
-  function arrow (ctx: { save: () => void; translate: (arg0: any, arg1: any) => void; rotate: (arg0: number) => void; fillStyle: string; strokeStyle: string; beginPath: () => void; lineWidth: number; lineTo: (arg0: number, arg1: number) => void; fill: () => void; stroke: () => void; restore: () => void; },p1: { y: number; x: number; }, p2: { x: any; y: any; }, size: number) {
-    var angle = Math.atan2((p2.y - p1.y) , (p2.x - p1.x));
-    var hyp = Math.sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
-    ctx.save();
-    ctx.translate(p1.x, p1.y);
-    ctx.rotate(angle);
-    // triangle
-    ctx.fillStyle = 'red';
-    ctx.strokeStyle = 'white';
-    ctx.beginPath();
-    ctx.lineWidth = 3;
-    ctx.lineTo(hyp - size, size);
-    ctx.lineTo(hyp, 0);
-    ctx.lineTo(hyp - size, -size);
-    ctx.fill();
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  // line with arrow estimate
-  function drawcurvewitharrow(ctx: { clearRect?: any; resetTransform?: (() => void) | undefined; strokeStyle?: string | undefined; lineWidth: any; setLineDash?: ((arg0: never[]) => void) | undefined; fillStyle?: string | undefined; beginPath?: any; moveTo?: any; quadraticCurveTo?: any; stroke?: any; },startpoint: { x: any; y: any; },control_p: { x: any; y: any; },endpoint: { x: any; y: any; },arrowsize: number){
-  ctx.beginPath();
-  ctx.moveTo(startpoint.x, startpoint.y);
-  ctx.quadraticCurveTo(control_p.x, control_p.y, endpoint.x, endpoint.y);
-  ctx.lineWidth = 4;
-  ctx.stroke();
-  arrow(ctx,control_p, {x: endpoint.x, y: endpoint.y}, arrowsize);
-  }
-
-
 
   // stop animation from running
   function stop() {

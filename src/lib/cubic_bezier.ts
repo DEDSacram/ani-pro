@@ -16,24 +16,6 @@ export function findCBezPoints(b: any[],complexity : number){
   return(pts);
 }
 
-// Given the 4 control points on a Bezier curve 
-// Get x,y at interval T along the curve (0<=T<=1)
-// function getCubicBezierXYatT(startPt: { x: number; y: number; }, controlPt1: { x: number; y: number; }, controlPt2: { x: number; y: number; }, endPt: { x: number; y: number; }, T: number) {
-//   let x = CubicN(T, startPt.x, controlPt1.x, controlPt2.x, endPt.x);
-//   let y = CubicN(T, startPt.y, controlPt1.y, controlPt2.y, endPt.y);
-//   return ({
-//     x: x,
-//     y: y
-//   });
-// }
-
-// helper
-// function CubicN(T: number, a : number, b : number, c: number, d: number) {
-//   let t2 = T * T;
-//   let t3 = t2 * T;
-//   return a + (-a * 3 + T * (3 * a - a * T)) * T + (3 * b + T * (-6 * b + b * 3 * T)) * T + (c * 3 - c * 3 * T) * t2 + d * t3;
-// }
-
 export function drawPlots(ctx: any ,end : number , pts: { x: number, y: number; }[] ){
 	
   ctx.fillStyle='red';
@@ -57,3 +39,22 @@ export function getBezierAngle(t: number, b: { x: number, y: number; }[]) {
   let dy = Math.pow(1-t, 2)*(b[1].y-b[0].y) + 2*t*(1-t)*(b[2].y-b[1].y) + t * t * (b[3].y - b[2].y);
   return -Math.atan2(dx, dy) + 0.5*Math.PI;
 }
+
+
+// Given the 4 control points on a Bezier curve 
+// Get x,y at interval T along the curve (0<=T<=1)
+// function getCubicBezierXYatT(startPt: { x: number; y: number; }, controlPt1: { x: number; y: number; }, controlPt2: { x: number; y: number; }, endPt: { x: number; y: number; }, T: number) {
+//   let x = CubicN(T, startPt.x, controlPt1.x, controlPt2.x, endPt.x);
+//   let y = CubicN(T, startPt.y, controlPt1.y, controlPt2.y, endPt.y);
+//   return ({
+//     x: x,
+//     y: y
+//   });
+// }
+
+// helper
+// function CubicN(T: number, a : number, b : number, c: number, d: number) {
+//   let t2 = T * T;
+//   let t3 = t2 * T;
+//   return a + (-a * 3 + T * (3 * a - a * T)) * T + (3 * b + T * (-6 * b + b * 3 * T)) * T + (c * 3 - c * 3 * T) * t2 + d * t3;
+// }

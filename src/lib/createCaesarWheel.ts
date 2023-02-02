@@ -1,4 +1,4 @@
-export function createCaesarWheel(ctx: { clearRect?: (arg0: number, arg1: number, arg2: number, arg3: number) => void; canvas?: any; translate?: any }){
+export function createCaesarWheel(ctx: any){
     return function (key: any,encrypt : boolean){
     var numkey = Number(key) % 26
     if(!encrypt){
@@ -45,7 +45,7 @@ function drawFirst(ctx: { rotate: (arg0: number) => void; translate: (arg0: numb
   ctx.rotate(-first);
 }
 
-function drawLetters(ctx: { font: string; textBaseline: string; textAlign: string; rotate: (arg0: number) => void; translate: (arg0: number, arg1: number) => void; fillText: (arg0: string, arg1: number, arg2: number) => void; beginPath: () => void; arc: (arg0: number, arg1: number, arg2: number, arg3: number, arg4: number) => void; fillStyle: string; fill: () => void; lineWidth: number; strokeStyle: string; stroke: () => void }, radius: number,key: number | undefined) {
+function drawLetters(ctx: any, radius: number,key: number | undefined) {
   var ang;
   var num;
   ctx.font = radius*0.1 + "px arial";
