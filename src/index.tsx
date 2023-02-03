@@ -16,6 +16,7 @@ import * as popis from './popis.json';
 import { Menu } from "./components/menu";
 import { FiChevronsLeft, FiChevronLeft, FiChevronRight, FiChevronsRight, FiArrowRight } from "solid-icons/fi";
 import { Slider } from "./components/slider";
+import { CanvasMenu } from "./components/canvas_window";
 
 class Postreq {
   public Cipher: string;
@@ -37,7 +38,7 @@ interface Postres {
 }
 export const App: Component = () => {
   //window size
-  const [size, setSize] = createSignal({ width: document.body.clientWidth, height: document.body.clientHeight });
+  const [size, setSize] = createSignal({ width: 800, height: 800 });
 
   //form inputs
   const [textEncryption, setTextEncryption] = createSignal('');
@@ -170,10 +171,13 @@ export const App: Component = () => {
   //called after window resize
   function handleResize() {
     if (submit) {
-      xratio = document.documentElement.clientWidth / ongeneratedsize.width
-      yratio = document.documentElement.clientHeight / ongeneratedsize.height
+      xratio = size().width / ongeneratedsize.width
+      yratio = size().height / ongeneratedsize.height
     }
-    setSize({ width: document.documentElement.clientWidth, height: document.documentElement.clientHeight })
+
+    // comeback
+    // setSize({ width: document.documentElement.clientWidth, height: document.documentElement.clientHeight })
+
     if (currentfunction && submit) {
       spacexby = size().width / spacex
       spaceyby = size().height / spacey
@@ -230,6 +234,10 @@ export const App: Component = () => {
         ongeneratedsize = { width: size().width, height: size().height }
         spacexby = size().width / spacex
         spaceyby = size().height / spacey
+
+        console.log(spacey,ongeneratedsize.height*yratio,(ongeneratedsize.height*yratio) / spacey)
+
+
 
         // call to create graphics for given cipher
         currentfunction(backres.Display,spacexby,spaceyby,((ongeneratedsize.height*yratio) / spacey))
@@ -699,8 +707,12 @@ export const App: Component = () => {
   return (
     <div>
       <Suspense fallback={<p>Loading...</p>}>
+
+        <CanvasMenu title={"Canvas"} itemid={"canvas"} minwidth={270} minheight={270}>
         <Canvas ref={canvas} width={size().width} height={size().height} overlay={false} />
         <Canvas ref={overlaycanvas} width={size().width} height={size().height} overlay={true} />
+        </CanvasMenu>
+
       </Suspense>
       <Menu title={"CipMenu"} itemid={"menu"} minwidth={270} minheight={270}>
         <DropdownCipher PASSREF={refCallback} />
