@@ -9,7 +9,7 @@ export const CanvasMenu : Component = (props) => {
     const [open, setOpen] = createSignal(false)
 
     let ref2!: HTMLElement | ((el: HTMLDivElement) => void)
-    let resizerright!: SVGSVGElement | ((el: SVGSVGElement) => void)
+    let resizerright : any
     let dragheader!: HTMLElement | ((el: HTMLDivElement) => void)
 
     let [heightbefore, setHeightBefore] = createSignal("fit-content")
@@ -38,17 +38,52 @@ export const CanvasMenu : Component = (props) => {
         else {
           ref2.style.height = "fit-content"
         }
+
+   
       }
+
+      function makeResizableDiv(div : any, ref : any,minimum_sizex : number,minimum_sizey : number) {
+        let width = 0
+        let height = 0
+          ref.addEventListener('mousedown', function (e: any) {
+            e.preventDefault()
+            window.addEventListener('mousemove', resize)
+            window.addEventListener('mouseup', stopResize)
+         })
+          function resize(e : any) {
+              width =  e.clientX - div.offsetLeft
+              height =  e.clientY - div.offsetTop
+              if(e.pageX < window.innerWidth){
+                if(width > minimum_sizex){
+                  div.style.width = width + "px"
+                }
+            
+              }
+              if(e.pageY < window.innerHeight){
+                if(height > minimum_sizey){
+                  div.style.height = height + 'px'
+                }
+            
+              }
+          }
+          function stopResize() {
+            window.removeEventListener('mousemove', resize)
+            props.PASSREF({w: width, h: height})
+          }
+      }
+      
       onMount(() => {
-        makeResizableDiv(ref2, resizerright,props.minwidth, props.minheight)
         dragElement(ref2, dragheader);
+        makeResizableDiv(ref2, resizerright,props.minwidth, props.minheight)
       });
 
     return(
         <div ref={ref2}  id={props.itemid} class="z-50 w-3/12 flex flex-col absolute" >
         <div class="flex items-center justify-between box-border border-2 bg-slate-800 "><div class="flex flex-row justify-around items-center w-2/3" ref={dragheader} id="dragdivheader"><FiMoreHorizontal color="white" /><h1 class="select-none">{props.title}</h1></div>{open() ? <FiChevronDown onClick={checkOpen} color="white" class="custom-icon z-60 w-1/3" title="a11y" /> : <FiChevronUp onClick={checkOpen} color="white" class="custom-icon z-60 w-1/3" title="a11y" />}</div>
         <div style={open() && { display: "none", visibility: "hidden" }} class="text-white flex flex-col h-full items-center justify-between bg-slate-800 ">
+          <div class=" min-h-full min-w-full">
             {(props.children) && props.children}
+          </div>
           <FiArrowDownRight ref={resizerright} class="self-end resizer z-40"></FiArrowDownRight>
         </div>
       </div>
