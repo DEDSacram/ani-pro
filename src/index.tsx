@@ -153,39 +153,63 @@ export const App: Component = () => {
     }
   };
 
+  const canvasCallback = (cansize : {w : number,h : number}) => {
+   if(size().width != cansize.w || size().height != cansize.h){
+    setSize({ width: cansize.w, height: cansize.h })
+
+
+    if (currentfunction && submit) {
+      xratio = size().width / ongeneratedsize.width
+      yratio = size().height / ongeneratedsize.height
+
+
+      spacexby = size().width / spacex
+      spaceyby = size().height / spacey
+      console.log(spacexby,spaceyby)
+      currentfunction(backres.Display,spacexby,spaceyby,(ongeneratedsize.height*yratio) / spacey)
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+    }
+    
+
+   }
+  }
+
   const sliderCallback = (d : number) => {
     setDuration(d)
   }
 
   // wait timer before window resize
-  function debounce(fn: { apply: (arg0: any, arg1: IArguments) => void; }, ms: number) {
-    let timer: any
-    return (_: any) => {
-      clearTimeout(timer)
-      timer = setTimeout((_: any) => {
-        timer = null
-        fn.apply(this, arguments)
-      }, ms)
-    };
-  }
+
+  // function debounce(fn: { apply: (arg0: any, arg1: IArguments) => void; }, ms: number) {
+  //   let timer: any
+  //   return (_: any) => {
+  //     clearTimeout(timer)
+  //     timer = setTimeout((_: any) => {
+  //       timer = null
+  //       fn.apply(this, arguments)
+  //     }, ms)
+  //   };
+  // }
+
   //called after window resize
-  function handleResize() {
-    if (submit) {
-      xratio = size().width / ongeneratedsize.width
-      yratio = size().height / ongeneratedsize.height
-    }
+  // function handleResize() {
+    // if (submit) {
+    //   xratio = size().width / ongeneratedsize.width
+    //   yratio = size().height / ongeneratedsize.height
+    // }
 
-    // comeback
-    // setSize({ width: document.documentElement.clientWidth, height: document.documentElement.clientHeight })
+  //   // comeback
+  //   // setSize({ width: document.documentElement.clientWidth, height: document.documentElement.clientHeight })
 
-    if (currentfunction && submit) {
-      spacexby = size().width / spacex
-      spaceyby = size().height / spacey
-      currentfunction(backres.Display,spacexby,spaceyby,(ongeneratedsize.height*yratio) / spacey)
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-      Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-    }
-  }
+    // if (currentfunction && submit) {
+    //   spacexby = size().width / spacex
+    //   spaceyby = size().height / spacey
+    //   currentfunction(backres.Display,spacexby,spaceyby,(ongeneratedsize.height*yratio) / spacey)
+    //   Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+    //   Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+    // }
+  // }
 
   //switch input output
   function switchOutputInput() {
@@ -235,9 +259,10 @@ export const App: Component = () => {
         spacexby = size().width / spacex
         spaceyby = size().height / spacey
 
-        console.log(spacey,ongeneratedsize.height*yratio,(ongeneratedsize.height*yratio) / spacey)
+        xratio = 1
+        yratio = 1
 
-
+        console.log(spacexby,spaceyby)
 
         // call to create graphics for given cipher
         currentfunction(backres.Display,spacexby,spaceyby,((ongeneratedsize.height*yratio) / spacey))
@@ -401,8 +426,8 @@ export const App: Component = () => {
         }
 
         if (time >= duration) {
-          resolve('done');
-          clearInterval(innertimer)
+          resolve('done');  ctx.strokeStyle = "white"; ctx.lineWidth = 1; ctx.setLineDash([]);
+          ctx.fillStyle = 'white';
         }
       }, 1000 / 60);
     });
@@ -694,7 +719,9 @@ export const App: Component = () => {
   }
 
   // calling timeout before resizing
-  window.addEventListener('resize', debounce(handleResize, 500))
+
+  // window.addEventListener('resize', debounce(handleResize, 500))
+
   //creating canvas back and overlay references
   let canvas!: { getContext: (arg0: string) => any; width: number; height: number; }
   let overlaycanvas!: { getContext: (arg0: string) => any; width: number; height: number; }
@@ -708,7 +735,7 @@ export const App: Component = () => {
     <div>
       <Suspense fallback={<p>Loading...</p>}>
 
-        <CanvasMenu title={"Canvas"} itemid={"canvas"} minwidth={270} minheight={270}>
+        <CanvasMenu title={"Canvas"} itemid={"canvas"} PASSREF={canvasCallback} minwidth={270} minheight={270}>
         <Canvas ref={canvas} width={size().width} height={size().height} overlay={false} />
         <Canvas ref={overlaycanvas} width={size().width} height={size().height} overlay={true} />
         </CanvasMenu>
