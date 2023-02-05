@@ -35,6 +35,7 @@ export const CanvasMenu : Component = (props) => {
           }
           ref2.style.height = heightbefore() + "px"
         }
+        
         else {
           ref2.style.height = "fit-content"
         }
@@ -45,6 +46,7 @@ export const CanvasMenu : Component = (props) => {
       function makeResizableDiv(div : any, ref : any,minimum_sizex : number,minimum_sizey : number) {
         let width = 0
         let height = 0
+        let res = {w: 0, h: 0}
           ref.addEventListener('mousedown', function (e: any) {
             e.preventDefault()
             window.addEventListener('mousemove', resize)
@@ -56,19 +58,21 @@ export const CanvasMenu : Component = (props) => {
               if(e.pageX < window.innerWidth){
                 if(width > minimum_sizex){
                   div.style.width = width + "px"
+                  res.w = div.children[1].clientWidth
                 }
             
               }
               if(e.pageY < window.innerHeight){
                 if(height > minimum_sizey){
                   div.style.height = height + 'px'
+                  res.h = div.children[1].clientHeight
                 }
             
               }
           }
           function stopResize() {
             window.removeEventListener('mousemove', resize)
-            props.PASSREF({w: width, h: height})
+            props.PASSREF(res)
           }
       }
       

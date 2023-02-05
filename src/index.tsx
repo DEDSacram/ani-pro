@@ -132,6 +132,9 @@ export const App: Component = () => {
   //choosing cipher from menu
   const refCallback = (el: any) => {
     currentcipher = el
+
+    
+
     switch (Number.parseInt(el)) {
       case 1:
         currentfunction = createCaesar(backctx)
@@ -162,10 +165,11 @@ export const App: Component = () => {
       xratio = size().width / ongeneratedsize.width
       yratio = size().height / ongeneratedsize.height
 
-
       spacexby = size().width / spacex
       spaceyby = size().height / spacey
-      console.log(spacexby,spaceyby)
+      
+      // resetContext(backctx)
+
       currentfunction(backres.Display,spacexby,spaceyby,(ongeneratedsize.height*yratio) / spacey)
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
@@ -261,8 +265,6 @@ export const App: Component = () => {
 
         xratio = 1
         yratio = 1
-
-        console.log(spacexby,spaceyby)
 
         // call to create graphics for given cipher
         currentfunction(backres.Display,spacexby,spaceyby,((ongeneratedsize.height*yratio) / spacey))
@@ -735,7 +737,7 @@ export const App: Component = () => {
     <div>
       <Suspense fallback={<p>Loading...</p>}>
 
-        <CanvasMenu title={"Canvas"} itemid={"canvas"} PASSREF={canvasCallback} minwidth={270} minheight={270}>
+        <CanvasMenu title={"Canvas"} itemid={"canvas"} PASSREF={canvasCallback} minwidth={800} minheight={800}>
         <Canvas ref={canvas} width={size().width} height={size().height} overlay={false} />
         <Canvas ref={overlaycanvas} width={size().width} height={size().height} overlay={true} />
         </CanvasMenu>
