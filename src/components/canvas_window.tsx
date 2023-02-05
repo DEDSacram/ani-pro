@@ -46,7 +46,11 @@ export const CanvasMenu : Component = (props) => {
       function makeResizableDiv(div : any, ref : any,minimum_sizex : number,minimum_sizey : number) {
         let width = 0
         let height = 0
-        let res = {w: 0, h: 0}
+        
+        div.style.width = minimum_sizex + "px"
+        div.style.height = minimum_sizey + 'px'
+
+        let res = {w: minimum_sizex, h: minimum_sizey}
           ref.addEventListener('mousedown', function (e: any) {
             e.preventDefault()
             window.addEventListener('mousemove', resize)
