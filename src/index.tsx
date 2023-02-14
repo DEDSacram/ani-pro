@@ -481,11 +481,11 @@ export const App: Component = () => {
         // move in current step
         currentmicrostep = 0
       }
-    
+    running.on = false
     // problem with for loop out of bounds
-    if (currentstep > animationsteps.length - 1) {
-      currentstep--
-    }
+    // if (currentstep > animationsteps.length - 1) {
+    //   currentstep--
+    // }
   }
 
   // stop animation from running
