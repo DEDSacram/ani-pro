@@ -183,37 +183,7 @@ export const App: Component = () => {
     setDuration(d)
   }
 
-  // wait timer before window resize
 
-  // function debounce(fn: { apply: (arg0: any, arg1: IArguments) => void; }, ms: number) {
-  //   let timer: any
-  //   return (_: any) => {
-  //     clearTimeout(timer)
-  //     timer = setTimeout((_: any) => {
-  //       timer = null
-  //       fn.apply(this, arguments)
-  //     }, ms)
-  //   };
-  // }
-
-  //called after window resize
-  // function handleResize() {
-    // if (submit) {
-    //   xratio = size().width / ongeneratedsize.width
-    //   yratio = size().height / ongeneratedsize.height
-    // }
-
-  //   // comeback
-  //   // setSize({ width: document.documentElement.clientWidth, height: document.documentElement.clientHeight })
-
-    // if (currentfunction && submit) {
-    //   spacexby = size().width / spacex
-    //   spaceyby = size().height / spacey
-    //   currentfunction(backres.Display,spacexby,spaceyby,(ongeneratedsize.height*yratio) / spacey)
-    //   Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-    //   Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-    // }
-  // }
 
   //switch input output
   function switchOutputInput() {
@@ -415,21 +385,19 @@ export const App: Component = () => {
           Promise.resolve(0)
         }
         let time = new Date().getTime() - start;
+        console.log(time)
+        ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
+        let value =  easeInOutQuart(time, from, to - from, duration);
+        ctx.fillStyle = color;
         if (row == undefined) {
-          let x = easeInOutQuart(time, from, to - from, duration);
-          ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-          ctx.fillStyle = color;
-          ctx.fillRect(x, col, width, height);
+          ctx.fillRect(value, col, width, height);
         } else {
-          let y = easeInOutQuart(time, from, to - from, duration);
-          ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-          ctx.fillStyle = color;
-          ctx.fillRect(row, y, width, height);
+          ctx.fillRect(row, value, width, height);
         }
-
+        // console.log(value)
         if (time >= duration) {
-          resolve('done');  ctx.strokeStyle = "white"; ctx.lineWidth = 1; ctx.setLineDash([]);
-          ctx.fillStyle = 'white';
+          clearTimeout(innertimer)
+          resolve('done');  
         }
       }, 1000 / 60);
     });
@@ -476,12 +444,7 @@ export const App: Component = () => {
       // giving for loops a label to break from it later
       cancel:
       for (currentstep; currentstep < animationsteps.length; currentstep++) {
-        //letter steps
-
-        //update description
-        updateDescription()
-
-
+      
         switch (Number.parseInt(backres.Cipher)) {
           case 1:
             // normal caesar
@@ -496,23 +459,17 @@ export const App: Component = () => {
           case 3:
            //Playfair
 
-
-          //  console.log(animationsteps[currentstep][0][0][1],animationsteps[currentstep][1][0][1])
-          // frontctx.arc(animationsteps[currentstep][0][0][0],animationsteps[currentstep][0][0][1],1,0,Math.PI*2);
-
-
-          // frontctx.fillRect(animationsteps[currentstep][0][0][0],animationsteps[currentstep][0][0][1], animationsteps[currentstep][0][0][0] + animationsteps[currentstep][0][1][0] - animationsteps[currentstep][0][0][0], animationsteps[currentstep][0][0][1] + animationsteps[currentstep][0][1][1] - animationsteps[currentstep][0][0][1] + spaceyby);
-
            for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length; currentmicrostep++) {
             // if to check if animation should be on X or Y axis
             if (animationsteps[currentstep][currentmicrostep][0][0] == animationsteps[currentstep][currentmicrostep][1][0]) {
               //"sameROW"
+              console.log(animationsteps[currentstep][currentmicrostep][0][1] * yratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio)
               await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][1] * yratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, animationsteps[currentstep][currentmicrostep][0][0] * xratio, spacexby, spaceyby, duration(), running)
-  
             } else {
               //"column"
               await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, spacexby, spaceyby, duration(), running)
             }
+         
             if (!running.on) {
               break cancel;
             }
@@ -520,6 +477,7 @@ export const App: Component = () => {
             break;
           default:
         }
+        updateDescription()
         // move in current step
         currentmicrostep = 0
       }
@@ -737,10 +695,12 @@ export const App: Component = () => {
     <div>
       <Suspense fallback={<p>Loading...</p>}>
 
+      
         <CanvasMenu title={"Canvas"} itemid={"canvas"} PASSREF={canvasCallback} minwidth={800} minheight={800}>
         <Canvas ref={canvas} width={size().width} height={size().height} overlay={false} />
         <Canvas ref={overlaycanvas} width={size().width} height={size().height} overlay={true} />
         </CanvasMenu>
+      
 
       </Suspense>
       <Menu title={"CipMenu"} itemid={"menu"} minwidth={270} minheight={270}>
