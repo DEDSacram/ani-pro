@@ -168,7 +168,9 @@ export const App: Component = () => {
       spacexby = size().width / spacex
       spaceyby = size().height / spacey
       
-      // resetContext(backctx)
+      //canvas clears properties on resize
+      resetContext(backctx)
+      resetContext(frontctx)
 
       currentfunction(backres.Display,spacexby,spaceyby,(ongeneratedsize.height*yratio) / spacey)
       Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
