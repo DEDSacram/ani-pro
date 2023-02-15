@@ -445,14 +445,17 @@ export const App: Component = () => {
 
       // giving for loops a label to break from it later
       cancel:
-      for (currentstep; currentstep < animationsteps.length; currentstep++) {
+      for (let i = currentstep; i < animationsteps.length; i++) {
       
+
+        currentstep = i
+
         switch (Number.parseInt(backres.Cipher)) {
           case 1:
             // normal caesar
-            let cp = {x: ((animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio + (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[currentstep][0][0][1]+spaceyby*2) * yratio+(animationsteps[currentstep][0][1][1]+spaceyby*2) * yratio)/2}
-            let cBez1=[{x: (animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][0][0][1]+spaceyby) * yratio},cp,cp,{x: (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][0][1][1]+spaceyby) * yratio}]
-            let cPoints = BezPoints([{x: (animationsteps[currentstep][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][0][0][1]+spaceyby) * yratio},cp, cp,{x: (animationsteps[currentstep][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][0][1][1]+spaceyby) * yratio}],5000)
+            let cp = {x: ((animationsteps[i][0][0][0]+(spacexby/2)) * xratio + (animationsteps[i][0][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[i][0][0][1]+spaceyby*2) * yratio+(animationsteps[i][0][1][1]+spaceyby*2) * yratio)/2}
+            let cBez1=[{x: (animationsteps[i][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[i][0][0][1]+spaceyby) * yratio},cp,cp,{x: (animationsteps[i][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[i][0][1][1]+spaceyby) * yratio}]
+            let cPoints = BezPoints([{x: (animationsteps[i][0][0][0]+(spacexby/2)) * xratio,y:(animationsteps[i][0][0][1]+spaceyby) * yratio},cp, cp,{x: (animationsteps[i][0][1][0]+(spacexby/2)) * xratio, y: (animationsteps[i][0][1][1]+spaceyby) * yratio}],5000)
             await Animate_T(frontctx,cBez1,cPoints,0,1,duration(),running)
             break;
           case 2:
@@ -461,15 +464,16 @@ export const App: Component = () => {
           case 3:
            //Playfair
 
-           for (currentmicrostep; currentmicrostep < animationsteps[currentstep].length; currentmicrostep++) {
+           for (let j = currentmicrostep; j < animationsteps[i].length; j++) {
             // if to check if animation should be on X or Y axis
-            if (animationsteps[currentstep][currentmicrostep][0][0] == animationsteps[currentstep][currentmicrostep][1][0]) {
+            currentmicrostep = j
+            if (animationsteps[i][j][0][0] == animationsteps[i][j][1][0]) {
               //"sameROW"
-              console.log(animationsteps[currentstep][currentmicrostep][0][1] * yratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio)
-              await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][1] * yratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, animationsteps[currentstep][currentmicrostep][0][0] * xratio, spacexby, spaceyby, duration(), running)
+              console.log(animationsteps[i][j][0][1] * yratio, animationsteps[i][j][1][1] * yratio)
+              await Animate(frontctx, animationsteps[i][j][0][1] * yratio, animationsteps[i][j][1][1] * yratio, undefined, animationsteps[i][j][0][0] * xratio, spacexby, spaceyby, duration(), running)
             } else {
               //"column"
-              await Animate(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, undefined, spacexby, spaceyby, duration(), running)
+              await Animate(frontctx, animationsteps[i][j][0][0] * xratio, animationsteps[i][j][1][0] * xratio, animationsteps[i][j][1][1] * yratio, undefined, spacexby, spaceyby, duration(), running)
             }
          
             if (!running.on) {
@@ -479,17 +483,13 @@ export const App: Component = () => {
             break;
           default:
         }
-        updateDescription()
         // move in current step
         currentmicrostep = 0
+        updateDescription()
       }
-    
+      console.log(currentmicrostep)
+      
     running.on = false
-    // problem with for loop out of bounds
-    if (currentstep > animationsteps.length - 1) {
-      currentstep--
-      currentmicrostep = animationsteps[currentstep-1].length-1;
-    }
   }
 
   // stop animation from running
@@ -547,9 +547,10 @@ export const App: Component = () => {
     if (!animationsteps.length) return
     if (running.on) {
       stop()
+      currentmicrostep++
       return
     }
-
+   
 
     currentmicrostep--
     if (currentmicrostep < 0) {
@@ -592,6 +593,7 @@ export const App: Component = () => {
     if (!animationsteps.length) return
     if (running.on) {
       stop()
+      currentmicrostep--
       return
     }
 
