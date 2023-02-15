@@ -387,7 +387,6 @@ export const App: Component = () => {
           Promise.resolve(0)
         }
         let time = new Date().getTime() - start;
-        console.log(time)
         ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
         let value =  easeInOutQuart(time, from, to - from, duration);
         ctx.fillStyle = color;
@@ -396,7 +395,6 @@ export const App: Component = () => {
         } else {
           ctx.fillRect(row, value, width, height);
         }
-        // console.log(value)
         if (time >= duration) {
           clearTimeout(innertimer)
           resolve('done');  
@@ -469,7 +467,6 @@ export const App: Component = () => {
             currentmicrostep = j
             if (animationsteps[i][j][0][0] == animationsteps[i][j][1][0]) {
               //"sameROW"
-              console.log(animationsteps[i][j][0][1] * yratio, animationsteps[i][j][1][1] * yratio)
               await Animate(frontctx, animationsteps[i][j][0][1] * yratio, animationsteps[i][j][1][1] * yratio, undefined, animationsteps[i][j][0][0] * xratio, spacexby, spaceyby, duration(), running)
             } else {
               //"column"
@@ -487,8 +484,9 @@ export const App: Component = () => {
         currentmicrostep = 0
         updateDescription()
       }
-      console.log(currentmicrostep)
-      
+      if(running.on){
+        currentmicrostep = animationsteps[currentstep].length
+      }
     running.on = false
   }
 
