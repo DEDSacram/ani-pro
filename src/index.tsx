@@ -152,6 +152,9 @@ export const App: Component = () => {
         spacex = 5
         spacey = 5
         break;
+      case 4:
+        // Homo Cipher
+        break;
       default:
     }
   };
@@ -196,8 +199,8 @@ export const App: Component = () => {
 
   // Submit form
   async function onSubmit() {
-     //check if key text to encrypt and cipher was chosen
-    if (textEncryption() && textEncryptionKey() && currentcipher) {
+     //check if key text to encrypt and cipher was chosen // NOT FOR HOMOCIPHER textEncryptionKey()
+    if (textEncryption() && currentcipher) {
       //set form submit to true
       submit = true
 
@@ -217,7 +220,9 @@ export const App: Component = () => {
       //
 
       //check if both submit and cipher was chosen
-      if (currentfunction && submit) {
+
+       // add back after edit currentfunction
+      if (submit) {
 
         //clear animation steps
         animationsteps = [];
@@ -238,13 +243,15 @@ export const App: Component = () => {
         xratio = 1
         yratio = 1
 
+        setEncryptedText(backres.TextNow)
+
         // call to create graphics for given cipher
         currentfunction(backres.Display,spacexby,spaceyby,((ongeneratedsize.height*yratio) / spacey))
 
         encrypttext = encrypt()
 
         //set encrypted text
-        setEncryptedText(backres.TextNow)
+        // setEncryptedText(backres.TextNow)
 
         // create animation by cipher
         switch (parseInt(currentcipher)) {

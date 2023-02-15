@@ -45,6 +45,7 @@ return(
     <a onClick={onChange} id="1">Caesar</a>
     <a onClick={onChange} id="2">Caesar{"(Wheel)"}</a>
     <a onClick={onChange} id="3">Playfair</a>
+    <a onClick={onChange} id="4">Homo</a>
   </div>
 </div>
 )
