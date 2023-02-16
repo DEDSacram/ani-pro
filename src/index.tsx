@@ -8,6 +8,9 @@ import { createCaesar } from "./lib/createCaesar";
 import { createCaesarWheel } from "./lib/createCaesarWheel";
 import { drawcurvewitharrow } from "./lib/linearrow";
 import { getBezierAngle,BezPoints,drawPlots, drawArrow } from "./lib/cubic_bezier";
+
+
+
 import "./index.css"
 import Canvas from "./components/canvas";
 
@@ -556,6 +559,10 @@ export const App: Component = () => {
         Selected(frontctx, animationsteps[currentstep][i][0][0] * xratio, animationsteps[currentstep][i][0][1] * yratio, spacexby, spaceyby, "red")
         Selected(frontctx, animationsteps[currentstep][i][1][0] * xratio, animationsteps[currentstep][i][1][1] * yratio, spacexby, spaceyby, "green")
        }
+
+       for(let i = 0; i < animationsteps[currentstep].length; i++){
+        drawcurvewitharrow(frontctx,{x: (animationsteps[currentstep][i][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][i][0][1]+spaceyby/2) * yratio},{x: ((animationsteps[currentstep][i][0][0]+(spacexby/2)) * xratio + (animationsteps[currentstep][i][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[currentstep][i][0][1]+spaceyby/2) * yratio+(animationsteps[currentstep][i][1][1]+spaceyby/2) * yratio)/2},{x: (animationsteps[currentstep][i][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][i][1][1]+spaceyby/2) * yratio},30)
+       }
         break;
       default:
     }
@@ -686,6 +693,9 @@ export const App: Component = () => {
        for(let i = 0; i < animationsteps[currentstep].length; i++){
         Selected(frontctx, animationsteps[currentstep][i][0][0] * xratio, animationsteps[currentstep][i][0][1] * yratio, spacexby, spaceyby, "red")
         Selected(frontctx, animationsteps[currentstep][i][1][0] * xratio, animationsteps[currentstep][i][1][1] * yratio, spacexby, spaceyby, "green")
+       }
+       for(let i = 0; i < animationsteps[currentstep].length; i++){
+        drawcurvewitharrow(frontctx,{x: (animationsteps[currentstep][i][0][0]+(spacexby/2)) * xratio,y:(animationsteps[currentstep][i][0][1]+spaceyby/2) * yratio},{x: ((animationsteps[currentstep][i][0][0]+(spacexby/2)) * xratio + (animationsteps[currentstep][i][1][0]+(spacexby/2)) * xratio)/2,y: ((animationsteps[currentstep][i][0][1]+spaceyby/2) * yratio+(animationsteps[currentstep][i][1][1]+spaceyby/2) * yratio)/2},{x: (animationsteps[currentstep][i][1][0]+(spacexby/2)) * xratio, y: (animationsteps[currentstep][i][1][1]+spaceyby/2) * yratio},30)
        }
         break;
       default:
