@@ -21,7 +21,7 @@ export function drawPlots(ctx: any ,end : number , pts: { x: number, y: number; 
   ctx.fillStyle='red';
   for(let i=0;i<end;i++){
     ctx.beginPath();
-    ctx.arc(pts[i].x,pts[i].y,1,0,Math.PI*2);
+    ctx.arc(pts[i].x,pts[i].y,2,0,Math.PI*2);
     ctx.fill();
   }
 }
