@@ -278,9 +278,7 @@ export const App: Component = () => {
         currentmicrostep = 0
         currentstep = 0
         updateDescription()
-        let temp = [...showsteps()]
-        temp.unshift(savedsteps[currentstep])
-        setShowSteps(temp)  // line with arrow estimate
+        UpdateStep()
         switch (Number.parseInt(backres.Cipher)) {
           case 1:
             // normal caesar
@@ -468,9 +466,9 @@ export const App: Component = () => {
       // giving for loops a label to break from it later
       cancel:
       for (let i = currentstep; i < animationsteps.length; i++) {
-      
-
         currentstep = i
+        updateDescription()
+        UpdateStep()
 
         switch (Number.parseInt(backres.Cipher)) {
           case 1:
@@ -507,6 +505,8 @@ export const App: Component = () => {
         // move in current step
         currentmicrostep = 0
         updateDescription()
+        UpdateStep()
+
       }
       if(running.on){
         currentmicrostep = animationsteps[currentstep].length
@@ -528,6 +528,12 @@ export const App: Component = () => {
     ctx.fill()
   }
 
+  function UpdateStep(){
+    let temp = [...showsteps()]
+    temp.unshift(savedsteps[currentstep])
+    setShowSteps(temp)  
+  }
+
   // move to one step before
   function skipLeft() {
     if (!animationsteps.length) return
@@ -538,9 +544,7 @@ export const App: Component = () => {
     if (currentstep - 1 > -1) {
       currentstep--;
       //log
-      let temp = [...showsteps()]
-      temp.unshift(savedsteps[currentstep])
-      setShowSteps(temp)
+      UpdateStep()
       //
     }
     currentmicrostep = 0
@@ -583,9 +587,7 @@ export const App: Component = () => {
       if (currentstep - 1 > -1) {
         currentstep--
         //log
-        let temp = [...showsteps()]
-        temp.unshift(savedsteps[currentstep])
-        setShowSteps(temp)
+        UpdateStep()
         //
         currentmicrostep = animationsteps[currentstep].length - 1
       } else {
@@ -631,9 +633,7 @@ export const App: Component = () => {
       if (currentstep + 1 < animationsteps.length) {
         currentstep++
         //log
-        let temp = [...showsteps()]
-        temp.unshift(savedsteps[currentstep])
-        setShowSteps(temp)
+        UpdateStep()
         //
         currentmicrostep = 0
       } else {
@@ -672,9 +672,7 @@ export const App: Component = () => {
     if (currentstep < animationsteps.length - 1) {
       currentstep++;
       //log
-      let temp = [...showsteps()]
-      temp.unshift(savedsteps[currentstep])
-      setShowSteps(temp)
+      UpdateStep()
       //
     }
     currentmicrostep = 0
