@@ -372,6 +372,11 @@ export const App: Component = () => {
       }
     }
   }
+
+  
+
+
+
    // Caesar steps to coordinates not yet
   function setCaesarCircle() {
     return function GenerateStepsCaesar() {
@@ -397,20 +402,11 @@ export const App: Component = () => {
         let time = new Date().getTime() - start;
         ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
         let value =  easeInOutQuart(time, from, to - from, duration);
-
-
-     
         // ctx.fillStyle = color;
         //Test
         let percentage = (time/duration);
-     
+
         ctx.fillStyle = `rgb(${(0.5-percentage)*255+128},${(percentage)*150},0)`;
-        // if(percentage < 0.5){
-        //   ctx.fillStyle = `rgb(${(percentage)*128},0, 0)`;
-        // }else{
-        //   ctx.fillStyle = `rgb(0,${(percentage)*128}, 0)`;
-        // }
-      
 
         if (row == undefined) {
           ctx.fillRect(value, col, width, height);
