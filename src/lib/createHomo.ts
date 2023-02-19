@@ -12,7 +12,6 @@ export function createHomo(ctx: { clearRect?: (arg0: number, arg1: number, arg2:
         ctx.stroke();
         ctx.fillText(key, spacexby * (counterx) + spacexby / 2, ((spaceyby) / 2));
         for(let i = 0; i < value.length; i++){
-          console.log(i)
           ctx.beginPath();
           ctx.rect(spacexby * (counterx), spaceyby * (i+1), spacexby, spaceyby);
           ctx.stroke();
