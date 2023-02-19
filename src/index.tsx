@@ -261,6 +261,7 @@ export const App: Component = () => {
                 max_value = value.length;
               }
               y++;
+            setTextEncryptionKey(JSON.stringify(backres.Display));
             }
               
             spacex = y
