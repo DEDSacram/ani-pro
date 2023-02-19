@@ -311,6 +311,10 @@ export const App: Component = () => {
             Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
             Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
             break;
+          case 4:
+            Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+            Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+            break;
           default:
             return
         }
@@ -394,15 +398,15 @@ export const App: Component = () => {
 
   // Homo
   function setHomo() {
-    return function GenerateStepsCaesar() {
-      // for (let i = 0; i < backres.Ani.length; i++) {
-      //   let step = []
-      //   for (let j = 0; j < backres.Ani[i][0].length; j++) {
-      //     let microstep = [backres.Ani[i][0][j][0] * spacexby, backres.Ani[i][0][j][1] * spaceyby]
-      //     step.push(microstep)
-      //   }
-      //   animationsteps.push([step])
-      // }
+    return function GenerateStepsHomo() {
+      for (let i = 0; i < backres.Ani.length; i++) {
+        let step = []
+        for (let j = 0; j < backres.Ani[i][0].length; j++) {
+          let microstep = [backres.Ani[i][0][j][0] * spacexby, backres.Ani[i][0][j][1] * spaceyby]
+          step.push(microstep)
+        }
+        animationsteps.push([step])
+      }
     }
   }
 
@@ -596,6 +600,10 @@ export const App: Component = () => {
           drawcurvewitharrow(frontctx, { x: (animationsteps[currentstep][i][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][i][0][1] + spaceyby / 2) * yratio }, { x: ((animationsteps[currentstep][i][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][i][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][i][0][1] + spaceyby / 2) * yratio + (animationsteps[currentstep][i][1][1] + spaceyby / 2) * yratio) / 2 }, { x: (animationsteps[currentstep][i][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][i][1][1] + spaceyby / 2) * yratio }, 30)
         }
         break;
+      case 4:
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+        break;
       default:
     }
     updateDescription()
@@ -633,6 +641,10 @@ export const App: Component = () => {
         break;
       case 3:
         //Playfair
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+        break;
+      case 4:
         Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
         Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
         break;
@@ -683,6 +695,10 @@ export const App: Component = () => {
         Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
         Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
         break;
+      case 4:
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+        break;
       default:
     }
     updateDescription()
@@ -723,6 +739,10 @@ export const App: Component = () => {
         for (let i = 0; i < animationsteps[currentstep].length; i++) {
           drawcurvewitharrow(frontctx, { x: (animationsteps[currentstep][i][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][i][0][1] + spaceyby / 2) * yratio }, { x: ((animationsteps[currentstep][i][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][i][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][i][0][1] + spaceyby / 2) * yratio + (animationsteps[currentstep][i][1][1] + spaceyby / 2) * yratio) / 2 }, { x: (animationsteps[currentstep][i][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][i][1][1] + spaceyby / 2) * yratio }, 30)
         }
+        break;
+      case 4:
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
         break;
       default:
     }
