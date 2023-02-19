@@ -532,7 +532,9 @@ export const App: Component = () => {
             }
           }
           break;
-        default:
+        case 4:
+          await Animate(frontctx, animationsteps[i][0][0][1] * yratio, animationsteps[i][0][1][1] * yratio, undefined, animationsteps[i][0][0][0] * xratio, spacexby, spaceyby, duration(), running)
+          break;
       }
       // move in current step
       currentmicrostep = 0
