@@ -264,7 +264,8 @@ export const App: Component = () => {
             }
               
             spacex = y
-            spacey = max_value
+            // first is also a row
+            spacey = max_value+1
             break;
           default:
             console.log("FAIL")
