@@ -416,6 +416,12 @@ export const App: Component = () => {
   // Caesar steps to coordinates not yet
   function setCaesarCircle() {
     return function GenerateStepsCaesar() {
+        for(let i = 0;i<2;i++){
+          let step = []
+          let microstep = [(13.84*Number.parseInt(textEncryptionKey()))*i, 0]
+          step.push(microstep)
+          animationsteps.push([step])
+        }
     }
   }
 
@@ -582,8 +588,12 @@ export const App: Component = () => {
       //
     }
     currentmicrostep = 0
+    Showcaseskip()
+    updateDescription()
+  }
+  function Showcaseskip(){
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    switch (Number.parseInt(backres.Cipher)) {
+        switch (Number.parseInt(backres.Cipher)) {
       case 1:
         // normal caesar
         drawcurvewitharrow(frontctx, { x: (animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][0][1] + spaceyby) * yratio }, { x: ((animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][0][0][1] + spaceyby * 2) * yratio + (animationsteps[currentstep][0][1][1] + spaceyby * 2) * yratio) / 2 }, { x: (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][1][1] + spaceyby) * yratio }, 10)
@@ -608,7 +618,29 @@ export const App: Component = () => {
         break;
       default:
     }
-    updateDescription()
+  }
+  function Showcasestep(){
+    frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
+    switch (Number.parseInt(backres.Cipher)) {
+      case 1:
+        // normal caesar
+        drawcurvewitharrow(frontctx, { x: (animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][0][1] + spaceyby) * yratio }, { x: ((animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][0][0][1] + spaceyby * 2) * yratio + (animationsteps[currentstep][0][1][1] + spaceyby * 2) * yratio) / 2 }, { x: (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][1][1] + spaceyby) * yratio }, 10)
+        break;
+      case 2:
+        // wheel caesar
+        break;
+      case 3:
+        //Playfair
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+        break;
+      case 4:
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+        break;
+      default:
+        return
+    }
   }
   // move to microstep before
   function stepLeft() {
@@ -632,27 +664,7 @@ export const App: Component = () => {
         currentmicrostep = 0
       }
     }
-    frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    switch (Number.parseInt(backres.Cipher)) {
-      case 1:
-        // normal caesar
-        drawcurvewitharrow(frontctx, { x: (animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][0][1] + spaceyby) * yratio }, { x: ((animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][0][0][1] + spaceyby * 2) * yratio + (animationsteps[currentstep][0][1][1] + spaceyby * 2) * yratio) / 2 }, { x: (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][1][1] + spaceyby) * yratio }, 10)
-        break;
-      case 2:
-        // wheel caesar
-        break;
-      case 3:
-        //Playfair
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-        break;
-      case 4:
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-        break;
-      default:
-        return
-    }
+    Showcasestep()
     updateDescription()
   }
 
@@ -682,27 +694,7 @@ export const App: Component = () => {
         currentmicrostep = animationsteps[currentstep].length - 1
       }
     }
-    frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    switch (Number.parseInt(backres.Cipher)) {
-      case 1:
-        // normal caesar
-        drawcurvewitharrow(frontctx, { x: (animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][0][1] + spaceyby) * yratio }, { x: ((animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][0][0][1] + spaceyby * 2) * yratio + (animationsteps[currentstep][0][1][1] + spaceyby * 2) * yratio) / 2 }, { x: (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][1][1] + spaceyby) * yratio }, 10)
-        break;
-      case 2:
-        // wheel caesar
-
-        break;
-      case 3:
-        //Playfair
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-        break;
-      case 4:
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-        break;
-      default:
-    }
+    Showcasestep()
     updateDescription()
   }
 
@@ -722,32 +714,7 @@ export const App: Component = () => {
       //
     }
     currentmicrostep = 0
-    frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-
-    switch (Number.parseInt(backres.Cipher)) {
-      case 1:
-        // normal caesar
-        drawcurvewitharrow(frontctx, { x: (animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][0][1] + spaceyby) * yratio }, { x: ((animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][0][0][1] + spaceyby * 2) * yratio + (animationsteps[currentstep][0][1][1] + spaceyby * 2) * yratio) / 2 }, { x: (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][1][1] + spaceyby) * yratio }, 10)
-        break;
-      case 2:
-        // wheel caesar
-        break;
-      case 3:
-        //Playfair
-        for (let i = 0; i < animationsteps[currentstep].length; i++) {
-          Selected(frontctx, animationsteps[currentstep][i][0][0] * xratio, animationsteps[currentstep][i][0][1] * yratio, spacexby, spaceyby, "red")
-          Selected(frontctx, animationsteps[currentstep][i][1][0] * xratio, animationsteps[currentstep][i][1][1] * yratio, spacexby, spaceyby, "green")
-        }
-        for (let i = 0; i < animationsteps[currentstep].length; i++) {
-          drawcurvewitharrow(frontctx, { x: (animationsteps[currentstep][i][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][i][0][1] + spaceyby / 2) * yratio }, { x: ((animationsteps[currentstep][i][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][i][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][i][0][1] + spaceyby / 2) * yratio + (animationsteps[currentstep][i][1][1] + spaceyby / 2) * yratio) / 2 }, { x: (animationsteps[currentstep][i][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][i][1][1] + spaceyby / 2) * yratio }, 30)
-        }
-        break;
-      case 4:
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-        break;
-      default:
-    }
+    Showcaseskip()
     updateDescription()
   }
 
@@ -773,8 +740,6 @@ export const App: Component = () => {
   onMount(() => {
     backctx = canvas.getContext("2d")
     frontctx = overlaycanvas.getContext("2d")
-    currentfunction = createCaesarWheel(backctx)
-    currentfunction(0,true)
   });
 
   return (

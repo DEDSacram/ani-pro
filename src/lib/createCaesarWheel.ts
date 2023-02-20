@@ -48,10 +48,6 @@ function drawFirst(ctx: { rotate: (arg0: number) => void; translate: (arg0: numb
 function drawPoint(ctx: { beginPath: () => void; arc: (arg0: number, arg1: number, arg2: any, arg3: number, arg4: number) => void; fill: () => void; font: any; fillText: (arg0: string, arg1: number, arg2: number) => void },angle : number,distance : number,radius : number){
   var x = 0 + radius * Math.cos(-angle*Math.PI/180) * distance;
   var y = 0 + radius * Math.sin(-angle*Math.PI/180) * distance;
-
-  // ctx.beginPath();
-  // ctx.arc(x, y, 5, 0, 2 * Math.PI);
-  // ctx.fill();
   return {circx:x,circy:y}
 }
 
@@ -67,23 +63,14 @@ function drawLetters(ctx: any, radius: number,key: number | undefined) {
   let onelet = 13.84;
   for(let heh = 1; heh < 27; heh++){
     
-      let circpoint = drawPoint(ctx,onelet*heh,0.70,radius)
+      let circpoint = drawPoint(ctx,onelet*heh,0.52,radius)
+      let textpoint = drawPoint(ctx,onelet*heh+onelet/2,0.61,radius)
       ctx.moveTo(circpoint.circx,circpoint.circy)
-      circpoint = drawPoint(ctx,onelet*heh,1,radius)
-
-      let textpoint = drawPoint(ctx,onelet*heh+onelet/2,0.85,radius)
-
+      circpoint = drawPoint(ctx,onelet*heh,0.70,radius)
       ctx.fillText(arrcipher[heh-1], textpoint.circx, textpoint.circy);
-
-      textpoint = drawPoint(ctx,onelet*heh+onelet/2,0.61,radius)
-
-      ctx.fillText(arrcipher[heh-1], textpoint.circx, textpoint.circy);
-
       ctx.lineTo(circpoint.circx, circpoint.circy);
       ctx.stroke()
-    
   }
-  
   ctx.beginPath();
   ctx.arc(0, 0, radius*0.52, 0, 2*Math.PI);
   ctx.fillStyle = "white";
@@ -91,23 +78,4 @@ function drawLetters(ctx: any, radius: number,key: number | undefined) {
   ctx.lineWidth = 5;
   ctx.strokeStyle = "black";
   ctx.stroke();
-
-  for(let heh = 1; heh < 27; heh++){
-    
-    let circpoint = drawPoint(ctx,(360/26)*heh,0.52,radius)
-    ctx.moveTo(circpoint.circx,circpoint.circy)
-    circpoint = drawPoint(ctx,(360/26)*heh,0.70,radius)
-    ctx.lineTo(circpoint.circx, circpoint.circy);
-    ctx.stroke()
-  
-}
-}
-function rotate(ctx,radius: number,onelet: number) {
-  for(let heh = 1; heh < 27; heh++){
-    let circpoint = drawPoint(ctx,onelet*heh,0.70,radius)
-    ctx.moveTo(circpoint.circx,circpoint.circy)
-    circpoint = drawPoint(ctx,onelet*heh,1,radius)
-    ctx.lineTo(circpoint.circx, circpoint.circy);
-    ctx.stroke()
-}
 }
