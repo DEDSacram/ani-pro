@@ -61,10 +61,9 @@ function drawLetters(ctx: any, radius: number,key: number | undefined) {
   ctx.font = radius*0.1 + "px arial";
   ctx.textBaseline="middle";
   ctx.textAlign="center";
-  let arrtext = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+  // correct order by my way of displaying
+  let arrtext = ["F","E","D","C","B","A","Z","Y","X","W","V","U","T","S","R","Q","P","O","N","M","L","K","J","I","H","G",]
   let arrcipher = arrtext.slice(key).concat(arrtext.slice(0,key))
-
- 
   let onelet = 13.84;
   for(let heh = 1; heh < 27; heh++){
     
@@ -76,40 +75,15 @@ function drawLetters(ctx: any, radius: number,key: number | undefined) {
 
       ctx.fillText(arrcipher[heh-1], textpoint.circx, textpoint.circy);
 
+      textpoint = drawPoint(ctx,onelet*heh+onelet/2,0.61,radius)
+
+      ctx.fillText(arrcipher[heh-1], textpoint.circx, textpoint.circy);
+
       ctx.lineTo(circpoint.circx, circpoint.circy);
       ctx.stroke()
     
   }
   
-
-
-
-  // let angledivider = 13
-  // drawFirst(ctx,radius,angledivider,0.85,arrtext[0])
-  // for(num = 1; num < arrtext.length; num++){
-  //   ang = num * Math.PI / angledivider;
-  //   ctx.rotate(ang);
-  //   ctx.translate(0, -radius*0.85);
-  //   ctx.rotate(-ang);
-  //   ctx.fillText(arrtext[num], 0, 0);
-  //   ctx.rotate(ang);
-  //   ctx.translate(0, radius*0.85);
-  //   ctx.rotate(-ang);
-  // }
-
-  // drawFirst(ctx,radius,angledivider,0.60,arrcipher[0])
-  // arrcipher.splice(0,1)
-  // for(num = 1; num < arrtext.length; num++){
-  //   ang = num * Math.PI / angledivider;
-  //   ctx.rotate(ang);
-  //   ctx.translate(0, -radius*0.60);
-  //   ctx.rotate(-ang);
-  //   ctx.fillText(arrcipher[num-1], 0, 0);
-  //   ctx.rotate(ang);
-  //   ctx.translate(0, radius*0.60);
-  //   ctx.rotate(-ang);
-  // }
-
   ctx.beginPath();
   ctx.arc(0, 0, radius*0.52, 0, 2*Math.PI);
   ctx.fillStyle = "white";
@@ -117,14 +91,6 @@ function drawLetters(ctx: any, radius: number,key: number | undefined) {
   ctx.lineWidth = 5;
   ctx.strokeStyle = "black";
   ctx.stroke();
-
-  // ctx.beginPath();
-  // ctx.arc(0, 0, radius*0.85, 0, 2*Math.PI);
-  // ctx.fillStyle = "white";
-  // ctx.fill();
-  // ctx.lineWidth = 5;
-  // ctx.strokeStyle = "black";
-  // ctx.stroke();
 
   for(let heh = 1; heh < 27; heh++){
     
@@ -138,12 +104,10 @@ function drawLetters(ctx: any, radius: number,key: number | undefined) {
 }
 function rotate(ctx,radius: number,onelet: number) {
   for(let heh = 1; heh < 27; heh++){
-    
     let circpoint = drawPoint(ctx,onelet*heh,0.70,radius)
     ctx.moveTo(circpoint.circx,circpoint.circy)
     circpoint = drawPoint(ctx,onelet*heh,1,radius)
     ctx.lineTo(circpoint.circx, circpoint.circy);
     ctx.stroke()
-  
 }
 }
