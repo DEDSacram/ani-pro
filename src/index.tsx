@@ -773,6 +773,8 @@ export const App: Component = () => {
   onMount(() => {
     backctx = canvas.getContext("2d")
     frontctx = overlaycanvas.getContext("2d")
+    currentfunction = createCaesarWheel(backctx)
+    currentfunction(0,true)
   });
 
   return (
