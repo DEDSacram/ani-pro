@@ -6,7 +6,7 @@ import { DropdownCipher } from "./components/dropdown";
 import { createPlayfair } from "./lib/createPlayfair";
 import { createCaesar } from "./lib/createCaesar";
 import { createHomo } from "./lib/createHomo"
-import { createCaesarWheel } from "./lib/createCaesarWheel";
+import { createCaesarWheel, drawPoint } from "./lib/createCaesarWheel";
 import { drawcurvewitharrow } from "./lib/linearrow";
 import { getBezierAngle, BezPoints, drawPlots, drawArrow } from "./lib/cubic_bezier";
 
@@ -54,6 +54,9 @@ export const App: Component = () => {
 
   //closure for generation of steps for animation
   let currentfunctionanimation: () => void
+
+  //to be removed
+  let radius
 
   //canvas context
   let backctx: any
@@ -261,12 +264,12 @@ export const App: Component = () => {
                 max_value = value.length;
               }
               y++;
-            setTextEncryptionKey(JSON.stringify(backres.Display));
+              setTextEncryptionKey(JSON.stringify(backres.Display));
             }
-              
+
             spacex = y
             // first is also a row
-            spacey = max_value+1
+            spacey = max_value + 1
             break;
           default:
             console.log("FAIL")
@@ -298,26 +301,7 @@ export const App: Component = () => {
         currentstep = 0
         updateDescription()
         UpdateStep()
-        switch (Number.parseInt(backres.Cipher)) {
-          case 1:
-            // normal caesar
-            drawcurvewitharrow(frontctx, { x: (animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][0][1] + spaceyby) * yratio }, { x: ((animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][0][0][1] + spaceyby * 2) * yratio + (animationsteps[currentstep][0][1][1] + spaceyby * 2) * yratio) / 2 }, { x: (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][1][1] + spaceyby) * yratio }, 10)
-            break;
-          case 2:
-            // wheel caesar
-            break;
-          case 3:
-            //Playfair
-            Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-            Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-            break;
-          case 4:
-            Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-            Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-            break;
-          default:
-            return
-        }
+        Showcasestep()
       }
     }
 
@@ -416,12 +400,10 @@ export const App: Component = () => {
   // Caesar steps to coordinates not yet
   function setCaesarCircle() {
     return function GenerateStepsCaesar() {
-        for(let i = 0;i<2;i++){
-          let step = []
-          let microstep = [(13.84*Number.parseInt(textEncryptionKey()))*i, 0]
-          step.push(microstep)
-          animationsteps.push([step])
-        }
+        let step = []
+        let microstep = [0,(13.84 * Number.parseInt(textEncryptionKey()))]
+        step.push(microstep)
+        animationsteps.push([step])
     }
   }
 
@@ -464,6 +446,59 @@ export const App: Component = () => {
   }
 
 
+  async function Animate_C(ctx, from: number, to: number,radius : number, duration: number, states: { on: boolean; }) {
+    return await new Promise(resolve => {
+
+      let start = new Date().getTime();
+      let innertimer = setInterval(function () {
+        if (!running.on) {
+          clearTimeout(innertimer)
+          Promise.resolve(0)
+        }
+        let time = new Date().getTime() - start;
+        ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
+        let yk = easeInOutQuart(time, from, to - from, duration);
+        Sum(ctx, yk, radius)
+        if (time >= duration) {
+          clearTimeout(innertimer)
+          resolve('done');
+        }
+      }, 1000 / 20);
+    });
+  }
+
+  function Sum(ctx, by: number ,radius : number) {
+    ctx.font = radius*0.1 + "px arial";
+    ctx.textBaseline="middle";
+    ctx.textAlign="center";
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 5;
+    let onelet = 13.84;
+
+    // doesnt need to redraw
+    if(encrypt()){
+      by = -by
+    }
+    
+    for (let heh = 1; heh < 27; heh++) {
+      let textpoint = drawPoint(ctx, onelet * heh + onelet / 2 +by, 0.85, radius)
+      ctx.fillText(backres.Display[heh - 1], textpoint.circx + radius, textpoint.circy + radius);
+    }
+
+    // Problem with multiple lines without erasing
+    // for (let heh = 1; heh < 27; heh++) {
+    //   let textpoint = drawPoint(ctx, onelet * heh + onelet / 2, 0.85, radius)
+    //   ctx.fillText(backres.Display[heh - 1], textpoint.circx + radius, textpoint.circy + radius);
+    // }
+
+    // for(let heh = 1;heh<6;heh++){
+    //   let circpoint = drawPoint(ctx, onelet * heh+ by, 0.70, radius)
+    //   ctx.moveTo(circpoint.circx+ radius, circpoint.circy+ radius)
+    //   circpoint = drawPoint(ctx, onelet * heh + by, 1, radius)
+    //   ctx.lineTo(circpoint.circx+ radius, circpoint.circy+ radius);
+    //   ctx.stroke()
+    // }
+  }
 
 
   async function Animate_T(ctx: any, cBez1: any, cPoints: any, from: number, to: number, duration: number, states: { on: boolean; }, color = "white") {
@@ -501,6 +536,18 @@ export const App: Component = () => {
     // if isnt running run
     running.on = true
 
+
+
+    if(Number.parseInt(backres.Cipher) == 2){
+    if (frontctx.canvas.clientWidth > frontctx.canvas.clientHeight) {
+      radius = frontctx.canvas.clientHeight / 2
+    }
+    else {
+      radius = frontctx.canvas.clientWidth / 2
+    }
+    // frontctx.translate(radius, radius);
+  }
+
     // giving for loops a label to break from it later
     cancel:
     for (let i = currentstep; i < animationsteps.length; i++) {
@@ -518,6 +565,8 @@ export const App: Component = () => {
           break;
         case 2:
           // wheel caesar
+          await Animate_C(frontctx, animationsteps[i][0][0][0], animationsteps[i][0][0][1], radius ,duration(), running)
+          
           break;
         case 3:
           //Playfair
@@ -591,9 +640,9 @@ export const App: Component = () => {
     Showcaseskip()
     updateDescription()
   }
-  function Showcaseskip(){
+  function Showcaseskip() {
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-        switch (Number.parseInt(backres.Cipher)) {
+    switch (Number.parseInt(backres.Cipher)) {
       case 1:
         // normal caesar
         drawcurvewitharrow(frontctx, { x: (animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][0][1] + spaceyby) * yratio }, { x: ((animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][0][0][1] + spaceyby * 2) * yratio + (animationsteps[currentstep][0][1][1] + spaceyby * 2) * yratio) / 2 }, { x: (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][1][1] + spaceyby) * yratio }, 10)
@@ -619,7 +668,7 @@ export const App: Component = () => {
       default:
     }
   }
-  function Showcasestep(){
+  function Showcasestep() {
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
     switch (Number.parseInt(backres.Cipher)) {
       case 1:
