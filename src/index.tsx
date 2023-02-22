@@ -6,11 +6,16 @@ import { DropdownCipher } from "./components/dropdown";
 import { createPlayfair } from "./lib/createPlayfair";
 import { createCaesar } from "./lib/createCaesar";
 import { createHomo } from "./lib/createHomo"
-import { createCaesarWheel, drawPoint } from "./lib/createCaesarWheel";
-import { drawcurvewitharrow } from "./lib/linearrow";
-import { getBezierAngle, BezPoints, drawPlots, drawArrow } from "./lib/cubic_bezier";
+import { createCaesarWheel } from "./lib/createCaesarWheel";
 
+import { Selected } from "./lib/Markup";
+import { BezPoints } from "./lib/cubic_bezier";
 
+import { Showcaseskip, Showcasestep } from "./lib/control_step";
+
+import { Animate, Animate_T, Animate_Circ } from "./lib/Animations";
+
+import { setCaesar, setHomo, setPlayfair, setCaesarCircle } from "./lib/setCipher";
 
 import "./index.css"
 import Canvas from "./components/canvas";
@@ -21,6 +26,9 @@ import { Menu } from "./components/menu";
 import { FiChevronsLeft, FiChevronLeft, FiChevronRight, FiChevronsRight, FiArrowRight } from "solid-icons/fi";
 import { Slider } from "./components/slider";
 import { CanvasMenu } from "./components/canvas_window";
+
+
+
 
 class Postreq {
   public Cipher: string;
@@ -53,10 +61,7 @@ export const App: Component = () => {
   let currentfunction: ((key: any, encrypt: boolean) => void) | ((display: any, spacexby: number, spaceyby: number, fontsize: number) => void) | ((arg0: string | string[] | string[][], arg1: number | boolean, arg2: number | undefined, arg3: number | undefined) => void)
 
   //closure for generation of steps for animation
-  let currentfunctionanimation: () => void
-
-  //to be removed
-  let radius
+  let currentfunctionanimation: any
 
   //canvas context
   let backctx: any
@@ -89,6 +94,16 @@ export const App: Component = () => {
     on: false
   };
 
+  interface progre {
+   animationsteps : (number[][][])[];
+   savedsteps: string[];
+}
+
+  let daobj : progre = {
+    animationsteps : [],
+    savedsteps : []
+  }
+
   //rules for cipher
   let [rules, setRules] = createSignal([]);
 
@@ -100,22 +115,19 @@ export const App: Component = () => {
   let [stepbefore, setStepBefore] = createSignal('')
 
   let encrypttext = false
+
+  let encryptkey: string;
   //
 
   //steps
-  let savedsteps: string[] = []
+
   let [showsteps, setShowSteps] = createSignal([])
 
 
   // gv that holds size on which it was generated
   let ongeneratedsize = { width: 0, height: 0 }
 
-  //animation
-  let animationsteps: (number[][][])[] = []
-
   let [duration, setDuration] = createSignal(1500)
-
-
 
   // response from
   let backres: Postres;
@@ -145,19 +157,19 @@ export const App: Component = () => {
     switch (Number.parseInt(el)) {
       case 1:
         currentfunction = createCaesar(backctx)
-        currentfunctionanimation = setCaesar()
+        currentfunctionanimation = setCaesar(daobj)
         break;
       case 2:
         currentfunction = createCaesarWheel(backctx)
-        currentfunctionanimation = setCaesarCircle()
+        currentfunctionanimation = setCaesarCircle(daobj)
         break;
       case 3:
         currentfunction = createPlayfair(backctx)
-        currentfunctionanimation = setPlayfair()
+        currentfunctionanimation = setPlayfair(daobj)
         break;
       case 4:
         currentfunction = createHomo(backctx)
-        currentfunctionanimation = setHomo()
+        currentfunctionanimation = setHomo(daobj)
         // Homo Cipher
         break;
       default:
@@ -181,8 +193,8 @@ export const App: Component = () => {
         resetContext(frontctx)
 
         currentfunction(backres.Display, spacexby, spaceyby, (ongeneratedsize.height * yratio) / spacey)
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+        Selected(frontctx, daobj.animationsteps[currentstep][currentmicrostep][0][0] * xratio, daobj.animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
+        Selected(frontctx, daobj.animationsteps[currentstep][currentmicrostep][1][0] * xratio, daobj.animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
       }
 
 
@@ -192,8 +204,6 @@ export const App: Component = () => {
   const sliderCallback = (d: number) => {
     setDuration(d)
   }
-
-
 
   //switch input output
   function switchOutputInput() {
@@ -215,22 +225,19 @@ export const App: Component = () => {
 
       //clear steps
       setShowSteps([])
-      savedsteps = []
+      daobj.savedsteps = []
 
       //clear step show under animaenu
       setTextBefore(' ')
       setTextNow(' ')
       setStepBefore(' ')
       setStepNow(' ')
-      //
-
-      //check if both submit and cipher was chosen
-
+      
       // add back after edit currentfunction
       if (submit) {
 
         //clear animation steps
-        animationsteps = [];
+        daobj.animationsteps = [];
 
         //clear canvas
         backctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -283,25 +290,32 @@ export const App: Component = () => {
         xratio = 1
         yratio = 1
 
-
         setEncryptedText(backres.TextNow)
-
-
-
         // call to create graphics for given cipher
         currentfunction(backres.Display, spacexby, spaceyby, ((ongeneratedsize.height * yratio) / spacey))
 
-        currentfunctionanimation()
-
         encrypttext = encrypt()
+        encryptkey = textEncryptionKey()
 
+        currentfunctionanimation(backres.Ani,backres.Display,encrypttext,spacexby,spaceyby)
 
         //first
         currentmicrostep = 0
         currentstep = 0
         updateDescription()
         UpdateStep()
-        Showcasestep()
+        Showcasestep(frontctx,Number.parseInt(backres.Cipher),daobj.animationsteps,currentstep,currentmicrostep,xratio,yratio,spacexby,spaceyby)
+        if(parseInt(currentcipher) == 4){
+          let radius = (frontctx.canvas.clientHeight / 2) * yratio
+          running.on = true
+          let imageData = frontctx.getImageData(0, 0, frontctx.canvas.clientWidth, frontctx.canvas.clientHeight);
+          if (encrypttext) {
+            await Animate_Circ(frontctx, 0, -(13.84 * Number.parseInt(encryptkey)), radius, duration(), running, imageData, backres.Display)
+          } else {
+            await Animate_Circ(frontctx, 0, 13.84 * Number.parseInt(encryptkey), radius, duration(), running, imageData, backres.Display)
+          }
+          running.on = false
+        }
       }
     }
 
@@ -312,219 +326,6 @@ export const App: Component = () => {
     ctx.resetTransform();
     ctx.strokeStyle = "white"; ctx.lineWidth = 1; ctx.setLineDash([]);
     ctx.fillStyle = 'white';
-  }
-
-  // Playfair steps to coordinates
-  function setPlayfair() {
-
-
-    return function GenerateStepsPlayfair() {
-      for (let i = 0; i < backres.Ani.length; i++) {
-        let step = []
-        // same row
-        let descript = ""
-
-        descript += backres.Display[backres.Ani[i][0][0][0]][backres.Ani[i][0][0][1]] + backres.Display[backres.Ani[i][1][0][0]][backres.Ani[i][1][0][1]] + "->" + backres.Display[backres.Ani[i][0][1][0]][backres.Ani[i][0][1][1]] + backres.Display[backres.Ani[i][1][1][0]][backres.Ani[i][1][1][1]] + " "
-        if (backres.Ani[i][0][0][0] == backres.Ani[i][1][0][0]) {
-          if (encrypttext) {
-            descript += popis.r + popis.each + popis.by + "1 " + popis.right
-          } else {
-            descript += popis.r + popis.each + popis.by + "1 " + popis.left
-          }
-        }
-        //same column
-        else if (backres.Ani[i][0][0][1] == backres.Ani[i][1][0][1]) {
-          if (encrypttext) {
-            descript += popis.c + popis.each + popis.by + + "1 " + popis.down
-          } else {
-            descript += popis.c + popis.each + popis.by + "1 " + popis.up
-          }
-        }
-        //different row and column
-        else {
-
-          if (encrypttext) {
-            descript += popis.drc + popis.each + popis.hr
-          } else {
-            descript += popis.drc + popis.each + popis.hr
-          }
-        }
-        savedsteps.push(descript)
-
-
-        for (let j = 0; j < backres.Ani[i].length; j++) {
-          let letter = []
-
-          for (let z = 0; z < backres.Ani[i][j].length; z++) {
-            letter.push([backres.Ani[i][j][z][1] * spacexby, backres.Ani[i][j][z][0] * spaceyby])
-          }
-          step.push(letter)
-        }
-        animationsteps.push(step)
-      }
-
-    }
-
-  }
-  // Caesar steps to coordinates
-  function setCaesar() {
-    return function GenerateStepsCaesar() {
-      for (let i = 0; i < backres.Ani.length; i++) {
-        let step = []
-        for (let j = 0; j < backres.Ani[i][0].length; j++) {
-          let microstep = [backres.Ani[i][0][j][0] * spacexby, backres.Ani[i][0][j][1] * spaceyby]
-          step.push(microstep)
-        }
-        animationsteps.push([step])
-      }
-    }
-  }
-
-  // Homo
-  function setHomo() {
-    return function GenerateStepsHomo() {
-      for (let i = 0; i < backres.Ani.length; i++) {
-        let step = []
-        for (let j = 0; j < backres.Ani[i][0].length; j++) {
-          let microstep = [backres.Ani[i][0][j][0] * spacexby, backres.Ani[i][0][j][1] * spaceyby]
-          step.push(microstep)
-        }
-        animationsteps.push([step])
-      }
-    }
-  }
-
-
-
-
-  // Caesar steps to coordinates not yet
-  function setCaesarCircle() {
-    return function GenerateStepsCaesar() {
-        let step = []
-        let microstep = [0,(13.84 * Number.parseInt(textEncryptionKey()))]
-        step.push(microstep)
-        animationsteps.push([step])
-    }
-  }
-
-  // function to calculate coordinate for quarctic movement
-  function easeInOutQuart(t: number, b: number, c: number, d: number) {
-    if ((t /= d / 2) < 1) return c / 2 * t * t * t * t + b;
-    return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
-  }
-
-  // function to animate at 60HZ
-  async function Animate(ctx: { clearRect: any; resetTransform?: (() => void) | undefined; strokeStyle?: string | undefined; lineWidth?: number | undefined; setLineDash?: ((arg0: never[]) => void) | undefined; fillStyle: any; fillRect?: any; }, from: number, to: number, col: number | undefined, row: number | undefined, width: number, height: number, duration: number, states: { on: boolean; }, color = "white") {
-    return await new Promise(resolve => {
-
-      let start = new Date().getTime();
-      let innertimer = setInterval(function () {
-        if (!running.on) {
-          clearTimeout(innertimer)
-          Promise.resolve(0)
-        }
-        let time = new Date().getTime() - start;
-        ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-        let value = easeInOutQuart(time, from, to - from, duration);
-        // ctx.fillStyle = color;
-        //Test
-        let percentage = (time / duration);
-
-        ctx.fillStyle = `rgb(${(0.5 - percentage) * 255 + 128},${(percentage) * 150},0)`;
-
-        if (row == undefined) {
-          ctx.fillRect(value, col, width, height);
-        } else {
-          ctx.fillRect(row, value, width, height);
-        }
-        if (time >= duration) {
-          clearTimeout(innertimer)
-          resolve('done');
-        }
-      }, 1000 / 60);
-    });
-  }
-
-
-  async function Animate_C(ctx, from: number, to: number,radius : number, duration: number, states: { on: boolean; }) {
-    return await new Promise(resolve => {
-
-      let start = new Date().getTime();
-      let innertimer = setInterval(function () {
-        if (!running.on) {
-          clearTimeout(innertimer)
-          Promise.resolve(0)
-        }
-        let time = new Date().getTime() - start;
-        ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-        let yk = easeInOutQuart(time, from, to - from, duration);
-        Sum(ctx, yk, radius)
-        if (time >= duration) {
-          clearTimeout(innertimer)
-          resolve('done');
-        }
-      }, 1000 / 20);
-    });
-  }
-
-  function Sum(ctx, by: number ,radius : number) {
-    ctx.font = radius*0.1 + "px arial";
-    ctx.textBaseline="middle";
-    ctx.textAlign="center";
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = 5;
-    let onelet = 13.84;
-
-    // doesnt need to redraw
-    if(encrypt()){
-      by = -by
-    }
-    
-    for (let heh = 1; heh < 27; heh++) {
-      let textpoint = drawPoint(ctx, onelet * heh + onelet / 2 +by, 0.85, radius)
-      ctx.fillText(backres.Display[heh - 1], textpoint.circx + radius, textpoint.circy + radius);
-    }
-
-    // Problem with multiple lines without erasing
-    // for (let heh = 1; heh < 27; heh++) {
-    //   let textpoint = drawPoint(ctx, onelet * heh + onelet / 2, 0.85, radius)
-    //   ctx.fillText(backres.Display[heh - 1], textpoint.circx + radius, textpoint.circy + radius);
-    // }
-
-    // for(let heh = 1;heh<6;heh++){
-    //   let circpoint = drawPoint(ctx, onelet * heh+ by, 0.70, radius)
-    //   ctx.moveTo(circpoint.circx+ radius, circpoint.circy+ radius)
-    //   circpoint = drawPoint(ctx, onelet * heh + by, 1, radius)
-    //   ctx.lineTo(circpoint.circx+ radius, circpoint.circy+ radius);
-    //   ctx.stroke()
-    // }
-  }
-
-
-  async function Animate_T(ctx: any, cBez1: any, cPoints: any, from: number, to: number, duration: number, states: { on: boolean; }, color = "white") {
-
-    return await new Promise(resolve => {
-
-      let start = new Date().getTime();
-      let innertimer = setInterval(function () {
-        if (!running.on) {
-          clearTimeout(innertimer)
-          Promise.resolve(0)
-        }
-
-        ctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-        let time = new Date().getTime() - start;
-        let x = easeInOutQuart(time, from, to - from, duration);
-        let endindex = Math.floor((cPoints.length - 1) * x)
-        let angle = getBezierAngle(x, cBez1)
-        drawPlots(frontctx, endindex, cPoints);
-        drawArrow(frontctx, cPoints[endindex].x, cPoints[endindex].y, angle)
-        if (time >= duration) {
-          resolve('done');
-          clearInterval(innertimer)
-        }
-      }, 1000 / 60);
-    });
   }
 
   // run animation forward
@@ -538,19 +339,11 @@ export const App: Component = () => {
 
 
 
-    if(Number.parseInt(backres.Cipher) == 2){
-    if (frontctx.canvas.clientWidth > frontctx.canvas.clientHeight) {
-      radius = frontctx.canvas.clientHeight / 2
-    }
-    else {
-      radius = frontctx.canvas.clientWidth / 2
-    }
-    // frontctx.translate(radius, radius);
-  }
+
 
     // giving for loops a label to break from it later
     cancel:
-    for (let i = currentstep; i < animationsteps.length; i++) {
+    for (let i = currentstep; i < daobj.animationsteps.length; i++) {
       currentstep = i
       updateDescription()
       UpdateStep()
@@ -558,28 +351,27 @@ export const App: Component = () => {
       switch (Number.parseInt(backres.Cipher)) {
         case 1:
           // normal caesar
-          let cp = { x: ((animationsteps[i][0][0][0] + (spacexby / 2)) * xratio + (animationsteps[i][0][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[i][0][0][1] + spaceyby * 2) * yratio + (animationsteps[i][0][1][1] + spaceyby * 2) * yratio) / 2 }
-          let cBez1 = [{ x: (animationsteps[i][0][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[i][0][0][1] + spaceyby) * yratio }, cp, cp, { x: (animationsteps[i][0][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[i][0][1][1] + spaceyby) * yratio }]
-          let cPoints = BezPoints([{ x: (animationsteps[i][0][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[i][0][0][1] + spaceyby) * yratio }, cp, cp, { x: (animationsteps[i][0][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[i][0][1][1] + spaceyby) * yratio }], 5000)
+          let cp = { x: ((daobj.animationsteps[i][0][0][0] + (spacexby / 2)) * xratio + (daobj.animationsteps[i][0][1][0] + (spacexby / 2)) * xratio) / 2, y: ((daobj.animationsteps[i][0][0][1] + spaceyby * 2) * yratio + (daobj.animationsteps[i][0][1][1] + spaceyby * 2) * yratio) / 2 }
+          let cBez1 = [{ x: (daobj.animationsteps[i][0][0][0] + (spacexby / 2)) * xratio, y: (daobj.animationsteps[i][0][0][1] + spaceyby) * yratio }, cp, cp, { x: (daobj.animationsteps[i][0][1][0] + (spacexby / 2)) * xratio, y: (daobj.animationsteps[i][0][1][1] + spaceyby) * yratio }]
+          let cPoints = BezPoints([{ x: (daobj.animationsteps[i][0][0][0] + (spacexby / 2)) * xratio, y: (daobj.animationsteps[i][0][0][1] + spaceyby) * yratio }, cp, cp, { x: (daobj.animationsteps[i][0][1][0] + (spacexby / 2)) * xratio, y: (daobj.animationsteps[i][0][1][1] + spaceyby) * yratio }], 5000)
           await Animate_T(frontctx, cBez1, cPoints, 0, 1, duration(), running)
           break;
         case 2:
           // wheel caesar
-          await Animate_C(frontctx, animationsteps[i][0][0][0], animationsteps[i][0][0][1], radius ,duration(), running)
-          
+
           break;
         case 3:
           //Playfair
 
-          for (let j = currentmicrostep; j < animationsteps[i].length; j++) {
+          for (let j = currentmicrostep; j < daobj.animationsteps[i].length; j++) {
             // if to check if animation should be on X or Y axis
             currentmicrostep = j
-            if (animationsteps[i][j][0][0] == animationsteps[i][j][1][0]) {
+            if (daobj.animationsteps[i][j][0][0] == daobj.animationsteps[i][j][1][0]) {
               //"sameROW"
-              await Animate(frontctx, animationsteps[i][j][0][1] * yratio, animationsteps[i][j][1][1] * yratio, undefined, animationsteps[i][j][0][0] * xratio, spacexby, spaceyby, duration(), running)
+              await Animate(frontctx, daobj.animationsteps[i][j][0][1] * yratio, daobj.animationsteps[i][j][1][1] * yratio, undefined, daobj.animationsteps[i][j][0][0] * xratio, spacexby, spaceyby, duration(), running)
             } else {
               //"column"
-              await Animate(frontctx, animationsteps[i][j][0][0] * xratio, animationsteps[i][j][1][0] * xratio, animationsteps[i][j][1][1] * yratio, undefined, spacexby, spaceyby, duration(), running)
+              await Animate(frontctx, daobj.animationsteps[i][j][0][0] * xratio, daobj.animationsteps[i][j][1][0] * xratio, daobj.animationsteps[i][j][1][1] * yratio, undefined, spacexby, spaceyby, duration(), running)
             }
 
             if (!running.on) {
@@ -588,7 +380,7 @@ export const App: Component = () => {
           }
           break;
         case 4:
-          await Animate(frontctx, animationsteps[i][0][0][1] * yratio, animationsteps[i][0][1][1] * yratio, undefined, animationsteps[i][0][0][0] * xratio, spacexby, spaceyby, duration(), running)
+          await Animate(frontctx, daobj.animationsteps[i][0][0][1] * yratio, daobj.animationsteps[i][0][1][1] * yratio, undefined, daobj.animationsteps[i][0][0][0] * xratio, spacexby, spaceyby, duration(), running)
           break;
       }
       // move in current step
@@ -598,7 +390,7 @@ export const App: Component = () => {
 
     }
     if (running.on) {
-      currentmicrostep = animationsteps[currentstep].length
+      currentmicrostep = daobj.animationsteps[currentstep].length
     }
     running.on = false
   }
@@ -606,26 +398,20 @@ export const App: Component = () => {
   // stop animation from running
   function stop() {
     frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    Selected(frontctx, animationsteps[currentstep][currentmicrostep][0] * xratio, animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
+    Selected(frontctx, daobj.animationsteps[currentstep][currentmicrostep][0] * xratio, daobj.animationsteps[currentstep][currentmicrostep][1] * yratio, spacexby, spaceyby)
     running.on = false
   }
-  // color a rectangle
-  function Selected(ctx: { clearRect?: any; resetTransform?: (() => void) | undefined; strokeStyle?: string | undefined; lineWidth?: number | undefined; setLineDash?: ((arg0: never[]) => void) | undefined; fillStyle: any; beginPath?: any; rect?: any; fill?: any; }, x: number, y: number, width: number, height: number, color = "white") {
-    ctx.beginPath()
-    ctx.fillStyle = color;
-    ctx.rect(x, y, width, height);
-    ctx.fill()
-  }
+
 
   function UpdateStep() {
     let temp = [...showsteps()]
-    temp.unshift(savedsteps[currentstep])
+    temp.unshift(daobj.savedsteps[currentstep])
     setShowSteps(temp)
   }
 
   // move to one step before
   function skipLeft() {
-    if (!animationsteps.length) return
+    if (!daobj.animationsteps.length) return
     if (running.on) {
       stop()
       return
@@ -637,63 +423,12 @@ export const App: Component = () => {
       //
     }
     currentmicrostep = 0
-    Showcaseskip()
+    Showcaseskip(frontctx,Number.parseInt(backres.Cipher),daobj.animationsteps,currentstep,currentmicrostep,xratio,yratio,spacexby,spaceyby)
     updateDescription()
-  }
-  function Showcaseskip() {
-    frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    switch (Number.parseInt(backres.Cipher)) {
-      case 1:
-        // normal caesar
-        drawcurvewitharrow(frontctx, { x: (animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][0][1] + spaceyby) * yratio }, { x: ((animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][0][0][1] + spaceyby * 2) * yratio + (animationsteps[currentstep][0][1][1] + spaceyby * 2) * yratio) / 2 }, { x: (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][1][1] + spaceyby) * yratio }, 10)
-        break;
-      case 2:
-        // wheel caesar
-        break;
-      case 3:
-        //Playfair
-        for (let i = 0; i < animationsteps[currentstep].length; i++) {
-          Selected(frontctx, animationsteps[currentstep][i][0][0] * xratio, animationsteps[currentstep][i][0][1] * yratio, spacexby, spaceyby, "red")
-          Selected(frontctx, animationsteps[currentstep][i][1][0] * xratio, animationsteps[currentstep][i][1][1] * yratio, spacexby, spaceyby, "green")
-        }
-
-        for (let i = 0; i < animationsteps[currentstep].length; i++) {
-          drawcurvewitharrow(frontctx, { x: (animationsteps[currentstep][i][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][i][0][1] + spaceyby / 2) * yratio }, { x: ((animationsteps[currentstep][i][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][i][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][i][0][1] + spaceyby / 2) * yratio + (animationsteps[currentstep][i][1][1] + spaceyby / 2) * yratio) / 2 }, { x: (animationsteps[currentstep][i][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][i][1][1] + spaceyby / 2) * yratio }, 30)
-        }
-        break;
-      case 4:
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-        break;
-      default:
-    }
-  }
-  function Showcasestep() {
-    frontctx.clearRect(0, 0, overlaycanvas.width, overlaycanvas.height);
-    switch (Number.parseInt(backres.Cipher)) {
-      case 1:
-        // normal caesar
-        drawcurvewitharrow(frontctx, { x: (animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][0][1] + spaceyby) * yratio }, { x: ((animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][0][0][1] + spaceyby * 2) * yratio + (animationsteps[currentstep][0][1][1] + spaceyby * 2) * yratio) / 2 }, { x: (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][1][1] + spaceyby) * yratio }, 10)
-        break;
-      case 2:
-        // wheel caesar
-        break;
-      case 3:
-        //Playfair
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-        break;
-      case 4:
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][0][0] * xratio, animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-        Selected(frontctx, animationsteps[currentstep][currentmicrostep][1][0] * xratio, animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
-        break;
-      default:
-        return
-    }
   }
   // move to microstep before
   function stepLeft() {
-    if (!animationsteps.length) return
+    if (!daobj.animationsteps.length) return
     if (running.on) {
       stop()
       currentmicrostep++
@@ -708,12 +443,12 @@ export const App: Component = () => {
         //log
         UpdateStep()
         //
-        currentmicrostep = animationsteps[currentstep].length - 1
+        currentmicrostep = daobj.animationsteps[currentstep].length - 1
       } else {
         currentmicrostep = 0
       }
     }
-    Showcasestep()
+    Showcasestep(frontctx,Number.parseInt(backres.Cipher),daobj.animationsteps,currentstep,currentmicrostep,xratio,yratio,spacexby,spaceyby)
     updateDescription()
   }
 
@@ -721,7 +456,7 @@ export const App: Component = () => {
 
   // move a microstep forward
   function stepRight() {
-    if (!animationsteps.length) return
+    if (!daobj.animationsteps.length) return
     if (running.on) {
       stop()
       currentmicrostep--
@@ -732,18 +467,18 @@ export const App: Component = () => {
     currentmicrostep++
 
 
-    if (currentmicrostep > animationsteps[currentstep].length - 1) {
-      if (currentstep + 1 < animationsteps.length) {
+    if (currentmicrostep > daobj.animationsteps[currentstep].length - 1) {
+      if (currentstep + 1 < daobj.animationsteps.length) {
         currentstep++
         //log
         UpdateStep()
         //
         currentmicrostep = 0
       } else {
-        currentmicrostep = animationsteps[currentstep].length - 1
+        currentmicrostep = daobj.animationsteps[currentstep].length - 1
       }
     }
-    Showcasestep()
+    Showcasestep(frontctx,Number.parseInt(backres.Cipher),daobj.animationsteps,currentstep,currentmicrostep,xratio,yratio,spacexby,spaceyby)
     updateDescription()
   }
 
@@ -751,19 +486,19 @@ export const App: Component = () => {
 
   // move step forward
   function skipRight() {
-    if (!animationsteps.length) return
+    if (!daobj.animationsteps.length) return
     if (running.on) {
       stop()
       return
     }
-    if (currentstep < animationsteps.length - 1) {
+    if (currentstep < daobj.animationsteps.length - 1) {
       currentstep++;
       //log
       UpdateStep()
       //
     }
     currentmicrostep = 0
-    Showcaseskip()
+    Showcaseskip(frontctx,Number.parseInt(backres.Cipher),daobj.animationsteps,currentstep,currentmicrostep,xratio,yratio,spacexby,spaceyby)
     updateDescription()
   }
 
@@ -777,11 +512,6 @@ export const App: Component = () => {
     setStepBefore(backres.TextBefore.slice(indexfrom, index))
     setStepNow(backres.TextNow.slice(indexfrom, index))
   }
-
-  // calling timeout before resizing
-
-  // window.addEventListener('resize', debounce(handleResize, 500))
-
   //creating canvas back and overlay references
   let canvas!: { getContext: (arg0: string) => any; width: number; height: number; }
   let overlaycanvas!: { getContext: (arg0: string) => any; width: number; height: number; }
@@ -794,14 +524,10 @@ export const App: Component = () => {
   return (
     <div>
       <Suspense fallback={<p>Loading...</p>}>
-
-
         <CanvasMenu title={"Canvas"} itemid={"canvas"} PASSREF={canvasCallback} minwidth={800} minheight={800}>
           <Canvas ref={canvas} width={size().width} height={size().height} overlay={false} />
           <Canvas ref={overlaycanvas} width={size().width} height={size().height} overlay={true} />
         </CanvasMenu>
-
-
       </Suspense>
       <Menu title={"CipMenu"} itemid={"menu"} minwidth={270} minheight={270}>
         <DropdownCipher PASSREF={refCallback} />

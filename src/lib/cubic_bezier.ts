@@ -1,27 +1,27 @@
-export function BezPoints(b: any[],complexity : number){
-  let pts=[b[0]];
-  let lastPt=b[0];
-  for(let t=0;t<=complexity;t++){
+export function BezPoints(b: any[], complexity: number) {
+  let pts = [b[0]];
+  let lastPt = b[0];
+  for (let t = 0; t <= complexity; t++) {
     // calc another point along the curve
-    let pt= getBezierXY(t/complexity,b);
-    let dx=pt.x-lastPt.x;
-    let dy=pt.y-lastPt.y;
-    let d= Math.sqrt(dx*dx+dy*dy);
-    let dInt= Math.floor(d);
-    if(dInt>0 || t==complexity){
-      lastPt=pt;
+    let pt = getBezierXY(t / complexity, b);
+    let dx = pt.x - lastPt.x;
+    let dy = pt.y - lastPt.y;
+    let d = Math.sqrt(dx * dx + dy * dy);
+    let dInt = Math.floor(d);
+    if (dInt > 0 || t == complexity) {
+      lastPt = pt;
       pts.push(pt);
     }
   }
-  return(pts);
+  return (pts);
 }
 
-export function drawPlots(ctx: any ,end : number , pts: { x: number, y: number; }[] ){
-	
-  ctx.fillStyle='red';
-  for(let i=0;i<end;i++){
+export function drawPlots(ctx: any, end: number, pts: { x: number, y: number; }[]) {
+
+  ctx.fillStyle = 'red';
+  for (let i = 0; i < end; i++) {
     ctx.beginPath();
-    ctx.arc(pts[i].x,pts[i].y,2,0,Math.PI*2);
+    ctx.arc(pts[i].x, pts[i].y, 2, 0, Math.PI * 2);
     ctx.fill();
   }
 }
@@ -29,18 +29,18 @@ export function drawPlots(ctx: any ,end : number , pts: { x: number, y: number; 
 
 function getBezierXY(t: number, b: { x: number, y: number; }[]) {
   return {
-    x: Math.pow(1-t,3) * b[0].x + 3 * t * Math.pow(1 - t, 2) * b[1].x + 3 * t * t * (1 - t) * b[2].x + t * t * t * b[3].x,
-    y: Math.pow(1-t,3) * b[0].y + 3 * t * Math.pow(1 - t, 2) * b[1].y + 3 * t * t * (1 - t) * b[2].y + t * t * t * b[3].y
+    x: Math.pow(1 - t, 3) * b[0].x + 3 * t * Math.pow(1 - t, 2) * b[1].x + 3 * t * t * (1 - t) * b[2].x + t * t * t * b[3].x,
+    y: Math.pow(1 - t, 3) * b[0].y + 3 * t * Math.pow(1 - t, 2) * b[1].y + 3 * t * t * (1 - t) * b[2].y + t * t * t * b[3].y
   };
 }
 
 export function getBezierAngle(t: number, b: { x: number, y: number; }[]) {
-  let dx = Math.pow(1-t, 2)*(b[1].x-b[0].x) + 2*t*(1-t)*(b[2].x-b[1].x) + t * t * (b[3].x - b[2].x);
-  let dy = Math.pow(1-t, 2)*(b[1].y-b[0].y) + 2*t*(1-t)*(b[2].y-b[1].y) + t * t * (b[3].y - b[2].y);
-  return -Math.atan2(dx, dy) + 0.5*Math.PI;
+  let dx = Math.pow(1 - t, 2) * (b[1].x - b[0].x) + 2 * t * (1 - t) * (b[2].x - b[1].x) + t * t * (b[3].x - b[2].x);
+  let dy = Math.pow(1 - t, 2) * (b[1].y - b[0].y) + 2 * t * (1 - t) * (b[2].y - b[1].y) + t * t * (b[3].y - b[2].y);
+  return -Math.atan2(dx, dy) + 0.5 * Math.PI;
 }
 
-export function drawArrow(ctx: any,x : number,y : number,angle:number){
+export function drawArrow(ctx: any, x: number, y: number, angle: number) {
   ctx.save();
   ctx.beginPath();
   ctx.translate(x, y);
@@ -52,7 +52,7 @@ export function drawArrow(ctx: any,x : number,y : number,angle:number){
   ctx.fillStyle = 'red';
   ctx.fill();
   ctx.restore();
-  }
+}
 
 
 // Given the 4 control points on a Bezier curve 
