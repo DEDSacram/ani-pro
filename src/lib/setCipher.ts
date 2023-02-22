@@ -95,15 +95,5 @@ export function setCaesarCircle(daobj : {animationsteps : (number[][][])[],saved
         }
         daobj.animationsteps.push([step])
       }
-    //   running.on = true
-    //   let imageData = ctx.getImageData(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
-    //   if (encrypttext) {
-    //     await Animate_Circ(ctx, 0, -(13.84 * Number.parseInt(encryptkey)), radius, duration(), running, imageData, backres.Display)
-    //   } else {
-    //     await Animate_Circ(ctx, 0, 13.84 * Number.parseInt(encryptkey), radius, duration(), running, imageData, backres.Display)
-    //   }
-    //   running.on = false
     }
   }
-
-//   let radius = (ctx.canvas.clientHeight / 2) * yratio

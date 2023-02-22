@@ -232,7 +232,7 @@ export const App: Component = () => {
       setTextNow(' ')
       setStepBefore(' ')
       setStepNow(' ')
-      
+
       // add back after edit currentfunction
       if (submit) {
 
@@ -292,6 +292,7 @@ export const App: Component = () => {
 
         setEncryptedText(backres.TextNow)
         // call to create graphics for given cipher
+
         currentfunction(backres.Display, spacexby, spaceyby, ((ongeneratedsize.height * yratio) / spacey))
 
         encrypttext = encrypt()
@@ -299,23 +300,25 @@ export const App: Component = () => {
 
         currentfunctionanimation(backres.Ani,backres.Display,encrypttext,spacexby,spaceyby)
 
+        // Spin for Caesar wheel
+        if(parseInt(currentcipher) == 2){
+          let radius = (backctx.canvas.clientHeight / 2) * yratio
+          running.on = true
+          let imageData = backctx.getImageData(0, 0, backctx.canvas.clientWidth, backctx.canvas.clientHeight);
+          if (encrypttext) {
+            await Animate_Circ(backctx, 0, -(13.84 * Number.parseInt(encryptkey)), radius, duration(), running, imageData, backres.Display)
+          } else {
+            await Animate_Circ(backctx, 0, 13.84 * Number.parseInt(encryptkey), radius, duration(), running, imageData, backres.Display)
+          }
+          running.on = false
+        }
+
         //first
         currentmicrostep = 0
         currentstep = 0
         updateDescription()
         UpdateStep()
         Showcasestep(frontctx,Number.parseInt(backres.Cipher),daobj.animationsteps,currentstep,currentmicrostep,xratio,yratio,spacexby,spaceyby)
-        if(parseInt(currentcipher) == 4){
-          let radius = (frontctx.canvas.clientHeight / 2) * yratio
-          running.on = true
-          let imageData = frontctx.getImageData(0, 0, frontctx.canvas.clientWidth, frontctx.canvas.clientHeight);
-          if (encrypttext) {
-            await Animate_Circ(frontctx, 0, -(13.84 * Number.parseInt(encryptkey)), radius, duration(), running, imageData, backres.Display)
-          } else {
-            await Animate_Circ(frontctx, 0, 13.84 * Number.parseInt(encryptkey), radius, duration(), running, imageData, backres.Display)
-          }
-          running.on = false
-        }
       }
     }
 
