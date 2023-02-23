@@ -5,12 +5,12 @@ import makeResizableDiv from "../lib/createResizable";
 import { onMount } from "solid-js";
 import { FiChevronDown, FiChevronUp, FiMoreHorizontal, FiArrowDownRight } from "solid-icons/fi";
 import "../index.css"
-export const Menu : Component = (props) => {
+export const Menu : Component = (props : any) => {
     const [open, setOpen] = createSignal(false)
 
-    let ref2!: HTMLElement | ((el: HTMLDivElement) => void)
-    let resizerright!: SVGSVGElement | ((el: SVGSVGElement) => void)
-    let dragheader!: HTMLElement | ((el: HTMLDivElement) => void)
+    let ref2!: any
+    let resizerright!: any
+    let dragheader!: any
 
     let [heightbefore, setHeightBefore] = createSignal("fit-content")
 
@@ -26,7 +26,7 @@ export const Menu : Component = (props) => {
         if (!open()) {
           if (ref2.offsetTop + parseInt(heightbefore()) >= window.innerHeight) {
             let addto = ref2.offsetTop
-            ref2.style.top = addto - (ref2.offsetTop + heightbefore() - window.innerHeight) + "px"
+            ref2.style.top = addto - (ref2.offsetTop + Number.parseInt(heightbefore()) - window.innerHeight) + "px"
             if (ref2.offsetTop < 0) {
               ref2.style.top = 0 + "px"
             } else {
