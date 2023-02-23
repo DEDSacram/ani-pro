@@ -17,6 +17,9 @@
     },
     "caesar":{
     "rules": ["Shift an alphabet by a given number right or left encipher to the same position"]
+    },
+    "homo":{
+      "rules": ["Remove all special characters", "Choose a unique sequence for each character occurrence", "Replace all characters by chosen sequences"]
     }
   }
   

@@ -287,6 +287,7 @@ export const App: Component = () => {
               }
               y++;
               setTextEncryptionKey(JSON.stringify(backres.Display));
+              setRules(popis.homo.rules)
             }
 
             spacex = y
@@ -331,7 +332,6 @@ export const App: Component = () => {
         currentmicrostep = 0
         currentstep = 0
         updateDescription()
-        UpdateStep()
         Showcasestep(frontctx,Number.parseInt(backres.Cipher),daobj.animationsteps,currentstep,currentmicrostep,xratio,yratio,spacexby,spaceyby)
       }
     }
@@ -402,9 +402,6 @@ export const App: Component = () => {
       }
       // move in current step
       currentmicrostep = 0
-      updateDescription()
-      UpdateStep()
-
     }
     if (running.on) {
       currentmicrostep = daobj.animationsteps[currentstep].length

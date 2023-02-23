@@ -28,12 +28,7 @@ export function setPlayfair(daobj : {animationsteps : (number[][][])[],savedstep
         }
         //different row and column
         else {
-
-          if (encrypttext) {
             descript += popis.drc + popis.each + popis.hr
-          } else {
-            descript += popis.drc + popis.each + popis.hr
-          }
         }
         ss.push(descript)
 
@@ -61,14 +56,22 @@ export function setPlayfair(daobj : {animationsteps : (number[][][])[],savedstep
 
 export function setCaesar(daobj : {animationsteps : (number[][][])[],savedsteps : string[]}) {
     return function GenerateStepsCaesar(aniarray : any,display : any,encrypttext : string,spacexby : number,spaceyby : number) {
+      let ss = []
       for (let i = 0; i < aniarray.length; i++) {
         let step = []
         for (let j = 0; j < aniarray[i][0].length; j++) {
           let microstep = [aniarray[i][0][j][0] * spacexby, aniarray[i][0][j][1] * spaceyby]
           step.push(microstep)
         }
+
+        let descript = ""
+        descript += display[aniarray[i][0][0][0]] + "->" + display[aniarray[i][0][1][0]]
+
+
+        ss.push(descript)
         daobj.animationsteps.push([step])
       }
+      daobj.savedsteps = ss
     }
   }
 
