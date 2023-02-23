@@ -1,14 +1,15 @@
-import { drawcurvewitharrow } from "./linearrow";
+import { drawcurvewitharrow, drawlinewitharrow, drawlinewitharrow_C } from "./linearrow";
 import { Selected } from "./Markup";
 export function Showcasestep(ctx : any,cipher : number,animationsteps : (number[][][])[],currentstep : number,currentmicrostep : number,xratio : number,yratio : number,spacexby : number,spaceyby : number) {
     ctx.clearRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
     switch (cipher) {
       case 1:
         // normal caesar
-        drawcurvewitharrow(ctx, { x: (animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][0][1] + spaceyby) * yratio }, { x: ((animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][0][0][1] + spaceyby * 2) * yratio + (animationsteps[currentstep][0][1][1] + spaceyby * 2) * yratio) / 2 }, { x: (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][1][1] + spaceyby) * yratio }, 10)
+        drawcurvewitharrow(ctx, { x: (animationsteps[currentstep][0][0][0] * xratio + (spacexby / 2)), y: (animationsteps[currentstep][0][0][1]* yratio + spaceyby) }, { x: ((animationsteps[currentstep][0][0][0] * xratio + (spacexby / 2)) + (animationsteps[currentstep][0][1][0] * xratio + (spacexby / 2))) / 2, y: ((animationsteps[currentstep][0][0][1]* yratio + spaceyby * 2) + (animationsteps[currentstep][0][1][1] * yratio + spaceyby * 2)) / 2 }, { x: (animationsteps[currentstep][0][1][0] * xratio + (spacexby / 2)), y: (animationsteps[currentstep][0][1][1]* yratio + spaceyby) }, 10)
         break;
       case 2:
         // wheel caesar
+        drawlinewitharrow_C(ctx,{x: animationsteps[currentstep][0][0][0] * yratio, y: animationsteps[currentstep][0][0][1] * yratio}, { x: (animationsteps[currentstep][0][1][0]) * yratio, y: (animationsteps[currentstep][0][1][1]) * yratio },10)
         break;
       case 3:
         //Playfair
@@ -30,10 +31,11 @@ export function Showcaseskip(ctx : any,cipher : number,animationsteps : (number[
     switch (cipher) {
       case 1:
         // normal caesar
-        drawcurvewitharrow(ctx, { x: (animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][0][1] + spaceyby) * yratio }, { x: ((animationsteps[currentstep][0][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][0][0][1] + spaceyby * 2) * yratio + (animationsteps[currentstep][0][1][1] + spaceyby * 2) * yratio) / 2 }, { x: (animationsteps[currentstep][0][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][0][1][1] + spaceyby) * yratio }, 10)
+        drawcurvewitharrow(ctx, { x: (animationsteps[currentstep][0][0][0] * xratio + (spacexby / 2)), y: (animationsteps[currentstep][0][0][1]* yratio + spaceyby) }, { x: ((animationsteps[currentstep][0][0][0] * xratio + (spacexby / 2)) + (animationsteps[currentstep][0][1][0] * xratio + (spacexby / 2))) / 2, y: ((animationsteps[currentstep][0][0][1]* yratio + spaceyby * 2) + (animationsteps[currentstep][0][1][1] * yratio + spaceyby * 2)) / 2 }, { x: (animationsteps[currentstep][0][1][0] * xratio + (spacexby / 2)), y: (animationsteps[currentstep][0][1][1]* yratio + spaceyby) }, 10)
         break;
       case 2:
-        // wheel caesar
+        // wheel caesar resizes proportionally to radius radius is on y
+        drawlinewitharrow_C(ctx,{x: animationsteps[currentstep][0][0][0] * yratio, y: animationsteps[currentstep][0][0][1] * yratio}, { x: (animationsteps[currentstep][0][1][0]) * yratio, y: (animationsteps[currentstep][0][1][1]) * yratio },10)
         break;
       case 3:
         //Playfair
@@ -43,7 +45,7 @@ export function Showcaseskip(ctx : any,cipher : number,animationsteps : (number[
         }
 
         for (let i = 0; i < animationsteps[currentstep].length; i++) {
-          drawcurvewitharrow(ctx, { x: (animationsteps[currentstep][i][0][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][i][0][1] + spaceyby / 2) * yratio }, { x: ((animationsteps[currentstep][i][0][0] + (spacexby / 2)) * xratio + (animationsteps[currentstep][i][1][0] + (spacexby / 2)) * xratio) / 2, y: ((animationsteps[currentstep][i][0][1] + spaceyby / 2) * yratio + (animationsteps[currentstep][i][1][1] + spaceyby / 2) * yratio) / 2 }, { x: (animationsteps[currentstep][i][1][0] + (spacexby / 2)) * xratio, y: (animationsteps[currentstep][i][1][1] + spaceyby / 2) * yratio }, 30)
+          drawlinewitharrow(ctx,{ x: (animationsteps[currentstep][i][0][0]* xratio + (spacexby / 2)), y: (animationsteps[currentstep][i][0][1] * yratio + spaceyby / 2) }, { x: (animationsteps[currentstep][i][1][0]* xratio + (spacexby / 2)), y: (animationsteps[currentstep][i][1][1]* yratio + spaceyby / 2) },30)
         }
         break;
       case 4:

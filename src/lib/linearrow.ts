@@ -25,5 +25,25 @@ export function drawcurvewitharrow(ctx: any, startpoint: { x: any; y: any; }, co
   ctx.quadraticCurveTo(control_p.x, control_p.y, endpoint.x, endpoint.y);
   ctx.lineWidth = 4;
   ctx.stroke();
-  arrow(ctx, control_p, { x: endpoint.x, y: endpoint.y }, arrowsize);
+  arrow(ctx, control_p, endpoint, arrowsize);
+}
+
+export function drawlinewitharrow_C(ctx: any, startpoint: { x: any; y: any; }, endpoint: { x: any; y: any; }, arrowsize: number) {
+  ctx.translate(ctx.canvas.clientWidth / 2, ctx.canvas.clientHeight / 2);
+  ctx.beginPath();
+  ctx.moveTo(startpoint.x, startpoint.y);
+  ctx.lineTo(endpoint.x, endpoint.y);
+  ctx.lineWidth = 4;
+  ctx.stroke();
+  arrow(ctx, startpoint, endpoint, arrowsize);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+export function drawlinewitharrow(ctx: any, startpoint: { x: any; y: any; }, endpoint: { x: any; y: any; }, arrowsize: number) {
+  ctx.beginPath();
+  ctx.moveTo(startpoint.x, startpoint.y);
+  ctx.lineTo(endpoint.x, endpoint.y);
+  ctx.lineWidth = 4;
+  ctx.stroke();
+  arrow(ctx, startpoint, endpoint, arrowsize);
 }

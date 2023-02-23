@@ -1,4 +1,5 @@
 import * as popis from '../popis.json';
+import { drawPoint } from './createCaesarWheel';
 
 export function setPlayfair(daobj : {animationsteps : (number[][][])[],savedsteps : string[]}) {
     return function GenerateStepsPlayfair(aniarray : any,display : any,encrypttext : string,spacexby : number,spaceyby : number) {
@@ -83,17 +84,25 @@ export function setHomo(daobj : {animationsteps : (number[][][])[],savedsteps : 
       }
     }
   }
-
 export function setCaesarCircle(daobj : {animationsteps : (number[][][])[],savedsteps : string[]}) {
-    return async function GenerateStepsCaesar(aniarray : any,display : any,encrypttext : string,spacexby : number,spaceyby : number,ctx : any) {
+    return async function GenerateStepsCaesar(aniarray : any,display : any,encrypttext : string,spacexby : number,spaceyby : number,ctx : any,by : number) {
     //   let radius = (backctx.canvas.clientHeight / 2) * yratio
-      for (let i = 0; i < aniarray.length; i++) {
-        let step = []
-        for (let j = 0; j < aniarray[i][0].length; j++) {
-          let microstep = [aniarray[i][0][j][0] * spacexby, aniarray[i][0][j][1] * spaceyby]
-          step.push(microstep)
+    let radius = ctx.canvas.clientHeight / 2
+    let cpoint
+    let microstep
+    for (let i = 0; i < aniarray.length; i++) {
+      let step = []
+        let rotatedby = by*13.84
+        if(encrypttext){
+          rotatedby = -rotatedby
         }
-        daobj.animationsteps.push([step])
-      }
+        cpoint = drawPoint(rotatedby +(13.84 * -aniarray[i][0][0][0] +6*13.84 + 13.84/2), 0.80, radius)
+        microstep = [cpoint.circx, cpoint.circy]
+        step.push(microstep)
+        cpoint = drawPoint(rotatedby + (13.84 * -aniarray[i][0][0][0] + 6*13.84 + 13.84/2), 0.65, radius)
+        microstep = [cpoint.circx, cpoint.circy]
+        step.push(microstep)
+      daobj.animationsteps.push([step])
     }
   }
+}

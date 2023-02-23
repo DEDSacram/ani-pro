@@ -127,7 +127,7 @@ export const App: Component = () => {
   // gv that holds size on which it was generated
   let ongeneratedsize = { width: 0, height: 0 }
 
-  let [duration, setDuration] = createSignal(1500)
+  let [duration, setDuration] = createSignal(3000)
 
   // response from
   let backres: Postres;
@@ -144,8 +144,8 @@ export const App: Component = () => {
       body: JSON.stringify(data),
     }).then((response) => response.json())
       .then((data) => {
-        console.log(data)
         backres = data
+        console.log(data)
       })
   }
   //choosing cipher from menu
@@ -176,7 +176,7 @@ export const App: Component = () => {
     }
   };
 
-  const canvasCallback = (cansize: { w: number, h: number }) => {
+  const canvasCallback = async (cansize: { w: number, h: number }) => {
     if (size().width != cansize.w || size().height != cansize.h) {
       setSize({ width: cansize.w, height: cansize.h })
 
@@ -192,9 +192,20 @@ export const App: Component = () => {
         resetContext(backctx)
         resetContext(frontctx)
 
-        currentfunction(backres.Display, spacexby, spaceyby, (ongeneratedsize.height * yratio) / spacey)
-        Selected(frontctx, daobj.animationsteps[currentstep][currentmicrostep][0][0] * xratio, daobj.animationsteps[currentstep][currentmicrostep][0][1] * yratio, spacexby, spaceyby, "red")
-        Selected(frontctx, daobj.animationsteps[currentstep][currentmicrostep][1][0] * xratio, daobj.animationsteps[currentstep][currentmicrostep][1][1] * yratio, spacexby, spaceyby, "green")
+        currentfunction(backres.Display, spacexby, spaceyby, ((ongeneratedsize.height * yratio) / spacey))
+
+        if(parseInt(currentcipher) == 2){
+          let radius = (backctx.canvas.clientHeight / 2)
+          running.on = true
+          let imageData = backctx.getImageData(0, 0, backctx.canvas.clientWidth, backctx.canvas.clientHeight);
+          if (encrypttext) {
+            await Animate_Circ(backctx, 0, (13.84 * -Number.parseInt(encryptkey)), radius, duration(), running, imageData, backres.Display)
+          } else {
+            await Animate_Circ(backctx, 0, 13.84 * Number.parseInt(encryptkey), radius, duration(), running, imageData, backres.Display)
+          }
+          running.on = false
+        }
+        Showcaseskip(frontctx,Number.parseInt(backres.Cipher),daobj.animationsteps,currentstep,currentmicrostep,xratio,yratio,spacexby,spaceyby)
       }
 
 
@@ -214,8 +225,12 @@ export const App: Component = () => {
 
   // Submit form
   async function onSubmit() {
+    if(running.on == true){
+    return
+    }
     //check if key text to encrypt and cipher was chosen // NOT FOR HOMOCIPHER textEncryptionKey()
     if (textEncryption() && currentcipher) {
+
       //set form submit to true
       submit = true
 
@@ -279,7 +294,6 @@ export const App: Component = () => {
             spacey = max_value + 1
             break;
           default:
-            console.log("FAIL")
         }
 
         ongeneratedsize = { width: size().width, height: size().height }
@@ -293,12 +307,12 @@ export const App: Component = () => {
         setEncryptedText(backres.TextNow)
         // call to create graphics for given cipher
 
-        currentfunction(backres.Display, spacexby, spaceyby, ((ongeneratedsize.height * yratio) / spacey))
+        currentfunction(backres.Display, spacexby, spaceyby, ((ongeneratedsize.height * yratio) / (spacey*1.5)))
 
         encrypttext = encrypt()
         encryptkey = textEncryptionKey()
 
-        currentfunctionanimation(backres.Ani,backres.Display,encrypttext,spacexby,spaceyby)
+        currentfunctionanimation(backres.Ani,backres.Display,encrypttext,spacexby,spaceyby,backctx,Number.parseInt(encryptkey),encrypttext)
 
         // Spin for Caesar wheel
         if(parseInt(currentcipher) == 2){

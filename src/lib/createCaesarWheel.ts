@@ -45,6 +45,7 @@ function drawLetters(ctx: any, radius: number,key: number | undefined) {
   let onelet = 13.84;
 
   for(let heh = 1; heh < 27; heh++){
+      console.log(onelet*heh)
       let circpoint = drawPoint(onelet*heh,0.52,radius)
       let textpoint = drawPoint(onelet*heh+onelet/2,0.61,radius)
       ctx.moveTo(circpoint.circx,circpoint.circy)
