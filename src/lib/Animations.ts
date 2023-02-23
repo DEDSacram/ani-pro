@@ -1,5 +1,6 @@
 import { getBezierAngle, drawPlots, drawArrow } from "./cubic_bezier";
 import { drawPoint } from "./createCaesarWheel";
+import { drawlinewitharrow_C } from "./linearrow"
 // function to calculate coordinate for quarctic movement
 function easeInOutQuart(t: number, b: number, c: number, d: number) {
   if ((t /= d / 2) < 1) return c / 2 * t * t * t * t + b;
@@ -57,6 +58,30 @@ export async function Animate_Circ(ctx: any, from: number, to: number, radius: n
     }, 1000 / 60);
   });
 }
+
+export async function Animate_Circ_Arr(ctx: any, from: {x:number,y:number}, to: {x:number,y:number}, duration: number, states: { on: boolean; }) {
+  return await new Promise(resolve => {
+
+    let start = new Date().getTime();
+    let innertimer = setInterval(function () {
+      if (!states.on) {
+        clearTimeout(innertimer)
+        Promise.resolve(0)
+      }
+      let time = new Date().getTime() - start;
+      ctx.clearRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
+      let xk = easeInOutQuart(time, from.x, to.x - from.x, duration);
+      let yk = easeInOutQuart(time, from.y, to.y - from.y, duration);
+      drawlinewitharrow_C(ctx,{x: from.x, y: from.y},{x:xk,y:yk},20)
+      if (time >= duration) {
+        clearTimeout(innertimer)
+        resolve('done');
+      }
+    }, 1000 / 60);
+  });
+}
+
+
 
 export async function Animate_T(ctx: any, cBez1: any, cPoints: any, from: number, to: number, duration: number, states: { on: boolean; }, color = "white") {
 

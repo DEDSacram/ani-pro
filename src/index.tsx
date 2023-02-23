@@ -13,7 +13,7 @@ import { BezPoints } from "./lib/cubic_bezier";
 
 import { Showcaseskip, Showcasestep } from "./lib/control_step";
 
-import { Animate, Animate_T, Animate_Circ } from "./lib/Animations";
+import { Animate, Animate_T, Animate_Circ, Animate_Circ_Arr } from "./lib/Animations";
 
 import { setCaesar, setHomo, setPlayfair, setCaesarCircle } from "./lib/setCipher";
 
@@ -375,7 +375,7 @@ export const App: Component = () => {
           break;
         case 2:
           // wheel caesar
-
+          await Animate_Circ_Arr(frontctx,{x: daobj.animationsteps[currentstep][0][0][0] * yratio, y: daobj.animationsteps[currentstep][0][0][1] * yratio}, { x: (daobj.animationsteps[currentstep][0][1][0]) * yratio, y: (daobj.animationsteps[currentstep][0][1][1]) * yratio }, duration(), running)
           break;
         case 3:
           //Playfair

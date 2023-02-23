@@ -9,7 +9,7 @@ export function Showcasestep(ctx : any,cipher : number,animationsteps : (number[
         break;
       case 2:
         // wheel caesar
-        drawlinewitharrow_C(ctx,{x: animationsteps[currentstep][0][0][0] * yratio, y: animationsteps[currentstep][0][0][1] * yratio}, { x: (animationsteps[currentstep][0][1][0]) * yratio, y: (animationsteps[currentstep][0][1][1]) * yratio },10)
+        drawlinewitharrow_C(ctx,{x: animationsteps[currentstep][0][0][0] * yratio, y: animationsteps[currentstep][0][0][1] * yratio}, { x: (animationsteps[currentstep][0][1][0]) * yratio, y: (animationsteps[currentstep][0][1][1]) * yratio },20)
         break;
       case 3:
         //Playfair
@@ -35,7 +35,7 @@ export function Showcaseskip(ctx : any,cipher : number,animationsteps : (number[
         break;
       case 2:
         // wheel caesar resizes proportionally to radius radius is on y
-        drawlinewitharrow_C(ctx,{x: animationsteps[currentstep][0][0][0] * yratio, y: animationsteps[currentstep][0][0][1] * yratio}, { x: (animationsteps[currentstep][0][1][0]) * yratio, y: (animationsteps[currentstep][0][1][1]) * yratio },10)
+        drawlinewitharrow_C(ctx,{x: animationsteps[currentstep][0][0][0] * yratio, y: animationsteps[currentstep][0][0][1] * yratio}, { x: (animationsteps[currentstep][0][1][0]) * yratio, y: (animationsteps[currentstep][0][1][1]) * yratio },20)
         break;
       case 3:
         //Playfair
