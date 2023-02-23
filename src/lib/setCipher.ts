@@ -55,7 +55,7 @@ export function setPlayfair(daobj : {animationsteps : (number[][][])[],savedstep
   }
 
 export function setCaesar(daobj : {animationsteps : (number[][][])[],savedsteps : string[]}) {
-    return function GenerateStepsCaesar(aniarray : any,display : any,encrypttext : string,spacexby : number,spaceyby : number) {
+    return function GenerateStepsCaesar(aniarray : any,display : any,encrypttext : string,spacexby : number,spaceyby : number,ctx : any,by : number) {
       let ss = []
       for (let i = 0; i < aniarray.length; i++) {
         let step = []
@@ -65,7 +65,12 @@ export function setCaesar(daobj : {animationsteps : (number[][][])[],savedsteps 
         }
 
         let descript = ""
-        descript += display[aniarray[i][0][0][0]] + "->" + display[aniarray[i][0][1][0]]
+        descript += display[aniarray[i][0][0][0]] + "->" + display[aniarray[i][0][1][0]] + " "
+        if(encrypttext){
+          descript += popis.mo + popis.by+ by + " " + popis.right
+        }else{
+          descript += popis.mo + popis.by+ by + " " + popis.left
+        }
 
 
         ss.push(descript)
@@ -77,19 +82,44 @@ export function setCaesar(daobj : {animationsteps : (number[][][])[],savedsteps 
 
 export function setHomo(daobj : {animationsteps : (number[][][])[],savedsteps : string[]}) {
     return function GenerateStepsHomo(aniarray : any,display : any,encrypttext : string,spacexby : number,spaceyby : number) {
+      let ss = []
       for (let i = 0; i < aniarray.length; i++) {
         let step = []
         for (let j = 0; j < aniarray[i][0].length; j++) {
           let microstep = [aniarray[i][0][j][0] * spacexby, aniarray[i][0][j][1] * spaceyby]
           step.push(microstep)
         }
+        let descript = ""
+        let ind = aniarray[i][0][0][0]
+        for (const key in display) {
+          
+          if(ind == 0){
+            console.log(aniarray[i][0][1])
+            descript += key + "->" + display[key][aniarray[i][0][1][1]-1] + " "
+            break;
+          }
+          ind--
+        }
+      
+        
+        // if(encrypttext){
+        //   descript += popis.mo + popis.by + " " + popis.right
+        // }else{
+        //   descript += popis.mo + popis.by + " " + popis.left
+        // }
+        ss.push(descript)
+
         daobj.animationsteps.push([step])
       }
+      daobj.savedsteps = ss
     }
   }
 export function setCaesarCircle(daobj : {animationsteps : (number[][][])[],savedsteps : string[]}) {
     return async function GenerateStepsCaesar(aniarray : any,display : any,encrypttext : string,spacexby : number,spaceyby : number,ctx : any,by : number) {
-    //   let radius = (backctx.canvas.clientHeight / 2) * yratio
+    //override
+    let dis = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+    let ss = []
+
     let radius = ctx.canvas.clientHeight / 2
     let cpoint
     let microstep
@@ -105,7 +135,18 @@ export function setCaesarCircle(daobj : {animationsteps : (number[][][])[],saved
         cpoint = drawPoint(rotatedby + (13.84 * -aniarray[i][0][0][0] + 6*13.84 + 13.84/2), 0.65, radius)
         microstep = [cpoint.circx, cpoint.circy]
         step.push(microstep)
+
+        let descript = ""
+        descript += display[aniarray[i][0][0][0]] + "->" + display[aniarray[i][0][1][0]] + " "
+        if(encrypttext){
+          descript += popis.mo + popis.by+ by + " " + popis.right
+        }else{
+          descript += popis.mo + popis.by+ by + " " + popis.left
+        }
+        ss.push(descript)
+
       daobj.animationsteps.push([step])
     }
+    daobj.savedsteps = ss
   }
 }

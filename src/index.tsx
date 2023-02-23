@@ -332,6 +332,7 @@ export const App: Component = () => {
         currentmicrostep = 0
         currentstep = 0
         updateDescription()
+        UpdateStep()
         Showcasestep(frontctx,Number.parseInt(backres.Cipher),daobj.animationsteps,currentstep,currentmicrostep,xratio,yratio,spacexby,spaceyby)
       }
     }
@@ -354,16 +355,18 @@ export const App: Component = () => {
     // if isnt running run
     running.on = true
 
-
-
-
-
+    let first_g = false
     // giving for loops a label to break from it later
     cancel:
     for (let i = currentstep; i < daobj.animationsteps.length; i++) {
       currentstep = i
       updateDescription()
-      UpdateStep()
+
+      if(first_g){
+        UpdateStep()
+      }
+    
+
 
       switch (Number.parseInt(backres.Cipher)) {
         case 1:
@@ -402,6 +405,7 @@ export const App: Component = () => {
       }
       // move in current step
       currentmicrostep = 0
+      first_g = true
     }
     if (running.on) {
       currentmicrostep = daobj.animationsteps[currentstep].length
@@ -448,7 +452,6 @@ export const App: Component = () => {
       currentmicrostep++
       return
     }
-
 
     currentmicrostep--
     if (currentmicrostep < 0) {
