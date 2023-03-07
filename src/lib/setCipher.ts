@@ -94,8 +94,11 @@ export function setHomo(daobj : {animationsteps : (number[][][])[],savedsteps : 
         for (const key in display) {
           
           if(ind == 0){
-            console.log(aniarray[i][0][1])
-            descript += key + "->" + display[key][aniarray[i][0][1][1]-1] + " "
+            if(encrypttext){
+              descript += key + "->" + display[key][aniarray[i][0][1][1]-1] + " "
+            }else{
+              descript += display[key][aniarray[i][0][0][1]-1] + "->" + key + " "
+            }
             break;
           }
           ind--
