@@ -522,9 +522,15 @@ export const App: Component = () => {
   function updateDescription() {
     let index = backres.Ani[currentstep].length * (currentstep + 1)
     let indexfrom = backres.Ani[currentstep].length * (currentstep + 1) - backres.Ani[currentstep].length
-    //whole
-    setTextBefore(backres.TextBefore.slice(0, index))
-    setTextNow(backres.TextNow.slice(0, index))
+    //whole show max 14 chars at once
+    if(index >= 14){
+      setTextBefore(backres.TextBefore.slice(index-14, index))
+      setTextNow(backres.TextNow.slice(index-14, index))
+    }else{
+      setTextBefore(backres.TextBefore.slice(0, index))
+      setTextNow(backres.TextNow.slice(0, index))
+    }
+  
     //step
     setStepBefore(backres.TextBefore.slice(indexfrom, index))
     setStepNow(backres.TextNow.slice(indexfrom, index))
