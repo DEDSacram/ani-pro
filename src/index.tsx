@@ -308,7 +308,7 @@ export const App: Component = () => {
         setEncryptedText(backres.TextNow)
         // call to create graphics for given cipher
 
-        currentfunction(backres.Display, spacexby, spaceyby, ((ongeneratedsize.height * yratio) / (spacey*1.5)))
+        currentfunction(backres.Display, spacexby, spaceyby, ((ongeneratedsize.width * yratio) / (spacey*1.5)))
 
         encrypttext = encrypt()
         encryptkey = textEncryptionKey()
