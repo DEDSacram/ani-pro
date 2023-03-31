@@ -85,6 +85,10 @@ export const App: Component = () => {
   let spacexby = 0
   let spaceyby = 0
 
+  let fontsize = 60;
+
+
+
   //animation control
   let currentstep = 0;
   let currentmicrostep = 0;
@@ -192,7 +196,9 @@ export const App: Component = () => {
         resetContext(backctx)
         resetContext(frontctx)
 
-        currentfunction(backres.Display, spacexby, spaceyby, ((ongeneratedsize.height * yratio) / spacey))
+        fontsize = (size().width/(spacex*1.5))*(spacex/spacey)
+      
+        currentfunction(backres.Display, spacexby, spaceyby, fontsize)
 
         if(parseInt(currentcipher) == 2){
           let radius = (backctx.canvas.clientHeight / 2)
@@ -289,7 +295,6 @@ export const App: Component = () => {
               setTextEncryptionKey(JSON.stringify(backres.Display));
               setRules(popis.homo.rules)
             }
-
             spacex = y
             // first is also a row
             spacey = max_value + 1
@@ -307,8 +312,12 @@ export const App: Component = () => {
 
         setEncryptedText(backres.TextNow)
         // call to create graphics for given cipher
-
-        currentfunction(backres.Display, spacexby, spaceyby, ((ongeneratedsize.width * yratio) / (spacey*1.5)))
+    
+        fontsize = (size().width/(spacex*1.5))*(spacex/spacey)
+  
+    
+      
+        currentfunction(backres.Display, spacexby, spaceyby, fontsize)
 
         encrypttext = encrypt()
         encryptkey = textEncryptionKey()
@@ -423,7 +432,11 @@ export const App: Component = () => {
 
   function UpdateStep() {
     let temp = [...showsteps()]
-    temp.unshift(daobj.savedsteps[currentstep][0][0]+"->"+daobj.savedsteps[currentstep][0][1] +" "+ daobj.savedsteps[currentstep][1])
+    if(daobj.savedsteps[currentstep][1]){
+      temp.unshift(daobj.savedsteps[currentstep][0][0]+"->"+daobj.savedsteps[currentstep][0][1] +" "+ daobj.savedsteps[currentstep][1])
+    }else{
+      temp.unshift(daobj.savedsteps[currentstep][0][0]+"->"+daobj.savedsteps[currentstep][0][1])
+    }
     setShowSteps(temp)
    
   }
@@ -521,20 +534,19 @@ export const App: Component = () => {
   }
 
   function updateDescription() {
-    let index = backres.Ani[currentstep].length * (currentstep + 1)
-    let indexfrom = backres.Ani[currentstep].length * (currentstep + 1) - backres.Ani[currentstep].length
+   
+    // daobj.savedsteps[currentstep][0][0].length+"->"+daobj.savedsteps[currentstep][0][1].length
     //whole show max 14 chars at once
-    if(index >= 14){
-      setTextBefore(backres.TextBefore.slice(index-14, index))
-      setTextNow(backres.TextNow.slice(index-14, index))
-    }else{
-      setTextBefore(backres.TextBefore.slice(0, index))
-      setTextNow(backres.TextNow.slice(0, index))
-    }
+
+    let max = daobj.savedsteps[currentstep][0][0].length + daobj.savedsteps[currentstep][0][1].length
+    let from = Math.floor(16/max)
+   
+    setTextBefore(backres.TextBefore.slice(Math.floor((currentstep*daobj.savedsteps[currentstep][0][0].length)/max),(currentstep)*daobj.savedsteps[currentstep][0][0].length))
+    // setTextNow(, (currentstep+1)*daobj.savedsteps[currentstep][0][1].length))
   
-    //step
-    setStepBefore(backres.TextBefore.slice(indexfrom, index))
-    setStepNow(backres.TextNow.slice(indexfrom, index))
+    // //step
+    setStepBefore(daobj.savedsteps[currentstep][0][0])
+    setStepNow(daobj.savedsteps[currentstep][0][1])
   }
   //creating canvas back and overlay references
   let canvas!: { getContext: (arg0: string) => any; width: number; height: number; }

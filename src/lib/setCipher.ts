@@ -101,12 +101,14 @@ export function setHomo(daobj : {animationsteps : (number[][][])[],savedsteps : 
             if(encrypttext){
               descript.push([key,display[key][aniarray[i][0][1][1]-1]])
             }else{
-              descript.push([display[key][aniarray[i][0][1][1]-1],key]) 
+              descript.push([display[key][aniarray[i][0][0][1]-1],key]) 
             }
             break;
           }
+         
           ind--
         }
+        console.log(descript)
       
         ss.push(descript)
 
