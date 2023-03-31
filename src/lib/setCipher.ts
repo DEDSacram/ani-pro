@@ -1,34 +1,37 @@
 import * as popis from '../popis.json';
 import { drawPoint } from './createCaesarWheel';
 
-export function setPlayfair(daobj : {animationsteps : (number[][][])[],savedsteps : string[]}) {
+export function setPlayfair(daobj : {animationsteps : (number[][][])[],savedsteps : any}) {
     return function GenerateStepsPlayfair(aniarray : any,display : any,encrypttext : string,spacexby : number,spaceyby : number) {
       let ss = []
       let sa = []
       for (let i = 0; i < aniarray.length; i++) {
         let step = []
         // same row
-        let descript = ""
+ 
 
-        descript += display[aniarray[i][0][0][0]][aniarray[i][0][0][1]] + display[aniarray[i][1][0][0]][aniarray[i][1][0][1]] + "->" + display[aniarray[i][0][1][0]][aniarray[i][0][1][1]] + display[aniarray[i][1][1][0]][aniarray[i][1][1][1]] + " "
+        let descript = []
+  
+        descript.push([display[aniarray[i][0][0][0]][aniarray[i][0][0][1]] + display[aniarray[i][1][0][0]][aniarray[i][1][0][1]],display[aniarray[i][0][1][0]][aniarray[i][0][1][1]] + display[aniarray[i][1][1][0]][aniarray[i][1][1][1]]])
+
         if (aniarray[i][0][0][0] == aniarray[i][1][0][0]) {
           if (encrypttext) {
-            descript += popis.r + popis.each + popis.by + "1 " + popis.right
+            descript.push(popis.r + popis.each + popis.by + "1 " + popis.right)
           } else {
-            descript += popis.r + popis.each + popis.by + "1 " + popis.left
+            descript.push(popis.r + popis.each + popis.by + "1 " + popis.left)
           }
         }
         //same column
         else if (aniarray[i][0][0][1] == aniarray[i][1][0][1]) {
           if (encrypttext) {
-            descript += popis.c + popis.each + popis.by + + "1 " + popis.down
+            descript.push(popis.c + popis.each + popis.by + + "1 " + popis.down)
           } else {
-            descript += popis.c + popis.each + popis.by + "1 " + popis.up
+            descript.push(popis.c + popis.each + popis.by + "1 " + popis.up)
           }
         }
         //different row and column
         else {
-            descript += popis.drc + popis.each + popis.hr
+          descript.push(popis.drc + popis.each + popis.hr)
         }
         ss.push(descript)
 
@@ -54,7 +57,7 @@ export function setPlayfair(daobj : {animationsteps : (number[][][])[],savedstep
 
   }
 
-export function setCaesar(daobj : {animationsteps : (number[][][])[],savedsteps : string[]}) {
+export function setCaesar(daobj : {animationsteps : (number[][][])[],savedsteps : any}) {
     return function GenerateStepsCaesar(aniarray : any,display : any,encrypttext : string,spacexby : number,spaceyby : number,ctx : any,by : number) {
       let ss = []
       for (let i = 0; i < aniarray.length; i++) {
@@ -64,12 +67,13 @@ export function setCaesar(daobj : {animationsteps : (number[][][])[],savedsteps 
           step.push(microstep)
         }
 
-        let descript = ""
-        descript += display[aniarray[i][0][0][0]] + "->" + display[aniarray[i][0][1][0]] + " "
+        let descript = []
+  
+        descript.push([display[aniarray[i][0][0][0]],display[aniarray[i][0][1][0]]])
         if(encrypttext){
-          descript += popis.mo + popis.by+ by + " " + popis.right
+          descript.push(popis.mo + popis.by+ by + " " + popis.right) 
         }else{
-          descript += popis.mo + popis.by+ by + " " + popis.left
+          descript.push(popis.mo + popis.by+ by + " " + popis.left) 
         }
 
 
@@ -80,7 +84,7 @@ export function setCaesar(daobj : {animationsteps : (number[][][])[],savedsteps 
     }
   }
 
-export function setHomo(daobj : {animationsteps : (number[][][])[],savedsteps : string[]}) {
+export function setHomo(daobj : {animationsteps : (number[][][])[],savedsteps : any}) {
     return function GenerateStepsHomo(aniarray : any,display : any,encrypttext : string,spacexby : number,spaceyby : number) {
       let ss = []
       for (let i = 0; i < aniarray.length; i++) {
@@ -89,27 +93,21 @@ export function setHomo(daobj : {animationsteps : (number[][][])[],savedsteps : 
           let microstep = [aniarray[i][0][j][0] * spacexby, aniarray[i][0][j][1] * spaceyby]
           step.push(microstep)
         }
-        let descript = ""
+        let descript = []
         let ind = aniarray[i][0][0][0]
         for (const key in display) {
           
           if(ind == 0){
             if(encrypttext){
-              descript += key + "->" + display[key][aniarray[i][0][1][1]-1] + " "
+              descript.push([key,display[key][aniarray[i][0][1][1]-1]])
             }else{
-              descript += display[key][aniarray[i][0][0][1]-1] + "->" + key + " "
+              descript.push([display[key][aniarray[i][0][1][1]-1],key]) 
             }
             break;
           }
           ind--
         }
       
-        
-        // if(encrypttext){
-        //   descript += popis.mo + popis.by + " " + popis.right
-        // }else{
-        //   descript += popis.mo + popis.by + " " + popis.left
-        // }
         ss.push(descript)
 
         daobj.animationsteps.push([step])
@@ -117,7 +115,7 @@ export function setHomo(daobj : {animationsteps : (number[][][])[],savedsteps : 
       daobj.savedsteps = ss
     }
   }
-export function setCaesarCircle(daobj : {animationsteps : (number[][][])[],savedsteps : string[]}) {
+export function setCaesarCircle(daobj : {animationsteps : (number[][][])[],savedsteps : any}) {
     return async function GenerateStepsCaesar(aniarray : any,display : any,encrypttext : string,spacexby : number,spaceyby : number,ctx : any,by : number) {
     //override
     let dis = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
@@ -139,12 +137,13 @@ export function setCaesarCircle(daobj : {animationsteps : (number[][][])[],saved
         microstep = [cpoint.circx, cpoint.circy]
         step.push(microstep)
 
-        let descript = ""
-        descript += display[aniarray[i][0][0][0]] + "->" + display[aniarray[i][0][1][0]] + " "
+        let descript = []
+  
+        descript.push([display[aniarray[i][0][0][0]],display[aniarray[i][0][1][0]]])
         if(encrypttext){
-          descript += popis.mo + popis.by+ by + " " + popis.right
+          descript.push(popis.mo + popis.by+ by + " " + popis.right) 
         }else{
-          descript += popis.mo + popis.by+ by + " " + popis.left
+          descript.push(popis.mo + popis.by+ by + " " + popis.left) 
         }
         ss.push(descript)
 

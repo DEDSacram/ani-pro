@@ -96,7 +96,7 @@ export const App: Component = () => {
 
   interface progre {
    animationsteps : (number[][][])[];
-   savedsteps: string[];
+   savedsteps: any;
 }
 
   let daobj : progre = {
@@ -423,8 +423,9 @@ export const App: Component = () => {
 
   function UpdateStep() {
     let temp = [...showsteps()]
-    temp.unshift(daobj.savedsteps[currentstep])
+    temp.unshift(daobj.savedsteps[currentstep][0][0]+"->"+daobj.savedsteps[currentstep][0][1] +" "+ daobj.savedsteps[currentstep][1])
     setShowSteps(temp)
+   
   }
 
   // move to one step before
