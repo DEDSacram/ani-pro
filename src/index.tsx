@@ -534,16 +534,13 @@ export const App: Component = () => {
   }
 
   function updateDescription() {
-   
-    // daobj.savedsteps[currentstep][0][0].length+"->"+daobj.savedsteps[currentstep][0][1].length
-    //whole show max 14 chars at once
-
-    let max = daobj.savedsteps[currentstep][0][0].length + daobj.savedsteps[currentstep][0][1].length
-    let from = Math.floor(16/max)
-   
-    setTextBefore(backres.TextBefore.slice(Math.floor((currentstep*daobj.savedsteps[currentstep][0][0].length)/max),(currentstep)*daobj.savedsteps[currentstep][0][0].length))
-    // setTextNow(, (currentstep+1)*daobj.savedsteps[currentstep][0][1].length))
-  
+    if(currentstep>=5){
+      setTextBefore(backres.TextBefore.slice((currentstep-5)*daobj.savedsteps[currentstep][0][0].length,(currentstep+1)*daobj.savedsteps[currentstep][0][0].length))
+      setTextNow(backres.TextNow.slice((currentstep-5)*daobj.savedsteps[currentstep][0][1].length,(currentstep+1)*daobj.savedsteps[currentstep][0][1].length))
+    }else{
+      setTextBefore(backres.TextBefore.slice(0,(currentstep+1)*daobj.savedsteps[currentstep][0][0].length))
+      setTextNow(backres.TextNow.slice(0,(currentstep+1)*daobj.savedsteps[currentstep][0][1].length))
+    }
     // //step
     setStepBefore(daobj.savedsteps[currentstep][0][0])
     setStepNow(daobj.savedsteps[currentstep][0][1])

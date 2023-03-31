@@ -108,7 +108,6 @@ export function setHomo(daobj : {animationsteps : (number[][][])[],savedsteps : 
          
           ind--
         }
-        console.log(descript)
       
         ss.push(descript)
 
