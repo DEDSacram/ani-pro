@@ -149,7 +149,6 @@ export const App: Component = () => {
     }).then((response) => response.json())
       .then((data) => {
         backres = data
-        console.log(data)
       })
   }
   //choosing cipher from menu
